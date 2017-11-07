@@ -17,6 +17,9 @@ module.exports = class Model {
         }
     }
 
+    static get TABLE () {
+    }
+
     save() {
         const params = {
             TableName: this.constructor.TABLE, //process.env.FUNCTIONS_TABLE,
@@ -31,7 +34,7 @@ module.exports = class Model {
 
     static getById(id) {
         var params = {
-            TableName : Model.TABLE,
+            TableName : this.TABLE,
             Key: {
                 id: id
             }
@@ -48,7 +51,7 @@ module.exports = class Model {
 
     static getOne(keyConditionExpression, expressionAttributeValues) {
         const query = {
-            TableName: Model.TABLE, // process.env.FUNCTIONS_TABLE,
+            TableName: this.TABLE, // process.env.FUNCTIONS_TABLE,
             IndexName: 'FunctionArnIndex',
             KeyConditionExpression: keyConditionExpression,
             ExpressionAttributeValues: expressionAttributeValues

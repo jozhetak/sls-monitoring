@@ -3,20 +3,17 @@
 const AWS = require('aws-sdk');
 const uuid = require('uuid');
 const Promise = require('bluebird');
-const _ = require('lodash')
+const _ = require('lodash');
+const FunctionModel = require('./../model/function');
+const InvocationModel = require('./../model/invocation');
 
-const FunctionModel = require('./../model/function')
-const InvocationModel = require('./../model/invocation')
-
-const LOG_STREAM_LIMIT = 50
+const LOG_STREAM_LIMIT = 50;
 
 AWS.config.setPromisesDependency(require('bluebird'));
 
 module.exports.run = (event, context) => {
 
-    // console.log('{ "errorMessage": "same errror" }')
-
-    AWS.config.update({accessKeyId: 'AKIAI5HP2HRG4CQINOMA', secretAccessKey: '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'});
+    AWS.config.update({accessKeyId: 'AKIAIO43W2FP3V74OLXQ', secretAccessKey: '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'});
 
     const lambda = new AWS.Lambda();
     return lambda.listFunctions({}).promise()
@@ -34,7 +31,6 @@ module.exports.run = (event, context) => {
 
 const saveOrUpdateFunctions = (accountId, functions) => {
     return Promise.each(functions, func => {
-
         return FunctionModel
             .getOne('arn = :arn', {':arn': func.FunctionArn})
             .then(funcDao => {
@@ -80,9 +76,9 @@ const updateInvocations = (accountId, funcInstance) => {
         .promise()
         .then((data) => {
             const streamNames = [];
-             data.logStreams.forEach((logStream) => {
-                 streamNames.push(logStream.logStreamName)
-             })
+            data.logStreams.forEach((logStream) => {
+                streamNames.push(logStream.logStreamName)
+            });
 
             var params = {
                 logGroupName: logGroupName, /* required */
@@ -90,7 +86,7 @@ const updateInvocations = (accountId, funcInstance) => {
                 endTime: new Date().getTime(),
                 //filterPattern: 'STRING_VALUE',
                 interleaved: false,
-                logStreamNames: streamNames,
+                logStreamNames: streamNames
                 //nextToken: 'STRING_VALUE',
                 //startTime: 0
             };
@@ -139,14 +135,7 @@ const convertEventsToInvocations = (events, accountId, funcInstance) => {
                     id: requestId,
                     accountId: accountId,
                     functionId: funcInstance.id,
-                    logs: [
-                        {
-                            eventId: event.eventId,
-                            timestamp: event.timestamp,
-                            ingestionTime: event.ingestionTime,
-                            message: event.message
-                        }
-                    ]
+                    logs: [event]
                 }
             } catch(err) {
                 console.log('error parsing log event, START REQUEST PATTERN: ', err, event.message);
@@ -193,7 +182,7 @@ const convertEventsToInvocations = (events, accountId, funcInstance) => {
                 currentInvocation.logs.push(event);
             }
         }
-    })
+    });
 
     return invocations;
-}
+};
