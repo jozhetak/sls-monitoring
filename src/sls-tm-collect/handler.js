@@ -12,7 +12,7 @@ const LOG_STREAM_LIMIT = 50
 
 AWS.config.setPromisesDependency(require('bluebird'));
 
-module.exports.hello = (event, context) => {
+module.exports.run = (event, context) => {
 
     // console.log('{ "errorMessage": "same errror" }')
 
