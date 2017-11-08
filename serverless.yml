@@ -24,6 +24,7 @@ provider:
   environment:
     FUNCTIONS_TABLE: "function-${opt:stage, self:provider.stage}"
     INVOCATIONS_TABLE: "invocation-${opt:stage, self:provider.stage}"
+    USERS_TABLE: "user-${opt:stage, self:provider.stage}"
 
   iamRoleStatements:
     - Effect: Allow
@@ -102,6 +103,34 @@ resources:
               WriteCapacityUnits: 1
 
         TableName: ${self:provider.environment.INVOCATIONS_TABLE}
+    UsersDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: "_id"
+            AttributeType: "S"
+#          - AttributeName: "firstName"
+#            AttributeType: "S"
+#          - AttributeName: "lastName"
+#            AttributeType: "S"
+#          - AttributeName: "email"
+#            AttributeType: "S"
+#          - AttributeName: "password"
+#            AttributeType: "S"
+#          - AttributeName: "createdAt"
+#            AttributeType: "S"
+#          - AttributeName: "updatedAt"
+#            AttributeType: "S"
+#          - AttributeName: "accounts"
+#            AttributeType: "L"
+        KeySchema:
+          - AttributeName: "_id"
+            KeyType: "HASH"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.USERS_TABLE}
 
 # you can overwrite defaults here
 #  stage: dev
@@ -142,12 +171,15 @@ functions:
         - src/model/**
 
   createUser:
-    handler: src/api/users/users.create.create
+    handler: src/api/users/users.create
+    package:
+      include:
+        - src/api/users/**
+        - src/model/**
     events:
       - http:
           path: users
           method: post
-          cors: true
 
   listUsers:
     handler: src/api/users/users.list
