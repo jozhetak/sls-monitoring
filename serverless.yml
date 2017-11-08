@@ -140,6 +140,61 @@ functions:
       include:
         - src/sls-tm-collect/**
         - src/model/**
+
+  createUser:
+    handler: src/api/users/users.create.create
+    events:
+      - http:
+          path: users
+          method: post
+          cors: true
+
+  listUsers:
+    handler: src/api/users/users.list
+    package:
+      include:
+        - src/api/users/**
+        - src/model/**
+    events:
+      - http:
+          path: users
+          method: get
+
+  getUser:
+    handler: src/api/users/users.get
+    package:
+      include:
+        - src/api/users/**
+        - src/model/**
+    events:
+      - http:
+          path: users/{id}
+          method: get
+          cors: true
+
+  updateUser:
+    handler: src/api/users/users.update
+    package:
+          include:
+            - src/api/users/**
+            - src/model/**
+    events:
+      - http:
+          path: users/{id}
+          method: put
+          cors: true
+
+  deleteUser:
+    handler: src/api/users/users.delete
+    package:
+          include:
+            - src/api/users/**
+            - src/model/**
+    events:
+      - http:
+          path: users/{id}
+          method: delete
+          cors: true
 #    events:
 #      - schedule: rate(1 minute)
 
