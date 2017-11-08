@@ -4,8 +4,8 @@ const AWS = require('aws-sdk');
 const uuid = require('uuid');
 const Promise = require('bluebird');
 const _ = require('lodash');
-const FunctionModel = require('./../model/function');
-const InvocationModel = require('./../model/invocation');
+const FunctionModel = require('../shared/model/function');
+const InvocationModel = require('../shared/model/invocation');
 
 const LOG_STREAM_LIMIT = 50;
 

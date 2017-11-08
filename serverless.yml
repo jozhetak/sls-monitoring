@@ -139,7 +139,7 @@ functions:
     package:
       include:
         - src/sls-tm-collect/**
-        - src/model/**
+        - src/shared/**
 #    events:
 #      - schedule: rate(1 minute)
 
