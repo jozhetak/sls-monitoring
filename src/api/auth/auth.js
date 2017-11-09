@@ -3,6 +3,7 @@
 const UserModel = require('./../../model/user');
 const AWS = require('aws-sdk');
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const jwt = require('jsonwebtoken');
 
 module.exports.signIn = (event, content, callback) => {
   const data = JSON.parse(event.body);
@@ -30,6 +31,12 @@ module.exports.signIn = (event, content, callback) => {
       }
     })
     .then((user) => {
+      const token = jwt.sign({
+        user: {
+          _id: user._id
+        }
+      }, 'JWT_SECRET', { expiresIn: 3600*24*365 });
+      user.accessToken = token
       const response = {
         statusCode: 200,
         body: JSON.stringify(user)

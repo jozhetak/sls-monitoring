@@ -226,7 +226,11 @@ functions:
       - http:
           path: users/{id}
           method: put
-          cors: true
+          cors: true,
+          authorizer:
+            name: authorize
+            identitySource: method.request.header.Authorization
+            type: token
 
   deleteUser:
     handler: src/api/users/users.delete
@@ -250,6 +254,12 @@ functions:
           path: signIn
           method: post
           cors: true
+  authorize:
+      handler: src/api/passport/passport.handler
+      package:
+        include:
+          - src/api/passport/**
+          - src/model/**
 #    events:
 #      - schedule: rate(1 minute)
 

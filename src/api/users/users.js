@@ -32,7 +32,6 @@ module.exports.create = (event, context, callback) => {
       });
 }
 
-
 module.exports.list = (event, context, callback) => {
   const response = {
     statusCode: 200,
@@ -64,11 +63,14 @@ module.exports.get = (event, context, callback) => {
 };
 
 module.exports.update = (event, context, callback) => {
+  const user = JSON.parse(event.requestContext.authorizer.user);
+  console.log(user)
   const response = {
     statusCode: 200,
     body: JSON.stringify({
       message: 'Go Serverless v1.0! Your function executed successfully!',
       input: event,
+      user: user
     }),
   };
 
