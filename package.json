@@ -1,5 +1,5 @@
 {
-  "name": "sls-tm-collect",
+  "name": "sls-monitoring",
   "version": "1.0.0",
   "description": "",
   "main": "handler.js",
