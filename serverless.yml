@@ -175,13 +175,29 @@ package:
     - src/**
 
 functions:
-  hello:
-    handler: src/sls-tm-collect/handler.run
+  schedule:
+    handler: src/sls-schedule/handler.run
+    events:
+      - sns:
+          topicName: sls-collect-run
+          displayName: Start collecting data for aws account
+  collect:
+    handler: src/sls-collect/handler.run
+    environment: # Function level environment variables
+      accessKeyId: 'AKIAIGGFXPP7OWBKKPNA'
+      secretAccessKey: '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'
     package:
       include:
-        - src/sls-tm-collect/**
-        - src/model/**
-
+        - src/sls-collect/**
+        - src/shared/**
+  test:
+    handler: src/test-error/handler.run
+    environment: # Function level environment variables
+      accessKeyId: 'AKIAIGGFXPP7OWBKKPNA'
+      secretAccessKey: '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'
+    package:
+      include:
+        - src/test-error/**
   createUser:
     handler: src/api/users/users.create
     package:
