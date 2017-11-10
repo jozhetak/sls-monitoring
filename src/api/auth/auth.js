@@ -1,6 +1,6 @@
 'use strict';
 
-const UserModel = require('./../../model/user');
+const UserModel = require('../../shared/model/user');
 const AWS = require('aws-sdk');
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 const jwt = require('jsonwebtoken');

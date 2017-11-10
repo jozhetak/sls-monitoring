@@ -1,5 +1,5 @@
 'use strict';
-const UserModel = require('./../../model/user');
+const UserModel = require('../../shared/model/user');
 const uuid = require('uuid');
 const _ = require('lodash');
 
