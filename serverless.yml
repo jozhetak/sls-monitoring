@@ -141,7 +141,7 @@ functions:
       secretAccessKey: 'dYpvxI/LCl4GTXQYZ2LeyeZIHx6kztUYthbPRgIi'
     package:
       include:
-        - src/sls-tm-collect/**
+        - src/sls-collect/**
         - src/shared/**
   test:
     handler: src/test-error/handler.run
