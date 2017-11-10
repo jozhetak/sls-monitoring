@@ -33,6 +33,7 @@ provider:
         - dynamodb:Scan
         - dynamodb:GetItem
         - dynamodb:PutItem
+        - dynamodb:UpdateItem
       Resource: "*"
 
 resources:
@@ -203,6 +204,10 @@ functions:
       - http:
           path: users
           method: get
+          authorizer:
+            name: authorize
+            identitySource: method.request.header.Authorization
+            type: token
 
   getUser:
     handler: src/api/users/users.get
@@ -215,6 +220,10 @@ functions:
           path: users/{id}
           method: get
           cors: true
+          authorizer:
+            name: authorize
+            identitySource: method.request.header.Authorization
+            type: token
 
   updateUser:
     handler: src/api/users/users.update
@@ -243,6 +252,10 @@ functions:
           path: users/{id}
           method: delete
           cors: true
+          authorizer:
+            name: authorize
+            identitySource: method.request.header.Authorization
+            type: token
   userSignIn:
     handler: src/api/auth/auth.signIn
     package:
