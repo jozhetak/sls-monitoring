@@ -33,6 +33,7 @@ provider:
         - dynamodb:Scan
         - dynamodb:GetItem
         - dynamodb:PutItem
+        - dynamodb:UpdateItem
       Resource: "*"
 
 resources:
@@ -193,89 +194,33 @@ functions:
   test:
     handler: src/test-error/handler.run
     environment: # Function level environment variables
-      accessKeyId: 'AKIAIGGFXPP7OWBKKPNA'
-      secretAccessKey: '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'
+      accessKeyId: 'AKIAI6XEDKZIA7BDZ6XQ'
+      secretAccessKey: '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'
     package:
       include:
         - src/test-error/**
-  createUser:
-    handler: src/api/users/users.create
-    package:
-      include:
-        - src/api/users/**
-        - src/model/**
-    events:
-      - http:
-          path: users
-          method: post
-
-  listUsers:
-    handler: src/api/users/users.list
-    package:
-      include:
-        - src/api/users/**
-        - src/model/**
-    events:
-      - http:
-          path: users
-          method: get
-
-  getUser:
-    handler: src/api/users/users.get
-    package:
-      include:
-        - src/api/users/**
-        - src/model/**
-    events:
-      - http:
-          path: users/{id}
-          method: get
-          cors: true
-
-  updateUser:
-    handler: src/api/users/users.update
-    package:
-          include:
-            - src/api/users/**
-            - src/model/**
-    events:
-      - http:
-          path: users/{id}
-          method: put
-          cors: true,
-          authorizer:
-            name: authorize
-            identitySource: method.request.header.Authorization
-            type: token
-
-  deleteUser:
-    handler: src/api/users/users.delete
-    package:
-          include:
-            - src/api/users/**
-            - src/model/**
-    events:
-      - http:
-          path: users/{id}
-          method: delete
-          cors: true
-  userSignIn:
-    handler: src/api/auth/auth.signIn
-    package:
-          include:
-            - src/api/auth/**
-            - src/model/**
-    events:
-      - http:
-          path: signIn
-          method: post
-          cors: true
   authorize:
       handler: src/api/passport/passport.handler
       package:
         include:
           - src/api/passport/**
-          - src/model/**
+          - src/shared/model/**
+  userSignIn:
+    handler: src/api/auth/auth.signIn
+    package:
+          include:
+            - src/api/auth/**
+            - src/shared/model/**
+    events:
+      - http:
+          path: signIn
+          method: post
+          cors: true
+  createUser: ${file(./src/api/users/serverless.yml):functions.createUser}
+  listUsers: ${file(./src/api/users/serverless.yml):functions.listUsers}
+  getUser: ${file(./src/api/users/serverless.yml):functions.getUser}
+  updateUser: ${file(./src/api/users/serverless.yml):functions.updateUser}
+  deleteUser: ${file(./src/api/users/serverless.yml):functions.deleteUser}
 #    events:
 #      - schedule: rate(1 minute)
 
