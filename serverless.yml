@@ -176,103 +176,113 @@ package:
     - src/**
 
 functions:
-  hello:
+  collect:
     handler: src/sls-tm-collect/handler.run
+    environment: # Function level environment variables
+      accessKeyId: 'AKIAI6XEDKZIA7BDZ6XQ'
+      secretAccessKey: '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'
     package:
       include:
-        - src/sls-tm-collect/**
-        - src/model/**
-
+        - src/sls-collect/**
+        - src/shared/**
+  test:
+    handler: src/test-error/handler.run
+    environment: # Function level environment variables
+      accessKeyId: 'AKIAI6XEDKZIA7BDZ6XQ'
+      secretAccessKey: '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'
+    package:
+      include:
+        - src/test-error/**
   createUser:
-    handler: src/api/users/users.create
-    package:
-      include:
-        - src/api/users/**
-        - src/model/**
-    events:
-      - http:
-          path: users
-          method: post
-
-  listUsers:
-    handler: src/api/users/users.list
-    package:
-      include:
-        - src/api/users/**
-        - src/model/**
-    events:
-      - http:
-          path: users
-          method: get
-          authorizer:
-            name: authorize
-            identitySource: method.request.header.Authorization
-            type: token
-
-  getUser:
-    handler: src/api/users/users.get
-    package:
-      include:
-        - src/api/users/**
-        - src/model/**
-    events:
-      - http:
-          path: users/{id}
-          method: get
-          cors: true
-          authorizer:
-            name: authorize
-            identitySource: method.request.header.Authorization
-            type: token
-
-  updateUser:
-    handler: src/api/users/users.update
-    package:
-          include:
-            - src/api/users/**
-            - src/model/**
-    events:
-      - http:
-          path: users/{id}
-          method: put
-          cors: true,
-          authorizer:
-            name: authorize
-            identitySource: method.request.header.Authorization
-            type: token
-
-  deleteUser:
-    handler: src/api/users/users.delete
-    package:
-          include:
-            - src/api/users/**
-            - src/model/**
-    events:
-      - http:
-          path: users/{id}
-          method: delete
-          cors: true
-          authorizer:
-            name: authorize
-            identitySource: method.request.header.Authorization
-            type: token
-  userSignIn:
-    handler: src/api/auth/auth.signIn
-    package:
-          include:
-            - src/api/auth/**
-            - src/model/**
-    events:
-      - http:
-          path: signIn
-          method: post
-          cors: true
-  authorize:
-      handler: src/api/passport/passport.handler
+      handler: src/api/users/users.create
       package:
         include:
-          - src/api/passport/**
+          - src/api/users/**
           - src/model/**
+      events:
+        - http:
+            path: users
+            method: post
+
+    listUsers:
+      handler: src/api/users/users.list
+      package:
+        include:
+          - src/api/users/**
+          - src/model/**
+      events:
+        - http:
+            path: users
+            method: get
+            authorizer:
+              name: authorize
+              identitySource: method.request.header.Authorization
+              type: token
+
+    getUser:
+      handler: src/api/users/users.get
+      package:
+        include:
+          - src/api/users/**
+          - src/model/**
+      events:
+        - http:
+            path: users/{id}
+            method: get
+            cors: true
+            authorizer:
+              name: authorize
+              identitySource: method.request.header.Authorization
+              type: token
+
+    updateUser:
+      handler: src/api/users/users.update
+      package:
+            include:
+              - src/api/users/**
+              - src/model/**
+      events:
+        - http:
+            path: users/{id}
+            method: put
+            cors: true,
+            authorizer:
+              name: authorize
+              identitySource: method.request.header.Authorization
+              type: token
+
+    deleteUser:
+      handler: src/api/users/users.delete
+      package:
+            include:
+              - src/api/users/**
+              - src/model/**
+      events:
+        - http:
+            path: users/{id}
+            method: delete
+            cors: true
+            authorizer:
+              name: authorize
+              identitySource: method.request.header.Authorization
+              type: token
+    userSignIn:
+      handler: src/api/auth/auth.signIn
+      package:
+            include:
+              - src/api/auth/**
+              - src/model/**
+      events:
+        - http:
+            path: signIn
+            method: post
+            cors: true
+    authorize:
+        handler: src/api/passport/passport.handler
+        package:
+          include:
+            - src/api/passport/**
+            - src/model/**
 #    events:
 #      - schedule: rate(1 minute)
 
