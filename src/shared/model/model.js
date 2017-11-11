@@ -48,8 +48,6 @@ module.exports = class Model {
             TableName: this.constructor.TABLE, //process.env.FUNCTIONS_TABLE,
             Item: this.data
         };
-        console.log(params)
-
         return dynamoDb.put(params).promise()
             .then(() => {
                 return this.data;

@@ -21,10 +21,7 @@ provider:
   name: aws
   runtime: nodejs6.10
   timeout: 300
-  environment:
-    FUNCTIONS_TABLE: "function-${opt:stage, self:provider.stage}"
-    INVOCATIONS_TABLE: "invocation-${opt:stage, self:provider.stage}"
-    USERS_TABLE: "user-${opt:stage, self:provider.stage}"
+  environment: ${file(./serverless.env.yml)}
 
   iamRoleStatements:
     - Effect: Allow
@@ -34,6 +31,7 @@ provider:
         - dynamodb:GetItem
         - dynamodb:PutItem
         - dynamodb:UpdateItem
+        - SNS:Publish
       Resource: "*"
 
 resources:
@@ -104,6 +102,32 @@ resources:
               WriteCapacityUnits: 1
 
         TableName: ${self:provider.environment.INVOCATIONS_TABLE}
+    AccountsDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: "_id"
+            AttributeType: "S"
+          - AttributeName: "isActive"
+            AttributeType: "N"
+        KeySchema:
+          - AttributeName: "_id"
+            KeyType: "HASH"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+          - IndexName: isActiveIndex
+            KeySchema:
+              - AttributeName: isActive
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.ACCOUNTS_TABLE}
     UsersDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain
@@ -178,24 +202,19 @@ package:
 functions:
   schedule:
     handler: src/sls-schedule/handler.run
-    events:
-      - sns:
-          topicName: sls-collect-run
-          displayName: Start collecting data for aws account
+    package:
+      include:
+        - src/sls-schedule/**
   collect:
     handler: src/sls-collect/handler.run
-    environment: # Function level environment variables
-      accessKeyId: 'AKIAIGGFXPP7OWBKKPNA'
-      secretAccessKey: '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'
+    events:
+      - sns: ${self:provider.environment.SLS_RUN_ARN}
     package:
       include:
         - src/sls-collect/**
         - src/shared/**
   test:
     handler: src/test-error/handler.run
-    environment: # Function level environment variables
-      accessKeyId: 'AKIAI6XEDKZIA7BDZ6XQ'
-      secretAccessKey: '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'
     package:
       include:
         - src/test-error/**

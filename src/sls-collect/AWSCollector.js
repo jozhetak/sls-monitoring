@@ -126,13 +126,13 @@ module.exports = class AWSCollector extends Collector {
 
                 var match = _.find(invocations, function(invocation) { return invocation.id === requestId })
                 if (match) {
-                    match.error = true;
+                    match.error = 1;
                     match.errorType = 'crash';
                     match.logs.push(event)
                 }
             }
             else if(ERROR_PATTERN.test(event.message)) {
-                currentInvocation.error = true;
+                currentInvocation.error = 1;
                 currentInvocation.errorType = 'error';
                 if(currentInvocation.logs) {
                     currentInvocation.logs.push(event);
@@ -141,7 +141,7 @@ module.exports = class AWSCollector extends Collector {
             else if(CONFIG_ERROR_PATTERN_1.test(event.message) ||
                     CONFIG_ERROR_PATTERN_2.test(event.message) ||
                     CONFIG_ERROR_PATTERN_3.test(event.message)) {
-                currentInvocation.error = true;
+                currentInvocation.error = 1 ;
                 currentInvocation.errorType = 'config';
                 if(currentInvocation.logs) {
                     currentInvocation.logs.push(event);

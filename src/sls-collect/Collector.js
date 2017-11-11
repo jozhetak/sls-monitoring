@@ -14,8 +14,8 @@ module.exports = class Collector {
 
     save(functions) {
         AWS.config.update({
-            accessKeyId: process.env.accessKeyId,
-            secretAccessKey: process.env.secretAccessKey
+            accessKeyId: process.env.ACCESS_KEY_ID,
+            secretAccessKey: process.SECRET_ACCESS_KEY
         });
 
         const that = this;
