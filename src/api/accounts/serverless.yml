@@ -1,78 +1,13 @@
 functions:
-  createAccount:
-    handler: src/api/accouts/accouts.create
-    package:
-      include:
-        - src/api/accouts/**
-        - src/shared/model/**
-    events:
-      - http:
-          path: accouts
-          method: post
-          authorizer:
-            name: authorize
-            identitySource: method.request.header.Authorization
-            type: token
-
-  listAccounts:
-    handler: src/api/accouts/accouts.list
-    package:
-      include:
-        - src/api/accouts/**
-        - src/shared/model/**
-    events:
-      - http:
-          path: accouts
-          method: get
-          authorizer:
-            name: authorize
-            identitySource: method.request.header.Authorization
-            type: token
-
   getAccount:
-    handler: src/api/accouts/accouts.get
+    handler: src/api/accounts/accounts.get
     package:
       include:
-        - src/api/accouts/**
+        - src/api/accounts/**
+        - src/api/passport/**
         - src/shared/model/**
     events:
       - http:
           path: accouts/{id}
           method: get
           cors: true
-          authorizer:
-            name: authorize
-            identitySource: method.request.header.Authorization
-            type: token
-
-  updateAccount:
-    handler: src/api/accouts/accouts.update
-    package:
-          include:
-            - src/api/accouts/**
-            - src/shared/model/**
-    events:
-      - http:
-          path: accouts/{id}
-          method: put
-          cors: true,
-          authorizer:
-            name: authorize
-            identitySource: method.request.header.Authorization
-            type: token
-
-  deleteAccount:
-    handler: src/api/accouts/accouts.delete
-    package:
-          include:
-            - src/api/accouts/**
-            - src/shared/model/**
-    events:
-      - http:
-          path: accouts/{id}
-          method: delete
-          cors: true
-          authorizer:
-            name: authorize
-            identitySource: method.request.header.Authorization
-            type: token

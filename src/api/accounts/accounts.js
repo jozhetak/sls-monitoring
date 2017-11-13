@@ -2,6 +2,8 @@
 const AccountModel = require('../../shared/model/user');
 const uuid = require('uuid');
 const _ = require('lodash');
+const passport = require('./../passport/passport')
+const waterfall = require('async/waterfall')
 
 module.exports.create = (event, context, callback) => {
   const timestamp = new Date().getTime();
@@ -49,15 +51,24 @@ module.exports.list = (event, context, callback) => {
 };
 
 module.exports.get = (event, context, callback) => {
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Go Serverless v1.0! Your function executed successfully!',
-      input: event,
-    }),
-  };
+  waterfall([
+    (cb) => passport.handler(event, context, cb),
+    (policyDocument, cb) => {
+      cb(null, JSON.parse(policyDocument.context.user))
+    }
+  ], (err, result) => {
+    const response = {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: 'Go Serverless v1.0! Your function executed successfully!',
+        input: event,
+        error: err,
+        user: result
+      }),
+    };
+    callback(null, response);
+  })
 
-  callback(null, response);
 
   // Use this code if you don't use the http event with the LAMBDA-PROXY integration
   // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });

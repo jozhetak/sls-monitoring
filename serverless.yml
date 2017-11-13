@@ -244,6 +244,8 @@ functions:
   getUser: ${file(./src/api/users/serverless.yml):functions.getUser}
   updateUser: ${file(./src/api/users/serverless.yml):functions.updateUser}
   deleteUser: ${file(./src/api/users/serverless.yml):functions.deleteUser}
+  # ACCOUNTS
+  getAccount: ${file(./src/api/accounts/serverless.yml):functions.getAccount}
 #    events:
 #      - schedule: rate(1 minute)
 

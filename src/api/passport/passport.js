@@ -21,7 +21,7 @@ const authorizeUser = (userScopes, methodArn) => {
  */
 module.exports.handler = (event, context, callback) => {
   console.log('event', event)
-  const token = event.authorizationToken;
+  const token = event.authorizationToken || event.headers.Authorization;
 
   try {
     // Verify JWT
@@ -36,7 +36,7 @@ module.exports.handler = (event, context, callback) => {
     const authorizerContext = { user: JSON.stringify(user) };
     // Return an IAM policy document for the current endpoint
     const policyDocument = buildIAMPolicy(userId, effect, event.methodArn, authorizerContext);
-    console.log('Authorize DONE')
+    console.log('Authorize DONE', policyDocument)
     callback(null, policyDocument);
   } catch (e) {
     callback('Unauthorized'); // Return a 401 Unauthorized response
@@ -52,7 +52,7 @@ module.exports.handler = (event, context, callback) => {
  * @param {String} userId - user id
  * @param {String} effect  - Allow / Deny
  * @param {String} resource - resource ARN
- * @param {String} context - response context
+ * @param {String} context - response context // must be a string
  * @returns {Object} policyDocument
  */
 const buildIAMPolicy = (userId, effect, resource, context) => {
