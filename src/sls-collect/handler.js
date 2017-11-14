@@ -9,7 +9,7 @@ module.exports.run = (event, context) => {
 
     const collector = new AWSCollector('12345', {
         accessKeyId: '',
-        secretAccessKey: '/3VEXhCmkknuGi3Kqc4vx5oJq2d9'
+        secretAccessKey: ''
     });
 
     return collector
