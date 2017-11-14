@@ -1,4 +1,15 @@
 functions:
+  createAccount:
+    handler: src/api/accounts/accounts.create
+    package:
+      include:
+        - src/api/accounts/**
+        - src/api/passport/**
+        - src/shared/model/**
+    events:
+      - http:
+          path: accounts
+          method: post
   getAccount:
     handler: src/api/accounts/accounts.get
     package:
@@ -8,6 +19,42 @@ functions:
         - src/shared/model/**
     events:
       - http:
-          path: accouts/{id}
+          path: accounts/{id}
           method: get
           cors: true
+
+  listAccounts:
+    handler: src/api/users/accounts.list
+    package:
+      include:
+        - src/api/accounts/**
+        - src/api/passport/**
+        - src/shared/model/**
+    events:
+      - http:
+          path: accounts
+          method: get
+  updateAccount:
+      handler: src/api/accouts/accouts.update
+      package:
+        include:
+        - src/api/accounts/**
+        - src/api/passport/**
+        - src/shared/model/**
+      events:
+        - http:
+            path: accounts/{id}
+            method: put
+            cors: true
+  deleteAccount:
+    handler: src/api/accouts/accouts.delete
+    package:
+      include:
+        - src/api/accounts/**
+        - src/api/passport/**
+        - src/shared/model/**
+      events:
+        - http:
+            path: accounts/{id}
+            method: delete
+            cors: true

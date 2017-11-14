@@ -1,0 +1,138 @@
+resources:
+  Resources:
+    CandidatesDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Delete
+      #DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: "id"
+            AttributeType: "S"
+          - AttributeName: "arn"
+            AttributeType: "S"
+          - AttributeName: "accountId"
+            AttributeType: "S"
+        KeySchema:
+          - AttributeName: "id"
+            KeyType: "HASH"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+          - IndexName: AccountIdIndex
+            KeySchema:
+              - AttributeName: accountId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+          - IndexName: FunctionArnIndex
+            KeySchema:
+              - AttributeName: arn
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+
+        TableName: ${self:provider.environment.FUNCTIONS_TABLE}
+
+    InvocationsDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Delete
+      #DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: "id"
+            AttributeType: "S"
+          - AttributeName: "accountId"
+            AttributeType: "S"
+        KeySchema:
+          - AttributeName: "id"
+            KeyType: "HASH"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+          - IndexName: AccountIdIndex
+            KeySchema:
+              - AttributeName: accountId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+
+        TableName: ${self:provider.environment.INVOCATIONS_TABLE}
+    AccountsDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Delete
+      #DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: "_id"
+            AttributeType: "S"
+          - AttributeName: "isActive"
+            AttributeType: "N"
+        KeySchema:
+          - AttributeName: "_id"
+            KeyType: "HASH"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+          - IndexName: isActiveIndex
+            KeySchema:
+              - AttributeName: isActive
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.ACCOUNTS_TABLE}
+    UsersDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Delete
+      #DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: "_id"
+            AttributeType: "S"
+#          - AttributeName: "firstName"
+#            AttributeType: "S"
+#          - AttributeName: "lastName"
+#            AttributeType: "S"
+          - AttributeName: "email"
+            AttributeType: "S"
+          - AttributeName: "password"
+            AttributeType: "S"
+#          - AttributeName: "createdAt"
+#            AttributeType: "S"
+#          - AttributeName: "updatedAt"
+#            AttributeType: "S"
+#          - AttributeName: "accounts"
+#            AttributeType: "L"
+        KeySchema:
+          - AttributeName: "_id"
+            KeyType: "HASH"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+          - IndexName: EmailPasswordIndex
+            KeySchema:
+              - AttributeName: email
+                KeyType: HASH
+              - AttributeName: password
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.USERS_TABLE}

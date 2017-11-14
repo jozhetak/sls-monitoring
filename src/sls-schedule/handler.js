@@ -6,6 +6,7 @@ const Promise = require('bluebird');
 AWS.config.setPromisesDependency(Promise);
 
 module.exports.run = (event, context) => {
+    console.log(process.env.SLS_RUN_ARN)
     // read data from accounts
     var sns = new AWS.SNS();
 

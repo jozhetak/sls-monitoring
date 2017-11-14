@@ -58,7 +58,7 @@ module.exports = class Model {
         var params = {
             TableName : this.TABLE,
             Key: {
-                id: id
+                _id: id
             }
         };
 
@@ -69,6 +69,19 @@ module.exports = class Model {
             .then((data) => {
                 return data.Item;
             })
+    }
+
+    static getAll(keyConditionExpression, expressionAttributeValues) {
+      const query = {
+        TableName: this.TABLE, // process.env.FUNCTIONS_TABLE,
+        KeyConditionExpression: keyConditionExpression,
+        ExpressionAttributeValues: expressionAttributeValues
+      };
+
+      return dynamoDb.query(query).promise()
+        .then((data) => {
+          return data.Items;
+        })
     }
 
     static getOne(keyConditionExpression, expressionAttributeValues) {
