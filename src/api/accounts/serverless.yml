@@ -1,0 +1,13 @@
+functions:
+  getAccount:
+    handler: src/api/accounts/accounts.get
+    package:
+      include:
+        - src/api/accounts/**
+        - src/api/passport/**
+        - src/shared/model/**
+    events:
+      - http:
+          path: accouts/{id}
+          method: get
+          cors: true

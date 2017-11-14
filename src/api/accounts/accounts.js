@@ -1,26 +1,28 @@
 'use strict';
-const UserModel = require('../../shared/model/user');
+const AccountModel = require('../../shared/model/user');
 const uuid = require('uuid');
 const _ = require('lodash');
+const passport = require('./../passport/passport')
+const waterfall = require('async/waterfall')
 
 module.exports.create = (event, context, callback) => {
   const timestamp = new Date().getTime();
   const data = JSON.parse(event.body);
   const params = {
       _id: uuid.v1(),
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      password: data.password,
+      name: data.name,
+      key: data.key,
+      secret: data.secret,
+      region: data.region,
       createdAt: timestamp,
       updatedAt: timestamp
   };
-  const user = new UserModel(params)
-  return user.save()
-    .then((user) => {
+  const account = new AccountModel(params)
+  return account.save()
+    .then((account) => {
       const response = {
         statusCode: 200,
-        body: JSON.stringify(user)
+        body: JSON.stringify(accout)
       };
       callback(null, response);
     })
@@ -28,7 +30,7 @@ module.exports.create = (event, context, callback) => {
         callback(null, {
           statusCode: error.statusCode || 501,
           headers: { 'Content-Type': 'text/plain' },
-          body: 'Couldn\'t create user.',
+          body: 'Couldn\'t create accout.',
         });
       });
 }
@@ -49,22 +51,30 @@ module.exports.list = (event, context, callback) => {
 };
 
 module.exports.get = (event, context, callback) => {
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Go Serverless v1.0! Your function executed successfully!',
-      input: event,
-    }),
-  };
+  waterfall([
+    (cb) => passport.handler(event, context, cb),
+    (policyDocument, cb) => {
+      cb(null, JSON.parse(policyDocument.context.user))
+    }
+  ], (err, result) => {
+    const response = {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: 'Go Serverless v1.0! Your function executed successfully!',
+        input: event,
+        error: err,
+        user: result
+      }),
+    };
+    callback(null, response);
+  })
 
-  callback(null, response);
 
   // Use this code if you don't use the http event with the LAMBDA-PROXY integration
   // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
 };
 
 module.exports.update = (event, context, callback) => {
-  console.log(event)
   const user = JSON.parse(event.requestContext.authorizer.user);
   const data = JSON.parse(event.body);
 

@@ -44,9 +44,9 @@ functions:
   updateUser:
     handler: src/api/users/users.update
     package:
-          include:
-            - src/api/users/**
-            - src/shared/model/**
+      include:
+        - src/api/users/**
+        - src/shared/model/**
     events:
       - http:
           path: users/{id}
