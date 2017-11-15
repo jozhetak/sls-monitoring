@@ -64,47 +64,50 @@ module.exports.get = (event, context, callback) => {
 };
 
 module.exports.update = (event, context, callback) => {
-  console.log(event)
-  const user = JSON.parse(event.requestContext.authorizer.user);
-  const data = JSON.parse(event.body);
-
-  if (user._id !== event.pathParameters.id){
-    return callback(null, {
-      statusCode: 403,
-      body: JSON.stringify({
-        message: 'Cannot edit other user',
-        user: user,
-        input: event
-      })
-    });
-  }
-
-  return UserModel.update(user._id, data).then((user) => {
-    const response = {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: 'Go Serverless v1.0! Your function executed successfully!',
-        user: user,
-        input: event
-      }),
-    };
-
-    callback(null, response);
-  }).catch((e) => {
-    const response = {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: e.message,
-        params: data,
-        input: event
-      }),
-    };
-
-    callback(null, response);
-  })
-
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
+  return passport.checkAuth(event.headers.Authorization)
+    .then((user) => {
+      if (user._id !== event.pathParameters.id){
+        throw Error('User has no permission')
+      }
+      return AccountModel.getById(event.pathParameters.id)
+        .then((account) => {
+          if (_.indexOf(account._users, user._id) === -1) {
+            throw Error('User has no permission')
+          }
+          return account
+        })
+        .catch((err) => {
+          throw err
+        })
+    })
+    .then((account) => {
+      const data = JSON.parse(event.body);
+      return UserModel.update(account._id, data)
+    })
+    .then((result) => {
+      return {
+        statusCode: 200,
+        error: null,
+        result: result
+      }
+    })
+    .catch((err) => {
+      return {
+        statusCode: 500,
+        error: err.message,
+        result: null
+      }
+    })
+    .finally((object) => {
+      const response = {
+        statusCode: object.statusCode,
+        body: JSON.stringify({
+          error: object.error,
+          result: object.result
+        }),
+      };
+      callback(null, response);
+    })
 };
 
 

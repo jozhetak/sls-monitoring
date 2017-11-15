@@ -20,10 +20,10 @@ functions:
       - http:
           path: users
           method: get
-          authorizer:
-            name: authorize
-            identitySource: method.request.header.Authorization
-            type: token
+#          authorizer:
+#            name: authorize
+#            identitySource: method.request.header.Authorization
+#            type: token
 
   getUser:
     handler: src/api/users/users.get
@@ -36,10 +36,10 @@ functions:
           path: users/{id}
           method: get
           cors: true
-          authorizer:
-            name: authorize
-            identitySource: method.request.header.Authorization
-            type: token
+#          authorizer:
+#            name: authorize
+#            identitySource: method.request.header.Authorization
+#            type: token
 
   updateUser:
     handler: src/api/users/users.update
@@ -52,10 +52,10 @@ functions:
           path: users/{id}
           method: put
           cors: true,
-          authorizer:
-            name: authorize
-            identitySource: method.request.header.Authorization
-            type: token
+#          authorizer:
+#            name: authorize
+#            identitySource: method.request.header.Authorization
+#            type: token
 
   deleteUser:
     handler: src/api/users/users.delete
@@ -68,7 +68,7 @@ functions:
           path: users/{id}
           method: delete
           cors: true
-          authorizer:
-            name: authorize
-            identitySource: method.request.header.Authorization
-            type: token
+#          authorizer:
+#            name: authorize
+#            identitySource: method.request.header.Authorization
+#            type: token
