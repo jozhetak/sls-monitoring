@@ -35,143 +35,7 @@ provider:
       Resource: "*"
 
 resources:
-  Resources:
-    CandidatesDynamoDbTable:
-      Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Delete
-      #DeletionPolicy: Retain
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: "id"
-            AttributeType: "S"
-          - AttributeName: "arn"
-            AttributeType: "S"
-          - AttributeName: "accountId"
-            AttributeType: "S"
-        KeySchema:
-          - AttributeName: "id"
-            KeyType: "HASH"
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        GlobalSecondaryIndexes:
-          - IndexName: AccountIdIndex
-            KeySchema:
-              - AttributeName: accountId
-                KeyType: HASH
-            Projection:
-              ProjectionType: ALL
-            ProvisionedThroughput:
-              ReadCapacityUnits: 1
-              WriteCapacityUnits: 1
-          - IndexName: FunctionArnIndex
-            KeySchema:
-              - AttributeName: arn
-                KeyType: HASH
-            Projection:
-              ProjectionType: ALL
-            ProvisionedThroughput:
-              ReadCapacityUnits: 1
-              WriteCapacityUnits: 1
-
-        TableName: ${self:provider.environment.FUNCTIONS_TABLE}
-
-    InvocationsDynamoDbTable:
-      Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Delete
-      #DeletionPolicy: Retain
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: "id"
-            AttributeType: "S"
-          - AttributeName: "accountId"
-            AttributeType: "S"
-        KeySchema:
-          - AttributeName: "id"
-            KeyType: "HASH"
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        GlobalSecondaryIndexes:
-          - IndexName: AccountIdIndex
-            KeySchema:
-              - AttributeName: accountId
-                KeyType: HASH
-            Projection:
-              ProjectionType: ALL
-            ProvisionedThroughput:
-              ReadCapacityUnits: 1
-              WriteCapacityUnits: 1
-
-        TableName: ${self:provider.environment.INVOCATIONS_TABLE}
-    AccountsDynamoDbTable:
-      Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Delete
-      #DeletionPolicy: Retain
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: "_id"
-            AttributeType: "S"
-          - AttributeName: "isActive"
-            AttributeType: "N"
-        KeySchema:
-          - AttributeName: "_id"
-            KeyType: "HASH"
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        GlobalSecondaryIndexes:
-          - IndexName: isActiveIndex
-            KeySchema:
-              - AttributeName: isActive
-                KeyType: HASH
-            Projection:
-              ProjectionType: ALL
-            ProvisionedThroughput:
-              ReadCapacityUnits: 1
-              WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.ACCOUNTS_TABLE}
-    UsersDynamoDbTable:
-      Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Delete
-      #DeletionPolicy: Retain
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: "_id"
-            AttributeType: "S"
-#          - AttributeName: "firstName"
-#            AttributeType: "S"
-#          - AttributeName: "lastName"
-#            AttributeType: "S"
-          - AttributeName: "email"
-            AttributeType: "S"
-          - AttributeName: "password"
-            AttributeType: "S"
-#          - AttributeName: "createdAt"
-#            AttributeType: "S"
-#          - AttributeName: "updatedAt"
-#            AttributeType: "S"
-#          - AttributeName: "accounts"
-#            AttributeType: "L"
-        KeySchema:
-          - AttributeName: "_id"
-            KeyType: "HASH"
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        GlobalSecondaryIndexes:
-          - IndexName: EmailPasswordIndex
-            KeySchema:
-              - AttributeName: email
-                KeyType: HASH
-              - AttributeName: password
-                KeyType: RANGE
-            Projection:
-              ProjectionType: ALL
-            ProvisionedThroughput:
-              ReadCapacityUnits: 1
-              WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.USERS_TABLE}
+  Resources: ${file(./serverless.resources.yml):resources.Resources}
 
 # you can overwrite defaults here
 #  stage: dev
@@ -206,13 +70,23 @@ package:
 functions:
   schedule:
     handler: src/sls-schedule/handler.run
+    environment:
+      SLS_RUN_ARN:
+        Fn::Join:
+          - ""
+          - - "arn:aws:sns:"
+            - Ref: "AWS::Region"
+            - ":"
+            - Ref: "AWS::AccountId"
+            - ":"
+            - ${self:provider.environment.SLS_RUN_TOPIC}
     package:
       include:
         - src/sls-schedule/**
   collect:
     handler: src/sls-collect/handler.run
     events:
-      - sns: ${self:provider.environment.SLS_RUN_ARN}
+      - sns: ${self:provider.environment.SLS_RUN_TOPIC}
     package:
       include:
         - src/sls-collect/**
@@ -245,7 +119,11 @@ functions:
   updateUser: ${file(./src/api/users/serverless.yml):functions.updateUser}
   deleteUser: ${file(./src/api/users/serverless.yml):functions.deleteUser}
   # ACCOUNTS
+  createAccount: ${file(./src/api/accounts/serverless.yml):functions.createAccount}
+  listAccounts: ${file(./src/api/accounts/serverless.yml):functions.listAccounts}
   getAccount: ${file(./src/api/accounts/serverless.yml):functions.getAccount}
+  updateAccount: ${file(./src/api/accounts/serverless.yml):functions.updateAccount}
+  deleteAccount: ${file(./src/api/accounts/serverless.yml):functions.deleteAccount}
 #    events:
 #      - schedule: rate(1 minute)
 
