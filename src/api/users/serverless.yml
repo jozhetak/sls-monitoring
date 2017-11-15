@@ -1,0 +1,74 @@
+functions:
+  createUser:
+    handler: src/api/users/users.create
+    package:
+      include:
+        - src/api/users/**
+        - src/shared/model/**
+    events:
+      - http:
+          path: users
+          method: post
+
+  listUsers:
+    handler: src/api/users/users.list
+    package:
+      include:
+        - src/api/users/**
+        - src/shared/model/**
+    events:
+      - http:
+          path: users
+          method: get
+          authorizer:
+            name: authorize
+            identitySource: method.request.header.Authorization
+            type: token
+
+  getUser:
+    handler: src/api/users/users.get
+    package:
+      include:
+        - src/api/users/**
+        - src/shared/model/**
+    events:
+      - http:
+          path: users/{id}
+          method: get
+          cors: true
+          authorizer:
+            name: authorize
+            identitySource: method.request.header.Authorization
+            type: token
+
+  updateUser:
+    handler: src/api/users/users.update
+    package:
+      include:
+        - src/api/users/**
+        - src/shared/model/**
+    events:
+      - http:
+          path: users/{id}
+          method: put
+          cors: true,
+          authorizer:
+            name: authorize
+            identitySource: method.request.header.Authorization
+            type: token
+
+  deleteUser:
+    handler: src/api/users/users.delete
+    package:
+          include:
+            - src/api/users/**
+            - src/shared/model/**
+    events:
+      - http:
+          path: users/{id}
+          method: delete
+          cors: true
+          authorizer:
+            name: authorize
+            identitySource: method.request.header.Authorization
+            type: token

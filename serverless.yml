@@ -21,9 +21,7 @@ provider:
   name: aws
   runtime: nodejs6.10
   timeout: 300
-  environment:
-    FUNCTIONS_TABLE: "function-${opt:stage, self:provider.stage}"
-    INVOCATIONS_TABLE: "invocation-${opt:stage, self:provider.stage}"
+  environment: ${file(./serverless.env.yml)}
 
   iamRoleStatements:
     - Effect: Allow
@@ -32,76 +30,12 @@ provider:
         - dynamodb:Scan
         - dynamodb:GetItem
         - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - SNS:Publish
       Resource: "*"
 
 resources:
-  Resources:
-    CandidatesDynamoDbTable:
-      Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: "id"
-            AttributeType: "S"
-          - AttributeName: "arn"
-            AttributeType: "S"
-          - AttributeName: "accountId"
-            AttributeType: "S"
-        KeySchema:
-          - AttributeName: "id"
-            KeyType: "HASH"
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        GlobalSecondaryIndexes:
-          - IndexName: AccountIdIndex
-            KeySchema:
-              - AttributeName: accountId
-                KeyType: HASH
-            Projection:
-              ProjectionType: ALL
-            ProvisionedThroughput:
-              ReadCapacityUnits: 1
-              WriteCapacityUnits: 1
-          - IndexName: FunctionArnIndex
-            KeySchema:
-              - AttributeName: arn
-                KeyType: HASH
-            Projection:
-              ProjectionType: ALL
-            ProvisionedThroughput:
-              ReadCapacityUnits: 1
-              WriteCapacityUnits: 1
-
-        TableName: ${self:provider.environment.FUNCTIONS_TABLE}
-
-    InvocationsDynamoDbTable:
-      Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: "id"
-            AttributeType: "S"
-          - AttributeName: "accountId"
-            AttributeType: "S"
-        KeySchema:
-          - AttributeName: "id"
-            KeyType: "HASH"
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        GlobalSecondaryIndexes:
-          - IndexName: AccountIdIndex
-            KeySchema:
-              - AttributeName: accountId
-                KeyType: HASH
-            Projection:
-              ProjectionType: ALL
-            ProvisionedThroughput:
-              ReadCapacityUnits: 1
-              WriteCapacityUnits: 1
-
-        TableName: ${self:provider.environment.INVOCATIONS_TABLE}
+  Resources: ${file(./serverless.resources.yml):resources.Resources}
 
 # you can overwrite defaults here
 #  stage: dev
@@ -134,23 +68,62 @@ package:
     - src/**
 
 functions:
+  schedule:
+    handler: src/sls-schedule/handler.run
+    environment:
+      SLS_RUN_ARN:
+        Fn::Join:
+          - ""
+          - - "arn:aws:sns:"
+            - Ref: "AWS::Region"
+            - ":"
+            - Ref: "AWS::AccountId"
+            - ":"
+            - ${self:provider.environment.SLS_RUN_TOPIC}
+    package:
+      include:
+        - src/sls-schedule/**
   collect:
-    handler: src/sls-tm-collect/handler.run
-    environment: # Function level environment variables
-      accessKeyId: 'AKIAI6XEDKZIA7BDZ6XQ'
-      secretAccessKey: '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'
+    handler: src/sls-collect/handler.run
+    events:
+      - sns: ${self:provider.environment.SLS_RUN_TOPIC}
     package:
       include:
         - src/sls-collect/**
         - src/shared/**
   test:
     handler: src/test-error/handler.run
-    environment: # Function level environment variables
-      accessKeyId: 'AKIAI6XEDKZIA7BDZ6XQ'
-      secretAccessKey: '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'
     package:
       include:
         - src/test-error/**
+  authorize:
+      handler: src/api/passport/passport.handler
+      package:
+        include:
+          - src/api/passport/**
+          - src/shared/model/**
+  userSignIn:
+    handler: src/api/auth/auth.signIn
+    package:
+          include:
+            - src/api/auth/**
+            - src/shared/model/**
+    events:
+      - http:
+          path: signIn
+          method: post
+          cors: true
+  createUser: ${file(./src/api/users/serverless.yml):functions.createUser}
+  listUsers: ${file(./src/api/users/serverless.yml):functions.listUsers}
+  getUser: ${file(./src/api/users/serverless.yml):functions.getUser}
+  updateUser: ${file(./src/api/users/serverless.yml):functions.updateUser}
+  deleteUser: ${file(./src/api/users/serverless.yml):functions.deleteUser}
+  # ACCOUNTS
+  createAccount: ${file(./src/api/accounts/serverless.yml):functions.createAccount}
+  listAccounts: ${file(./src/api/accounts/serverless.yml):functions.listAccounts}
+  getAccount: ${file(./src/api/accounts/serverless.yml):functions.getAccount}
+  updateAccount: ${file(./src/api/accounts/serverless.yml):functions.updateAccount}
+  deleteAccount: ${file(./src/api/accounts/serverless.yml):functions.deleteAccount}
 #    events:
 #      - schedule: rate(1 minute)
 

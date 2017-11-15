@@ -9,6 +9,29 @@ const _ = require('lodash');
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 module.exports = class Model {
+  // const schema = {
+  //   _id: 'S',
+  //   firstName: 'S',
+  //   lastName: 'S'
+  // }
+
+  static getUpdateCondition(params) {
+    const timestamp = new Date().getTime();
+    let UpdateExpression = 'SET ';
+    const ExpressionAttributeValues = {
+      ':updatedAt' : timestamp
+    }
+    _.forOwn(params, (value, key) => {
+      UpdateExpression += key + ' = ' + ':' + key + ', ';
+      ExpressionAttributeValues[':' + key] = value
+    })
+    UpdateExpression += 'updatedAt = :updatedAt';
+    return {
+      ExpressionAttributeValues: ExpressionAttributeValues,
+      UpdateExpression: UpdateExpression
+    }
+  }
+
     constructor(opts) {
         this.data = opts || {};
 
@@ -25,7 +48,6 @@ module.exports = class Model {
             TableName: this.constructor.TABLE, //process.env.FUNCTIONS_TABLE,
             Item: this.data
         };
-
         return dynamoDb.put(params).promise()
             .then(() => {
                 return this.data;
@@ -36,7 +58,7 @@ module.exports = class Model {
         var params = {
             TableName : this.TABLE,
             Key: {
-                id: id
+                _id: id
             }
         };
 
@@ -47,6 +69,19 @@ module.exports = class Model {
             .then((data) => {
                 return data.Item;
             })
+    }
+
+    static getAll(keyConditionExpression, expressionAttributeValues) {
+      const query = {
+        TableName: this.TABLE, // process.env.FUNCTIONS_TABLE,
+        KeyConditionExpression: keyConditionExpression,
+        ExpressionAttributeValues: expressionAttributeValues
+      };
+
+      return dynamoDb.query(query).promise()
+        .then((data) => {
+          return data.Items;
+        })
     }
 
     static getOne(keyConditionExpression, expressionAttributeValues) {
@@ -65,5 +100,24 @@ module.exports = class Model {
 
                 return null;
             })
+    }
+
+    static update(id, data) {
+      const {ExpressionAttributeValues, UpdateExpression} = this.getUpdateCondition(data)
+      const params = {
+        TableName: this.TABLE,
+        Key: {
+          _id: id,
+        },
+        ExpressionAttributeValues: ExpressionAttributeValues,
+        UpdateExpression: UpdateExpression
+      };
+      return dynamoDb.update(params).promise()
+        .then((data) => {
+          if (data) {
+            return data;
+          }
+          return null;
+        })
     }
 }
