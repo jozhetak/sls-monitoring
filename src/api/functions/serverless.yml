@@ -1,0 +1,25 @@
+functions:
+  getFunction:
+    handler: src/api/functions/functions.get
+    package:
+      include:
+        - src/api/functions/**
+        - src/api/passport/**
+        - src/shared/model/**
+    events:
+      - http:
+          path: functions/{id}
+          method: get
+          cors: true
+
+  listFunction:
+    handler: src/api/functions/functions.list
+    package:
+      include:
+        - src/api/accounts/**
+        - src/api/passport/**
+        - src/shared/model/**
+    events:
+      - http:
+          path: functions
+          method: get
