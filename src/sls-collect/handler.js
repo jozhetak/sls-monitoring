@@ -4,7 +4,7 @@ const AWSCollector = require('./AWSCollector');
 
 module.exports.run = (event, context) => {
 
-    const ßmessage = event.Records[0].Sns.Message;
+    const message = event.Records[0].Sns.Message;
     console.log('From SNS:', message);
 
     const collector = new AWSCollector('12345', {

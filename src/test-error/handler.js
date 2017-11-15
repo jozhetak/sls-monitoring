@@ -9,7 +9,7 @@ AWS.config.setPromisesDependency(require('bluebird'));
 module.exports.run = (event, context) => {
     console.log("Access Key:", AWS.config.credentials.accessKeyId, process.env.accessKeyId)
 
-    AWS.config.update({accessKeyId: 'AKIAIO43W2FP3V74OLXQ', secretAccessKey: '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'});
+    AWS.config.update({accessKeyId: '', secretAccessKey: ''});
     console.log("Access Key 2:", AWS.config.credentials.accessKeyId)
 
     const cred = new AWS.Credentials();

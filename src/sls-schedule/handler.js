@@ -14,15 +14,15 @@ module.exports.run = (event, context) => {
     // foreach send sns topic
     accounts.push({
         acoountId: '157000000',
-        accessKeyId: 'AKIAJFWWM4LHJ73A2YUQ',
-        secretAccessKey: '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'
+        accessKeyId: '',
+        secretAccessKey: ''
     });
 
     // foreach send sns topic
     accounts.push({
         acoountId: '157000001',
-        accessKeyId: 'AKIAJFWWM4LHJ73A2YUQ',
-        secretAccessKey: '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'
+        accessKeyId: '',
+        secretAccessKey: ''
     });
 
 
