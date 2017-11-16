@@ -8,10 +8,6 @@ module.exports = class Collector {
         this.accountId = accountId;
     }
 
-    collect() {
-
-    }
-
     save(functions) {
         AWS.config.update({
             accessKeyId: process.env.ACCESS_KEY_ID,

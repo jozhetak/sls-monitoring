@@ -1,10 +1,7 @@
-
+'use strict';
 const AWS = require('aws-sdk');
 const Promise = require('bluebird');
 const Collector = require('./Collector');
-// const FunctionModel = require('../shared/model/function');
-// const InvocationModel = require('../shared/model/invocation');
-
 const _ = require('lodash');
 
 const LOG_STREAM_LIMIT = 50;
@@ -19,6 +16,13 @@ module.exports = class AWSCollector extends Collector {
         this.secretAccessKey = opts.secretAccessKey;
     }
 
+    collectAndSave() {
+        return collect()
+            .then((functions) => {
+                return that.save(functions)
+            })
+    }
+
     collect() {
         AWS.config.update({
             accessKeyId: this.accessKeyId,
@@ -26,11 +30,13 @@ module.exports = class AWSCollector extends Collector {
         });
 
         const that = this;
-        
+
         // collect code
         const lambda = new AWS.Lambda();
         return lambda.listFunctions({}).promise()
             .then((data) => {
+
+                console.log('data', data);
                 return Promise.map(data.Functions, func => {
                     return that._getInvocations(func)
                         .then((invocations) => {
@@ -39,16 +45,17 @@ module.exports = class AWSCollector extends Collector {
                         })
                 });
             })
-            .then((functions) => {
-                return that.save(functions)
-            })
+            // .then((functions) => {
+            //     console.log('functions', functions);
+            //     return that.save(functions)
+            // })
     }
 
     _getInvocations(func) {
         const cloudwatchlogs = new AWS.CloudWatchLogs();
         const logGroupName = '/aws/lambda/' + func.FunctionName;
 
-        var params = {
+        const params = {
             logGroupName: logGroupName,
             descending: true,
             limit: LOG_STREAM_LIMIT,
