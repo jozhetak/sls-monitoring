@@ -24,7 +24,7 @@ functions:
           cors: true
 
   listAccounts:
-    handler: src/api/users/accounts.list
+    handler: src/api/accounts/accounts.list
     package:
       include:
         - src/api/accounts/**

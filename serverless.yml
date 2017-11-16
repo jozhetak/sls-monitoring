@@ -124,6 +124,12 @@ functions:
   getAccount: ${file(./src/api/accounts/serverless.yml):functions.getAccount}
   updateAccount: ${file(./src/api/accounts/serverless.yml):functions.updateAccount}
   deleteAccount: ${file(./src/api/accounts/serverless.yml):functions.deleteAccount}
+  # FUNCTIONS
+  listFunctions: ${file(./src/api/functions/serverless.yml):functions.listFunctions}
+  getfunction: ${file(./src/api/functions/serverless.yml):functions.getFunction}
+  # INVOCATIONS
+  listInvocations: ${file(./src/api/functions/serverless.yml):functions.listInvocations}
+  getInvocation: ${file(./src/api/functions/serverless.yml):functions.getInvocation}
 #    events:
 #      - schedule: rate(1 minute)
 

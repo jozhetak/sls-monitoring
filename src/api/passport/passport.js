@@ -43,8 +43,17 @@ module.exports.handler = (event, context, callback) => {
   }
 };
 
-
-
+module.exports.checkAuth = (authToken) => {
+  const tokenSecret = process.evn.TOKEN
+  return new Promise((resolve, reject) => {
+    jwt.verify(authToken, tokenSecret, (err, decoded) => {
+      if (err) {
+        return reject(err)
+      }
+      return resolve(decoded)
+    })
+  })
+}
 /**
  * Returns an IAM policy document for a given user and resource.
  *
