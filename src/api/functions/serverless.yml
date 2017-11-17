@@ -12,7 +12,7 @@ functions:
           method: get
           cors: true
 
-  listFunction:
+  listFunctions:
     handler: src/api/functions/functions.list
     package:
       include:

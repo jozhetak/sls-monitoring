@@ -3,17 +3,11 @@
  */
 const uuid = require('uuid');
 const AWS = require('aws-sdk');
-const Promise = require('bluebird');
 const _ = require('lodash');
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 module.exports = class Model {
-  // const schema = {
-  //   _id: 'S',
-  //   firstName: 'S',
-  //   lastName: 'S'
-  // }
 
   static getUpdateCondition(params) {
     const timestamp = new Date().getTime();
@@ -30,6 +24,31 @@ module.exports = class Model {
       ExpressionAttributeValues: ExpressionAttributeValues,
       UpdateExpression: UpdateExpression
     }
+  }
+
+  static buildQuery(params) {
+    const result = {
+      TableName: this.TABLE
+    }
+    if (params.Key) {
+      result.Key = params.Key
+    }
+    if (params.KeyConditionExpression) {
+      result.KeyConditionExpression = params.KeyConditionExpression
+    }
+    if (params.ExpressionAttributeValues) {
+      result.ExpressionAttributeValues = params.ExpressionAttributeValues
+    }
+    if (params.IndexName) {
+      result.IndexName = params.IndexName
+    }
+    if (params.FilterExpression) {
+      result.FilterExpression = params.FilterExpression
+    }
+    if (params.ProjectionExpression) {
+      result.ProjectionExpression = params.ProjectionExpression
+    }
+    return result
   }
 
     constructor(opts) {
@@ -71,13 +90,8 @@ module.exports = class Model {
             })
     }
 
-    static getAll(keyConditionExpression, expressionAttributeValues) {
-      const query = {
-        TableName: this.TABLE, // process.env.FUNCTIONS_TABLE,
-        KeyConditionExpression: keyConditionExpression,
-        ExpressionAttributeValues: expressionAttributeValues
-      };
-
+    static getAll(params) {
+      const query = this.buildQuery(params)
       return dynamoDb.query(query).promise()
         .then((data) => {
           return data.Items;

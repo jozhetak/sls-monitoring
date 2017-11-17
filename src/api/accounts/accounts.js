@@ -1,5 +1,6 @@
 'use strict';
 const AccountModel = require('../../shared/model/account');
+const UserAccountModel = require('../../shared/model/userAccount');
 const uuid = require('uuid');
 const _ = require('lodash');
 const passport = require('./../passport/passport')
@@ -18,7 +19,8 @@ module.exports.create = (event, context, callback) => {
         region: data.region,
         createdAt: timestamp,
         updatedAt: timestamp,
-        _users:[user._id]
+        _users:[user._id],
+        _user: user._id // createdBy
       };
       const account = new AccountModel(params)
       return account.save()
@@ -52,7 +54,20 @@ module.exports.create = (event, context, callback) => {
 module.exports.list = (event, context, callback) => {
   return passport.checkAuth(event.headers.Authorization)
     .then((user) => {
-      return AccountModel.getAll()
+      return UserAccountModel.getAll({
+        KeyConditionExpression: "_user = " + user._id,
+        ProjectionExpression: "_account"
+      })
+    })
+    .then((accounts) => {
+      return AccountModel.getAll({
+        KeyCondition: {
+          _id: {
+            "ComparisonOperator": "IN",
+            "AttributeValueList": accounts
+          }
+        },
+      })
     })
     .then((result) => {
       return {
