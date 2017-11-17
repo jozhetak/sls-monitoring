@@ -13,7 +13,7 @@ module.exports.run = (event, context) => {
     });
 
     return collector
-        .collect()
+        .collectAndSave()
         .then(() => {
             context.succeed()
         })

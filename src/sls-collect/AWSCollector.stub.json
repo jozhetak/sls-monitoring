@@ -1,0 +1,61 @@
+{
+  "PositiveCase1": {
+    "ListLambda": {
+      "NextMarker": "",
+      "Functions": [
+        {
+          "FunctionName": "Lambda1",
+          "FunctionArn": "arn-Lambda1",
+          "Runtime": "nodejs",
+          "CodeSize": 2000,
+          "Timeout": 120,
+          "MemorySize": 512
+        },
+        {
+          "FunctionName": "Lambda2-no-log-streams",
+          "FunctionArn": "arn-Lambda2",
+          "Runtime": "nodejs",
+          "CodeSize": 3000,
+          "Timeout": 180,
+          "MemorySize": 1024
+        }
+      ]
+    },
+    "describeLogStreams": {
+      "nextToken": "",
+      "logStreams": [
+        {
+          "logStreamName": "/aws/lambda/Lambda1",
+          "creationTime": "1510763333884",
+          "firstEventTimestamp": "1510763333884",
+          "lastEventTimestamp": "1510763333884",
+          "arn": "arn-stream-Lambda1"
+        }
+      ]
+    },
+    "filterLogEvents": {
+      "nextToken": "",
+      "events": [
+        {
+          "logStreamName": "/aws/lambda/Lambda1",
+          "timestamp": "1510763588890",
+          "message": "START RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04db Version: $LATEST",
+          "eventId": "d603c526-3d63-4024-adc5-bcda099bd00b"
+        },
+        {
+          "logStreamName": "/aws/lambda/Lambda1",
+          "timestamp": "1510763588899",
+          "message": "END RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04db",
+          "eventId": "7b21a37f-9508-4502-998d-4d4e02b478e1"
+        },
+        {
+          "logStreamName": "/aws/lambda/Lambda1",
+          "timestamp": "1510763588999",
+          "message": "REPORT RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04db\tDuration: 207.39 ms\tBilled Duration: 300 ms\tMemory Size: 1024 MB\tMax Memory Used: 38 MB",
+          "eventId": "d68ba1b0-6423-4073-8763-0f09d2173612"
+        }
+      ]
+    }
+  }
+
+}
