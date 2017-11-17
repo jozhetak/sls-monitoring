@@ -2,7 +2,7 @@
 
 const _ = require('lodash');
 const jwt = require('jsonwebtoken');
-
+const Promise = require('bluebird');
 
 // Returns a boolean whether or not a user is allowed to call a particular method
 // A user with scopes: ['pangolins'] can
@@ -44,7 +44,7 @@ module.exports.handler = (event, context, callback) => {
 };
 
 module.exports.checkAuth = (authToken) => {
-  const tokenSecret = process.evn.TOKEN
+  const tokenSecret = process.env.TOKEN
   return new Promise((resolve, reject) => {
     jwt.verify(authToken, tokenSecret, (err, decoded) => {
       if (err) {

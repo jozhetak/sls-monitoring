@@ -7,6 +7,7 @@ const passport = require('./../passport/passport')
 const waterfall = require('async/waterfall')
 
 module.exports.create = (event, context, callback) => {
+  console.log('event: ', event)
   return passport.checkAuth(event.headers.Authorization)
     .then((user) => {
       const timestamp = new Date().getTime();
@@ -39,7 +40,8 @@ module.exports.create = (event, context, callback) => {
         result: null
       }
     })
-    .finally((object) => {
+    .then((object) => {
+      console.log(object)
       const response = {
         statusCode: object.statusCode,
         body: JSON.stringify({
@@ -83,7 +85,7 @@ module.exports.list = (event, context, callback) => {
         result: null
       }
     })
-    .finally((object) => {
+    .then((object) => {
       const response = {
         statusCode: object.statusCode,
         body: JSON.stringify({
@@ -123,7 +125,7 @@ module.exports.get = (event, context, callback) => {
         result: null
       }
     })
-    .finally((object) => {
+    .then((object) => {
       const response = {
         statusCode: object.statusCode,
         body: JSON.stringify({
@@ -167,7 +169,7 @@ module.exports.update = (event, context, callback) => {
         result: null
       }
     })
-    .finally((object) => {
+    .then((object) => {
       const response = {
         statusCode: object.statusCode,
         body: JSON.stringify({
