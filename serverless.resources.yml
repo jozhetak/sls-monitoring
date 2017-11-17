@@ -156,7 +156,7 @@ resources:
         GlobalSecondaryIndexes:
           - IndexName: AccountUsers
             KeySchema:
-              - AttributeName: _accout
+              - AttributeName: _account
                 KeyType: HASH
               - AttributeName: _user
                 KeyType: RANGE
