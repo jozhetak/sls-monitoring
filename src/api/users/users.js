@@ -3,7 +3,10 @@ const UserModel = require('../../shared/model/user');
 const uuid = require('uuid');
 const _ = require('lodash');
 
+
+
 module.exports.create = (event, context, callback) => {
+  console.log('here')
   const timestamp = new Date().getTime();
   const data = JSON.parse(event.body);
   const params = {
@@ -42,8 +45,7 @@ module.exports.list = (event, context, callback) => {
     }),
   };
 
-  callback(null, response);
-
+   callback(new Error('[404] Not found'))
   // Use this code if you don't use the http event with the LAMBDA-PROXY integration
   // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
 };
@@ -56,7 +58,6 @@ module.exports.get = (event, context, callback) => {
       input: event,
     }),
   };
-
   callback(null, response);
 
   // Use this code if you don't use the http event with the LAMBDA-PROXY integration

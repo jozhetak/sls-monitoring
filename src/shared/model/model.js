@@ -6,8 +6,17 @@ const AWS = require('aws-sdk');
 const Promise = require('bluebird');
 const _ = require('lodash');
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
-
+const IS_OFFLINE = process.env.IS_OFFLINE;
+let dynamoDb;
+if (IS_OFFLINE === 'true') {
+  dynamoDb = new AWS.DynamoDB.DocumentClient({
+    region: 'localhost',
+    endpoint: 'http://localhost:8000'
+  })
+  console.log(dynamoDb);
+} else {
+  dynamoDb = new AWS.DynamoDB.DocumentClient();
+};
 module.exports = class Model {
   // const schema = {
   //   _id: 'S',

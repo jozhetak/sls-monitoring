@@ -15,12 +15,15 @@
     "bluebird": "^3.5.1",
     "jsonwebtoken": "^8.1.0",
     "lodash": "^4.17.4",
+    "serverless-dynamodb-local": "^0.2.26",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
+    "@types/aws-lambda": "0.0.21",
     "chai": "^4.1.2",
     "mocha": "^4.0.1",
     "proxyquire": "^1.8.0",
+    "serverless-offline": "^3.16.0",
     "sinon": "^4.1.2"
   }
 }

@@ -11,8 +11,13 @@
 #
 # Happy Coding!
 
+
 service: sls-tm-collect
 
+custom:
+  dynamodb:
+    start:
+      migrate: true
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
 # frameworkVersion: "=X.X.X"
@@ -33,6 +38,11 @@ provider:
         - dynamodb:UpdateItem
         - SNS:Publish
       Resource: "*"
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline
+
 
 resources:
   Resources: ${file(./serverless.resources.yml):resources.Resources}
@@ -125,11 +135,11 @@ functions:
   updateAccount: ${file(./src/api/accounts/serverless.yml):functions.updateAccount}
   deleteAccount: ${file(./src/api/accounts/serverless.yml):functions.deleteAccount}
   # FUNCTIONS
-  listFunctions: ${file(./src/api/functions/serverless.yml):functions.listFunctions}
+#  listFunctions: ${file(./src/api/functions/serverless.yml):functions.listFunctions}
   getfunction: ${file(./src/api/functions/serverless.yml):functions.getFunction}
   # INVOCATIONS
-  listInvocations: ${file(./src/api/functions/serverless.yml):functions.listInvocations}
-  getInvocation: ${file(./src/api/functions/serverless.yml):functions.getInvocation}
+#  listInvocations: ${file(./src/api/functions/serverless.yml):functions.listInvocations}
+#  getInvocation: ${file(./src/api/functions/serverless.yml):functions.getInvocation}
 #    events:
 #      - schedule: rate(1 minute)
 
