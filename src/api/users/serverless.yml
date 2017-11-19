@@ -5,6 +5,7 @@ functions:
       include:
         - src/api/users/**
         - src/shared/model/**
+        - src/shared/helpers/**
     events:
       - http:
           path: users

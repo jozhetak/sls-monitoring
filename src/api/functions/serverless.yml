@@ -6,6 +6,8 @@ functions:
         - src/api/functions/**
         - src/api/passport/**
         - src/shared/model/**
+        - src/shared/helpers/**
+
     events:
       - http:
           path: functions/{id}

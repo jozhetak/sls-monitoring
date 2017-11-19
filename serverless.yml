@@ -40,6 +40,7 @@ provider:
       Resource: "*"
 
 plugins:
+  - serverless-webpack
   - serverless-dynamodb-local
   - serverless-offline
 
