@@ -19,7 +19,7 @@ function AWSSDK(testData) {
             return {
                 promise() {
                     return Promise.resolve({
-                        Functions: testData.functions
+                        Functions: testData.ListLambda.Functions
                     })
                 }
             }
@@ -31,17 +31,17 @@ function AWSSDK(testData) {
             return {
                 promise() {
                     return Promise.resolve({
-                        logStreams: testData.logStreams
+                        logStreams: testData.describeLogStreams.logStreams
                     })
                 }
             }
         }
 
-        filterLogEvents() {
+        filterLogEvents(params) {
             return {
                 promise() {
                     return Promise.resolve({
-                        events: testData.events
+                        events: testData.filterLogEvents[params.logGroupName].events
                     })
                 }
             }

@@ -106,7 +106,7 @@ module.exports = class AWSCollector extends Collector {
         const ERROR_PATTERN = /(\{.*"errorMessage":)(.*)(\})/;
         const CONFIG_ERROR_PATTERN_1 = /(.*at\s)(.*)(\/var\/task\/*)/;
         const CONFIG_ERROR_PATTERN_2 = /^module initialization error/i;
-        const CONFIG_ERROR_PATTERN_3 = /^Unhandled rejection/i;
+        const CONFIG_ERROR_PATTERN_3 = /Unhandled rejection/i;
 
         const CRASH_PATTERN = /(RequestId:\s)(.*)(\s+Process exited before completing request)/;
 
@@ -120,8 +120,6 @@ module.exports = class AWSCollector extends Collector {
                     currentInvocation  = {
                         logStreamName: event.logStreamName,
                         id: requestId,
-                        //accountId: accountId,
-                        //functionId: funcInstance.id,
                         logs: [event]
                     }
                 } catch(err) {
@@ -157,10 +155,10 @@ module.exports = class AWSCollector extends Collector {
             else if (REPORT_PATTERN.test(event.message)) {
                 try {
                     const req = event.message.match(REPORT_PATTERN)[2];
-                    currentInvocation.duration = event.message.match(DURATION_PATTERN)[2];
-                    currentInvocation.billedDuration = event.message.match(BILLED_DURATION_PATTERN)[2];
-                    currentInvocation.memory = event.message.match(MEMORY_SIZE_PATTERN)[2];
-                    currentInvocation.memoryUsed = event.message.match(MAX_MEMORY_USED_PATTERN)[2];
+                    currentInvocation.duration = parseFloat(event.message.match(DURATION_PATTERN)[2]);
+                    currentInvocation.billedDuration = parseFloat(event.message.match(BILLED_DURATION_PATTERN)[2]);
+                    currentInvocation.memory = parseFloat(event.message.match(MEMORY_SIZE_PATTERN)[2]);
+                    currentInvocation.memoryUsed = parseFloat(event.message.match(MAX_MEMORY_USED_PATTERN)[2]);
 
                     if(currentInvocation.logs) {
                         currentInvocation.logs.push(event);

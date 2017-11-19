@@ -10,6 +10,7 @@ functions:
       - http:
           path: accounts
           method: post
+          cors: true
   getAccount:
     handler: src/api/accounts/accounts.get
     package:

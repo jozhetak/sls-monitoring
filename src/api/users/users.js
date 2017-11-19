@@ -99,7 +99,7 @@ module.exports.update = (event, context, callback) => {
         result: null
       }
     })
-    .finally((object) => {
+    .then((object) => {
       const response = {
         statusCode: object.statusCode,
         body: JSON.stringify({

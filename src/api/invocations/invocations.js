@@ -22,7 +22,7 @@ module.exports.list = (event, context, callback) => {
         result: null
       }
     })
-    .finally((object) => {
+    .then((object) => {
       const response = {
         statusCode: object.statusCode,
         body: JSON.stringify({
@@ -53,7 +53,7 @@ module.exports.get = (event, context, callback) => {
         result: null
       }
     })
-    .finally((object) => {
+    .then((object) => {
       const response = {
         statusCode: object.statusCode,
         body: JSON.stringify({
