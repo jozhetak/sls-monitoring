@@ -1,18 +1,17 @@
-'use strict';
-const AccountModel = require('../../shared/model/account');
-const UserAccountModel = require('../../shared/model/userAccount');
-const uuid = require('uuid');
-const _ = require('lodash');
+'use strict'
+const AccountModel = require('../../shared/model/account')
+const UserAccountModel = require('../../shared/model/userAccount')
+const uuid = require('uuid')
+const _ = require('lodash')
 const passport = require('./../passport/passport')
-const waterfall = require('async/waterfall')
 
 module.exports.create = (event, context, callback) => {
   console.log('event: ', event)
   return passport.checkAuth(event.headers.Authorization)
     .then((decoded) => {
       const user = decoded.user
-      const timestamp = new Date().getTime();
-      const data = JSON.parse(event.body);
+      const timestamp = new Date().getTime()
+      const data = JSON.parse(event.body)
       const params = {
         _id: uuid.v1(),
         name: data.name,
@@ -23,7 +22,7 @@ module.exports.create = (event, context, callback) => {
         updatedAt: timestamp,
         isActive: true,
         _user: user._id // createdBy
-      };
+      }
       const account = new AccountModel(params)
       const accountUser = new UserAccountModel({
         _id: uuid.v1(),
@@ -59,41 +58,41 @@ module.exports.create = (event, context, callback) => {
         body: JSON.stringify({
           error: object.error,
           result: object.result
-        }),
-      };
-      callback(null, response);
+        })
+      }
+      callback(null, response)
     })
 }
 
 module.exports.list = (event, context, callback) => {
   return passport.checkAuth(event.headers.Authorization)
     .then((decoded) => {
-    console.log('user:', decoded.user)
+      console.log('user:', decoded.user)
       return UserAccountModel.getAll({
         IndexName: 'UserAccounts',
-        KeyConditionExpression: "#user = :user",
+        KeyConditionExpression: '#user = :user',
         ExpressionAttributeNames: {
-          "#user":"_user"
+          '#user': '_user'
         },
         ExpressionAttributeValues: {
-          ":user": decoded.user._id
-        },
-        //ProjectionExpression: "_account"
+          ':user': decoded.user._id
+        }
+        // ProjectionExpression: "_account"
       })
     })
     .then((accounts) => {
-    console.log('accounts', accounts)
+      console.log('accounts', accounts)
       const accountsList = []
       accounts.forEach((account) => {
-          accountsList.push(account._account)
+        accountsList.push(account._account)
       })
       return AccountModel.getAllScan({
         KeyConditions: {
           _id: {
-            "ComparisonOperator": "IN",
-            "AttributeValueList": accountsList
+            'ComparisonOperator': 'IN',
+            'AttributeValueList': accountsList
           }
-        },
+        }
       })
     })
     .then((result) => {
@@ -116,11 +115,11 @@ module.exports.list = (event, context, callback) => {
         body: JSON.stringify({
           error: object.error,
           result: object.result
-        }),
-      };
-      callback(null, response);
+        })
+      }
+      callback(null, response)
     })
-};
+}
 
 module.exports.get = (event, context, callback) => {
   return passport.checkAuth(event.headers.Authorization)
@@ -156,11 +155,11 @@ module.exports.get = (event, context, callback) => {
         body: JSON.stringify({
           error: object.error,
           result: object.result
-        }),
-      };
-      callback(null, response);
+        })
+      }
+      callback(null, response)
     })
-};
+}
 
 module.exports.update = (event, context, callback) => {
   return passport.checkAuth(event.headers.Authorization)
@@ -177,7 +176,7 @@ module.exports.update = (event, context, callback) => {
         })
     })
     .then((account) => {
-      const data = JSON.parse(event.body);
+      const data = JSON.parse(event.body)
       return AccountModel.update(account._id, data)
     })
     .then((result) => {
@@ -200,24 +199,23 @@ module.exports.update = (event, context, callback) => {
         body: JSON.stringify({
           error: object.error,
           result: object.result
-        }),
-      };
-      callback(null, response);
+        })
+      }
+      callback(null, response)
     })
-};
-
+}
 
 module.exports.delete = (event, context, callback) => {
   const response = {
     statusCode: 200,
     body: JSON.stringify({
       message: 'Go Serverless v1.0! Your function executed successfully!',
-      input: event,
-    }),
-  };
+      input: event
+    })
+  }
 
-  callback(null, response);
+  callback(null, response)
 
   // Use this code if you don't use the http event with the LAMBDA-PROXY integration
   // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
-};
+}

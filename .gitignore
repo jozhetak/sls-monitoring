@@ -1,5 +1,6 @@
 .idea
 .tmp
+.webpack
 .serverless
 .nyc_output
 node_modules

@@ -2,8 +2,19 @@
 
 const UserModel = require('../../shared/model/user');
 const AWS = require('aws-sdk');
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
 const jwt = require('jsonwebtoken');
+
+const IS_OFFLINE = process.env.IS_OFFLINE
+let dynamoDb
+if (IS_OFFLINE === 'true') {
+  dynamoDb = new AWS.DynamoDB.DocumentClient({
+    region: 'localhost',
+    endpoint: 'http://localhost:8000'
+  })
+  console.log(dynamoDb)
+} else {
+  dynamoDb = new AWS.DynamoDB.DocumentClient()
+};
 
 module.exports.signIn = (event, content, callback) => {
   const data = JSON.parse(event.body);

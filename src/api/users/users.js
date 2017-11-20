@@ -37,13 +37,14 @@ module.exports.create = (event, context, callback) => {
 }
 
 module.exports.list = (event, context, callback) => {
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Go Serverless v1.0! Your function executed successfully!',
-      input: event
-    })
-  }
+  UserModel.getAllScan({}).then(res => {
+    const response = {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: res
+      })
+    }
+  })
 
   callback(new Error('[404] Not found'))
   // Use this code if you don't use the http event with the LAMBDA-PROXY integration
@@ -113,25 +114,31 @@ module.exports.update = (event, context, callback) => {
 
 module.exports.delete = (event, context, callback) => {
   console.log(event, context, callback)
-  Promise.resolve().then(() => {
-    if (!event.headers.Authorization) {
-      throw errors.unauthorized()
-    }
-    return passport.checkAuth(event.headers.Authorization)
-  })
-    .then(user => {
-      if (user._id !== event.pathParameters._id) {
+  Promise.resolve()
+    .then(() => {
+      if (!event.headers.Authorization) {
+        throw errors.unauthorized()
+      }
+      return passport.checkAuth(event.headers.Authorization)
+    })
+    .then(decoded => {
+      if (!decoded.user._id.equals(event.pathParameters.id)) {
         throw errors.forbidden()
       }
-      return {
-        statusCode: 200,
-        body: JSON.stringify(user)
-      }
+      return UserModel.getById(event.pathParameters.id)
+    })
+    .then(user => {
+      console.log(user)
+      user.isActive = false
+      console.log(user)
+      let newUser = new UserModel(user)
+      console.log(newUser)
+      return newUser.save()
     })
     .catch(err => {
       return {
         statusCode: 500,
-        error: err.message,
+        body: JSON.stringify(err.message),
         result: null
       }
     })
