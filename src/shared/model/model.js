@@ -42,8 +42,14 @@ module.exports = class Model {
     if (params.Key) {
       result.Key = params.Key
     }
+    if (params.KeyConditions) {
+      result.KeyConditions = params.KeyConditions
+    }
     if (params.KeyConditionExpression) {
       result.KeyConditionExpression = params.KeyConditionExpression
+    }
+    if (params.ExpressionAttributeNames) {
+      result.ExpressionAttributeNames = params.ExpressionAttributeNames
     }
     if (params.ExpressionAttributeValues) {
       result.ExpressionAttributeValues = params.ExpressionAttributeValues
@@ -101,11 +107,23 @@ module.exports = class Model {
 
     static getAll(params) {
       const query = this.buildQuery(params)
+      console.log(JSON.stringify(query, null, 4));
       return dynamoDb.query(query).promise()
         .then((data) => {
+          console.log('data', data)
           return data.Items;
         })
     }
+
+  static getAllScan(params) {
+    const query = this.buildQuery(params)
+    console.log(JSON.stringify(query, null, 4));
+    return dynamoDb.scan(query).promise()
+      .then((data) => {
+        console.log('data', data)
+        return data.Items;
+      })
+  }
 
     static getOne(keyConditionExpression, expressionAttributeValues) {
         const query = {

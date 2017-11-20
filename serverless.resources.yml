@@ -76,24 +76,12 @@ resources:
         AttributeDefinitions:
           - AttributeName: "_id"
             AttributeType: "S"
-          - AttributeName: "isActive"
-            AttributeType: "N"
         KeySchema:
           - AttributeName: "_id"
             KeyType: "HASH"
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        GlobalSecondaryIndexes:
-          - IndexName: isActiveIndex
-            KeySchema:
-              - AttributeName: isActive
-                KeyType: HASH
-            Projection:
-              ProjectionType: ALL
-            ProvisionedThroughput:
-              ReadCapacityUnits: 1
-              WriteCapacityUnits: 1
         TableName: ${self:provider.environment.ACCOUNTS_TABLE}
     UsersDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
@@ -141,19 +129,30 @@ resources:
       DeletionPolicy: Delete
       Properties:
         AttributeDefinitions:
+          - AttributeName: "_id"
+            AttributeType: "S"
           - AttributeName: "_user"
             AttributeType: "S"
           - AttributeName: "_account"
             AttributeType: "S"
         KeySchema:
-          - AttributeName: "_user"
+          - AttributeName: "_id"
             KeyType: "HASH"
-          - AttributeName: "_account"
-            KeyType: "RANGE"
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         GlobalSecondaryIndexes:
+          - IndexName: UserAccounts
+            KeySchema:
+              - AttributeName: _user
+                KeyType: HASH
+              - AttributeName: _account
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
           - IndexName: AccountUsers
             KeySchema:
               - AttributeName: _account

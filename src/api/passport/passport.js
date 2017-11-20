@@ -47,7 +47,7 @@ module.exports.checkAuth = (authToken) => {
   const tokenSecret = process.env.TOKEN
   return new Promise((resolve, reject) => {
     jwt.verify(authToken, tokenSecret, (err, decoded) => {
-      if (err) {
+      if (err || !decoded) {
         return reject(err)
       }
       return resolve(decoded)
