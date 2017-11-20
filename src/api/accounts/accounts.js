@@ -9,7 +9,8 @@ const waterfall = require('async/waterfall')
 module.exports.create = (event, context, callback) => {
   console.log('event: ', event)
   return passport.checkAuth(event.headers.Authorization)
-    .then((user) => {
+    .then((decoded) => {
+      const user = decoded.user
       const timestamp = new Date().getTime();
       const data = JSON.parse(event.body);
       const params = {
@@ -20,11 +21,22 @@ module.exports.create = (event, context, callback) => {
         region: data.region,
         createdAt: timestamp,
         updatedAt: timestamp,
-        _users:[user._id],
+        isActive: true,
         _user: user._id // createdBy
       };
       const account = new AccountModel(params)
-      return account.save()
+      const accountUser = new UserAccountModel({
+        _id: uuid.v1(),
+        _user: user._id,
+        _account: params._id,
+        isAdmin: true
+      })
+      return Promise.all([
+        account.save(),
+        accountUser.save()
+      ]).then((result) => {
+        return result[0]
+      })
     })
     .then((result) => {
       return {

@@ -76,24 +76,12 @@ resources:
         AttributeDefinitions:
           - AttributeName: "_id"
             AttributeType: "S"
-          - AttributeName: "isActive"
-            AttributeType: "N"
         KeySchema:
           - AttributeName: "_id"
             KeyType: "HASH"
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        GlobalSecondaryIndexes:
-          - IndexName: isActiveIndex
-            KeySchema:
-              - AttributeName: isActive
-                KeyType: HASH
-            Projection:
-              ProjectionType: ALL
-            ProvisionedThroughput:
-              ReadCapacityUnits: 1
-              WriteCapacityUnits: 1
         TableName: ${self:provider.environment.ACCOUNTS_TABLE}
     UsersDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'

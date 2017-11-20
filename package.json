@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "unit": "nyc ./node_modules/mocha/bin/mocha ./src/**/*.test.js",
-    "deploy": ""
+    "deploy": "sls deploy --aws-profile serverless-admin --stage dev --region eu-central-1",
+    "remove": "sls remove --aws-profile serverless-admin --stage dev --region eu-central-1"
   },
   "author": "",
   "license": "ISC",
