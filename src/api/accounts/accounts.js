@@ -55,18 +55,31 @@ module.exports.create = (event, context, callback) => {
 
 module.exports.list = (event, context, callback) => {
   return passport.checkAuth(event.headers.Authorization)
-    .then((user) => {
+    .then((decoded) => {
+    console.log('user:', decoded.user)
       return UserAccountModel.getAll({
-        KeyConditionExpression: "_user = " + user._id,
-        ProjectionExpression: "_account"
+        IndexName: 'UserAccounts',
+        KeyConditionExpression: "#user = :user",
+        ExpressionAttributeNames: {
+          "#user":"_user"
+        },
+        ExpressionAttributeValues: {
+          ":user": decoded.user._id
+        },
+        //ProjectionExpression: "_account"
       })
     })
     .then((accounts) => {
-      return AccountModel.getAll({
-        KeyCondition: {
+    console.log('accounts', accounts)
+      const accountsList = []
+      accounts.forEach((account) => {
+          accountsList.push(account._account)
+      })
+      return AccountModel.getAllScan({
+        KeyConditions: {
           _id: {
             "ComparisonOperator": "IN",
-            "AttributeValueList": accounts
+            "AttributeValueList": accountsList
           }
         },
       })
@@ -81,7 +94,7 @@ module.exports.list = (event, context, callback) => {
     .catch((err) => {
       return {
         statusCode: 500,
-        error: err.message,
+        error: err,
         result: null
       }
     })
