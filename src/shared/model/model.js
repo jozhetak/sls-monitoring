@@ -2,20 +2,8 @@
  * Created by Mac on 10/28/17.
  */
 const uuid = require('uuid')
-const AWS = require('aws-sdk')
 const _ = require('lodash')
-
-const IS_OFFLINE = process.env.IS_OFFLINE
-let dynamoDb
-if (IS_OFFLINE === 'true') {
-  dynamoDb = new AWS.DynamoDB.DocumentClient({
-    region: 'localhost',
-    endpoint: 'http://localhost:8000'
-  })
-  console.log(dynamoDb)
-} else {
-  dynamoDb = new AWS.DynamoDB.DocumentClient()
-};
+const dynamodb = require('../helper/dynamodb')
 
 module.exports = class Model {
   static getUpdateCondition (params) {
@@ -33,6 +21,7 @@ module.exports = class Model {
       ExpressionAttributeValues: ExpressionAttributeValues,
       UpdateExpression: UpdateExpression
     }
+    dynamodb.
   }
 
   static buildQuery (params) {
@@ -82,21 +71,21 @@ module.exports = class Model {
       TableName: this.constructor.TABLE, // process.env.FUNCTIONS_TABLE,
       Item: this.data
     }
-    return dynamoDb.put(params).promise()
+    return dynamodb.put(params).promise()
       .then(() => {
         return this.data
       })
   }
 
   static getById (id) {
-    var params = {
+    const params = {
       TableName: this.TABLE,
       Key: {
         _id: id
       }
     }
 
-    return dynamoDb.get(params)
+    return dynamodb.get(params)
       .promise()
       .then((data) => {
         return data.Item
@@ -105,18 +94,8 @@ module.exports = class Model {
 
   static getAll (params) {
     const query = this.buildQuery(params)
-    return dynamoDb.query(query).promise()
+    return dynamodb.query(query).promise()
       .then((data) => {
-        return data.Items
-      })
-  }
-
-  static getAll (params) {
-    const query = this.buildQuery(params)
-    console.log(JSON.stringify(query, null, 4))
-    return dynamoDb.query(query).promise()
-      .then((data) => {
-        console.log('data', data)
         return data.Items
       })
   }
@@ -124,7 +103,7 @@ module.exports = class Model {
   static getAllScan (params) {
     const query = this.buildQuery(params)
     console.log(JSON.stringify(query, null, 4))
-    return dynamoDb.scan(query).promise()
+    return dynamodb.scan(query).promise()
       .then((data) => {
         console.log('data', data)
         return data.Items
@@ -139,7 +118,7 @@ module.exports = class Model {
       ExpressionAttributeValues: expressionAttributeValues
     }
 
-    return dynamoDb.query(query).promise()
+    return dynamodb.query(query).promise()
       .then((data) => {
         if (data.Count > 0) {
           return data.Items[0]
@@ -159,7 +138,7 @@ module.exports = class Model {
       ExpressionAttributeValues: ExpressionAttributeValues,
       UpdateExpression: UpdateExpression
     }
-    return dynamoDb.update(params).promise()
+    return dynamodb.update(params).promise()
       .then((data) => {
         if (data) {
           return data

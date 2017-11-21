@@ -4,9 +4,10 @@ const uuid = require('uuid')
 const _ = require('lodash')
 const passport = require('../passport/passport')
 const errors = require('../../shared/helper/errors')
+const dtoUser = require('../../shared/user.dto')
+const responses = require('../../shared/helper/responses')
 
 module.exports.create = (event, context, callback) => {
-  console.log('here')
   const timestamp = new Date().getTime()
   const data = JSON.parse(event.body)
   const params = {
@@ -14,41 +15,36 @@ module.exports.create = (event, context, callback) => {
     firstName: data.firstName,
     lastName: data.lastName,
     email: data.email,
-    password: data.password,
+    password: passport.encryptPassword(data.password),
     createdAt: timestamp,
     updatedAt: timestamp
   }
   const user = new UserModel(params)
   return user.save()
-    .then((user) => {
-      const response = {
-        statusCode: 200,
-        body: JSON.stringify(user)
-      }
-      callback(null, response)
-    })
-    .catch((error) => {
-      callback(null, {
-        statusCode: error.statusCode || 501,
-        headers: { 'Content-Type': 'text/plain' },
-        body: 'Couldn\'t create user.'
-      })
-    })
+    .then(dtoUser.makeDto)
+    .then(responses.create)
+    .catch(responses.error)
+    .then((response) => callback(null, response))
 }
 
 module.exports.list = (event, context, callback) => {
-  UserModel.getAllScan({}).then(res => {
-    const response = {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: res
-      })
-    }
-  })
-
-  callback(new Error('[404] Not found'))
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
+  Promise.resolve()
+    .then(() => {
+      if (!event.headers.Authorization) {
+        throw errors.unauthorized()
+      }
+      return passport.checkAuth(event.headers.Authorization)
+    })
+    .then(decoded => {
+      if (!decoded || !decoded.user) {
+        throw errors.forbidden()
+      }
+      return UserModel.getAllScan({})
+    })
+    .then(users => users.map(dtoUser.makeDto))
+    .then(responses.create)
+    .catch(responses.error)
+    .then((response) => callback(null, response))
 }
 
 module.exports.get = (event, context, callback) => {
@@ -113,7 +109,6 @@ module.exports.update = (event, context, callback) => {
 }
 
 module.exports.delete = (event, context, callback) => {
-  console.log(event, context, callback)
   Promise.resolve()
     .then(() => {
       if (!event.headers.Authorization) {
@@ -122,28 +117,18 @@ module.exports.delete = (event, context, callback) => {
       return passport.checkAuth(event.headers.Authorization)
     })
     .then(decoded => {
-      if (!decoded.user._id.equals(event.pathParameters.id)) {
+      if (!decoded || !decoded.user || !decoded.user._id.equals(event.pathParameters.id)) {
         throw errors.forbidden()
       }
       return UserModel.getById(event.pathParameters.id)
     })
     .then(user => {
-      console.log(user)
       user.isActive = false
-      console.log(user)
       let newUser = new UserModel(user)
-      console.log(newUser)
       return newUser.save()
     })
-    .catch(err => {
-      return {
-        statusCode: 500,
-        body: JSON.stringify(err.message),
-        result: null
-      }
-    })
+    .then(dtoUser.makeDto)
+    .then(responses.create)
+    .catch(responses.error)
     .then((response) => callback(null, response))
-
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
 }
