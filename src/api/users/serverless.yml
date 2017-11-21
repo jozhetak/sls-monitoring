@@ -5,6 +5,7 @@ functions:
       include:
         - src/api/users/**
         - src/shared/model/**
+        - src/shared/helpers/**
     events:
       - http:
           path: users
@@ -16,6 +17,8 @@ functions:
       include:
         - src/api/users/**
         - src/shared/model/**
+        - src/shared/helpers/**
+
     events:
       - http:
           path: users
@@ -31,6 +34,7 @@ functions:
       include:
         - src/api/users/**
         - src/shared/model/**
+        - src/shared/helpers/**
     events:
       - http:
           path: users/{id}
@@ -47,6 +51,7 @@ functions:
       include:
         - src/api/users/**
         - src/shared/model/**
+        - src/shared/helpers/**
     events:
       - http:
           path: users/{id}
@@ -63,6 +68,8 @@ functions:
           include:
             - src/api/users/**
             - src/shared/model/**
+            - src/shared/helpers/**
+
     events:
       - http:
           path: users/{id}

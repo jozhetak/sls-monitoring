@@ -6,6 +6,8 @@ functions:
         - src/api/invocations/**
         - src/api/passport/**
         - src/shared/model/**
+        - src/shared/helpers/**
+
     events:
       - http:
           path: invocations/{id}
