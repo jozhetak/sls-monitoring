@@ -21,7 +21,6 @@ module.exports = class Model {
       ExpressionAttributeValues: ExpressionAttributeValues,
       UpdateExpression: UpdateExpression
     }
-    dynamodb.
   }
 
   static buildQuery (params) {
