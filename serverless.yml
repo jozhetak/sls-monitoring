@@ -108,17 +108,18 @@ functions:
       include:
         - src/test-error/**
   authorize:
-      handler: src/api/passport/passport.handler
-      package:
-        include:
-          - src/api/passport/**
-          - src/shared/model/**
+    handler: src/api/passport/passport.handler
+    package:
+      include:
+        - src/api/passport/**
+        - src/shared/model/**
   userSignIn:
     handler: src/api/auth/auth.signIn
     package:
-          include:
-            - src/api/auth/**
-            - src/shared/model/**
+      include:
+        - src/api/auth/**
+        - src/api/passport/**
+        - src/shared/**
     events:
       - http:
           path: signIn

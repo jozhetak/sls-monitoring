@@ -12,12 +12,17 @@ module.exports = class Model {
     const ExpressionAttributeValues = {
       ':updatedAt': timestamp
     }
+    const ExpressionAttributeNames = {
+      '#updatedAt': 'updatedAt'
+    }
     _.forOwn(params, (value, key) => {
-      UpdateExpression += key + ' = ' + ':' + key + ', '
+      UpdateExpression += '#' + key + ' = ' + ':' + key + ', '
       ExpressionAttributeValues[':' + key] = value
+      ExpressionAttributeNames['#' + key] = key
     })
-    UpdateExpression += 'updatedAt = :updatedAt'
+    UpdateExpression += '#updatedAt = :updatedAt'
     return {
+      ExpressionAttributeNames: ExpressionAttributeNames,
       ExpressionAttributeValues: ExpressionAttributeValues,
       UpdateExpression: UpdateExpression
     }
@@ -128,19 +133,21 @@ module.exports = class Model {
   }
 
   static update (id, data) {
-    const {ExpressionAttributeValues, UpdateExpression} = this.getUpdateCondition(data)
+    const {ExpressionAttributeNames, ExpressionAttributeValues, UpdateExpression} = this.getUpdateCondition(data)
     const params = {
       TableName: this.TABLE,
       Key: {
         _id: id
       },
+      ExpressionAttributeNames: ExpressionAttributeNames,
       ExpressionAttributeValues: ExpressionAttributeValues,
-      UpdateExpression: UpdateExpression
+      UpdateExpression: UpdateExpression,
+      ReturnValues: 'ALL_NEW'
     }
     return dynamodb.update(params).promise()
       .then((data) => {
         if (data) {
-          return data
+          return data.Attributes
         }
         return null
       })

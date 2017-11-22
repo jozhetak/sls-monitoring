@@ -5,8 +5,7 @@ functions:
       include:
         - src/api/accounts/**
         - src/api/passport/**
-        - src/shared/model/**
-        - src/shared/helpers/**
+        - src/shared/**
     events:
       - http:
           path: accounts
@@ -18,7 +17,7 @@ functions:
       include:
         - src/api/accounts/**
         - src/api/passport/**
-        - src/shared/model/**
+        - src/shared/**
     events:
       - http:
           path: accounts/{id}
@@ -31,7 +30,7 @@ functions:
       include:
         - src/api/accounts/**
         - src/api/passport/**
-        - src/shared/model/**
+        - src/shared/**
     events:
       - http:
           path: accounts
@@ -42,7 +41,7 @@ functions:
         include:
         - src/api/accounts/**
         - src/api/passport/**
-        - src/shared/model/**
+        - src/shared/**
       events:
         - http:
             path: accounts/{id}
@@ -54,7 +53,7 @@ functions:
       include:
         - src/api/accounts/**
         - src/api/passport/**
-        - src/shared/model/**
+        - src/shared/**
       events:
         - http:
             path: accounts/{id}
