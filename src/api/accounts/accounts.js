@@ -124,10 +124,10 @@ module.exports.list = (event, context, callback) => {
 
 module.exports.get = (event, context, callback) => {
   return passport.checkAuth(event.headers.Authorization)
-    .then((user) => {
+    .then((decoded) => {
       return AccountModel.getById(event.pathParameters.id)
         .then((account) => {
-          if (_.indexOf(account._users, user._id) === -1) {
+          if (account._user !== decoded.user._id) {
             throw Error('User has no permission')
           }
           return account
@@ -164,10 +164,10 @@ module.exports.get = (event, context, callback) => {
 
 module.exports.update = (event, context, callback) => {
   return passport.checkAuth(event.headers.Authorization)
-    .then((user) => {
+    .then((decoded) => {
       return AccountModel.getById(event.pathParameters.id)
         .then((account) => {
-          if (_.indexOf(account._users, user._id) === -1) {
+          if (account._user !== decoded.user._id) {
             throw Error('User has no permission')
           }
           return account
