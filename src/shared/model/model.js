@@ -133,7 +133,8 @@ module.exports = class Model {
   }
 
   static update (id, data) {
-    const {ExpressionAttributeNames, ExpressionAttributeValues, UpdateExpression} = this.getUpdateCondition(data)
+    const {ExpressionAttributeNames, ExpressionAttributeValues, UpdateExpression} = this.getUpdateCondition(
+      data)
     const params = {
       TableName: this.TABLE,
       Key: {

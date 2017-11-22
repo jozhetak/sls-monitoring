@@ -204,7 +204,6 @@
             "message": "REPORT RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04d9\tDuration: 207.39 ms\tBilled Duration: 300 ms\tMemory Size: 1024 MB\tMax Memory Used: 38 MB",
             "eventId": "d68ba1b0-6423-4073-8763-0f09d2173612"
           }
-
         ]
       },
       "/aws/lambda/Lambda2-errors": {

@@ -9,7 +9,8 @@ const errors = require('../../shared/helper/errors')
 // A user with scopes: ['pangolins'] can
 // call 'arn:aws:execute-api:ap-southeast-1::random-api-id/dev/GET/pangolins'
 const authorizeUser = (userScopes, methodArn) => {
-  const hasValidScope = _.some(userScopes, scope => _.endsWith(methodArn, scope))
+  const hasValidScope = _.some(userScopes,
+    scope => _.endsWith(methodArn, scope))
   return hasValidScope
 }
 
@@ -34,9 +35,10 @@ module.exports.handler = (event, context, callback) => {
 
     const effect = isAllowed ? 'Allow' : 'Deny'
     const userId = user._id
-    const authorizerContext = { user: JSON.stringify(user) }
+    const authorizerContext = {user: JSON.stringify(user)}
     // Return an IAM policy document for the current endpoint
-    const policyDocument = buildIAMPolicy(userId, effect, event.methodArn, authorizerContext)
+    const policyDocument = buildIAMPolicy(userId, effect, event.methodArn,
+      authorizerContext)
     console.log('Authorize DONE', policyDocument)
     callback(null, policyDocument)
   } catch (e) {

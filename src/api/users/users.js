@@ -117,7 +117,8 @@ module.exports.delete = (event, context, callback) => {
       return passport.checkAuth(event.headers.Authorization)
     })
     .then(decoded => {
-      if (!decoded || !decoded.user || !decoded.user._id.equals(event.pathParameters.id)) {
+      if (!decoded || !decoded.user ||
+        !decoded.user._id.equals(event.pathParameters.id)) {
         throw errors.forbidden()
       }
       return UserModel.getById(event.pathParameters.id)

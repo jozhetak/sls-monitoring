@@ -46,7 +46,7 @@ module.exports.signIn = (event, content, callback) => {
       console.log('error', e)
       callback(null, {
         statusCode: e.statusCode || 501,
-        headers: { 'Content-Type': 'text/plain' },
+        headers: {'Content-Type': 'text/plain'},
         body: e.message
       })
     })
