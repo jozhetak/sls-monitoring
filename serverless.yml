@@ -39,10 +39,10 @@ provider:
         - SNS:Publish
       Resource: "*"
 
-plugins:
-  - serverless-webpack
-  - serverless-dynamodb-local
-  - serverless-offline
+#plugins:
+#  - serverless-webpack
+#  - serverless-dynamodb-local
+#  - serverless-offline
 
 
 resources:

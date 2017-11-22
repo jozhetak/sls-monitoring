@@ -9,6 +9,7 @@ module.exports.delete = (body) => {
   return buildResponse(204, body)
 }
 module.exports.error = (error) => {
+  console.log(error)
   return buildResponse(error.statusCode || 500, error.message)
 }
 
