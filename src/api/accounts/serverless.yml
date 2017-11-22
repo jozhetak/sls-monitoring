@@ -6,6 +6,7 @@ functions:
         - src/api/accounts/**
         - src/api/passport/**
         - src/shared/model/**
+        - src/shared/helpers/**
     events:
       - http:
           path: accounts
@@ -48,7 +49,7 @@ functions:
             method: put
             cors: true
   deleteAccount:
-    handler: src/api/accouts/accouts.delete
+    handler: src/api/accounts/accounts.delete
     package:
       include:
         - src/api/accounts/**
