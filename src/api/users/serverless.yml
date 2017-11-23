@@ -26,7 +26,6 @@ functions:
 #            name: authorize
 #            identitySource: method.request.header.Authorization
 #            type: token
-
   getUser:
     handler: src/api/users/users.get
     package:
@@ -43,7 +42,6 @@ functions:
 #            name: authorize
 #            identitySource: method.request.header.Authorization
 #            type: token
-
   updateUser:
     handler: src/api/users/users.update
     package:
@@ -60,7 +58,6 @@ functions:
 #            name: authorize
 #            identitySource: method.request.header.Authorization
 #            type: token
-
   deleteUser:
     handler: src/api/users/users.delete
     package:

@@ -17,7 +17,7 @@ module.exports = class AWSCollector extends Collector {
   }
 
   collectAndSave () {
-    return collect()
+    return this.collect()
       .then((functions) => {
         return that.save(functions)
       })
@@ -76,7 +76,7 @@ module.exports = class AWSCollector extends Collector {
           return
         }
 
-        var params = {
+        const params = {
           logGroupName: logGroupName,
           startTime: new Date().getTime() - LOG_EVENT_TIMEOUT,
           endTime: new Date().getTime(),
@@ -90,7 +90,7 @@ module.exports = class AWSCollector extends Collector {
           return []
         }
 
-        var invocations = that._convertEventsToInvocations(data.events)
+        const invocations = that._convertEventsToInvocations(data.events)
         return invocations
       })
   }
@@ -130,7 +130,7 @@ module.exports = class AWSCollector extends Collector {
       else if (CRASH_PATTERN.test(event.message)) {
         const requestId = event.message.match(CRASH_PATTERN)[2]
 
-        var match = _.find(invocations,
+        const match = _.find(invocations,
           function (invocation) { return invocation.id === requestId })
         if (match) {
           match.error = 1
