@@ -22,7 +22,7 @@ module.exports.create = (event, context, callback) => {
   const user = new UserModel(params)
   return user.save()
     .then(dtoUser.makeDto)
-    .then(responses.create)
+    .then(responses.created)
     .catch(responses.error)
     .then((response) => callback(null, response))
 }
@@ -42,70 +42,36 @@ module.exports.list = (event, context, callback) => {
       return UserModel.getAllScan({})
     })
     .then(users => users.map(dtoUser.makeDto))
-    .then(responses.create)
+    .then(responses.ok)
     .catch(responses.error)
     .then((response) => callback(null, response))
 }
 
 module.exports.get = (event, context, callback) => {
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Go Serverless v1.0! Your function executed successfully!',
-      input: event
+  return passport.checkAuth(event.headers.Authorization)
+    .then(() => {
+      return UserModel.getById(event.pathParameters.id)
     })
-  }
-  callback(null, response)
-
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
+    .then(responses.ok)
+    .catch(responses.error)
+    .then((response) => callback(null, response))
 }
 
 module.exports.update = (event, context, callback) => {
   return passport.checkAuth(event.headers.Authorization)
-    .then((user) => {
-      if (user._id !== event.pathParameters.id) {
+    .then((decoded) => {
+      if (decoded.user._id !== event.pathParameters.id) {
         throw Error('User has no permission')
       }
-      return AccountModel.getById(event.pathParameters.id)
-        .then((account) => {
-          if (_.indexOf(account._users, user._id) === -1) {
-            throw Error('User has no permission')
-          }
-          return account
-        })
-        .catch((err) => {
-          throw err
-        })
+      return UserModel.getById(event.pathParameters.id)
     })
-    .then((account) => {
+    .then((user) => {
       const data = JSON.parse(event.body)
-      return UserModel.update(account._id, data)
+      return UserModel.update(user._id, data)
     })
-    .then((result) => {
-      return {
-        statusCode: 200,
-        error: null,
-        result: result
-      }
-    })
-    .catch((err) => {
-      return {
-        statusCode: 500,
-        error: err.message,
-        result: null
-      }
-    })
-    .then((object) => {
-      const response = {
-        statusCode: object.statusCode,
-        body: JSON.stringify({
-          error: object.error,
-          result: object.result
-        })
-      }
-      callback(null, response)
-    })
+    .then(responses.ok)
+    .catch(responses.error)
+    .then((response) => callback(null, response))
 }
 
 module.exports.delete = (event, context, callback) => {
@@ -128,8 +94,7 @@ module.exports.delete = (event, context, callback) => {
       let newUser = new UserModel(user)
       return newUser.save()
     })
-    .then(dtoUser.makeDto)
-    .then(responses.create)
+    .then(responses.deleted)
     .catch(responses.error)
     .then((response) => callback(null, response))
 }

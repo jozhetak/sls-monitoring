@@ -1,5 +1,5 @@
 'use strict'
-
+const HttpStatus = require('./HttpStatus')
 class ProjectError extends Error {
   constructor (message) {
     super(message)
@@ -12,34 +12,34 @@ class ProjectError extends Error {
 module.exports.serverError = (err) => {
   const error = new ProjectError('SERVER_ERROR')
   if (err) error.message = err
-  error.statusCode = 500
+  error.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
   return error
 }
 
 module.exports.notFound = (err) => {
   const error = new ProjectError('NOT_FOUND')
   if (err) error.message = err
-  error.statusCode = 404
+  error.statusCode = HttpStatus.NOT_FOUND
   return error
 }
 
 module.exports.badRequest = (err) => {
   const error = new ProjectError('BAD_REQUEST')
   if (err) error.message = err
-  error.statusCode = 400
+  error.statusCode = HttpStatus.BAD_REQUEST
   return error
 }
 
 module.exports.forbidden = (err) => {
   const error = new ProjectError('FORBIDDEN')
   if (err) error.message = err
-  error.statusCode = 403
+  error.statusCode = HttpStatus.FORBIDDEN
   return error
 }
 
 module.exports.unauthorized = (err) => {
   const error = new ProjectError('UNAUTHORIZED')
   if (err) error.message = err
-  error.statusCode = 401
+  error.statusCode = HttpStatus.UNAUTHORIZED
   return error
 }
