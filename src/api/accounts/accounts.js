@@ -32,7 +32,6 @@ module.exports.create = (event, context, callback) => {
       }
       const account = new AccountModel(params)
       const accountUser = new UserAccountModel({
-        _id: uuid.v1(),
         _user: user._id,
         _account: params._id,
         isAdmin: true
@@ -54,7 +53,7 @@ module.exports.list = (event, context, callback) => {
     .then((decoded) => {
       console.log('user:', decoded.user)
       return UserAccountModel.getAll({
-        IndexName: 'UserAccounts',
+        // IndexName: 'UserAccounts',
         KeyConditionExpression: '#user = :user',
         ExpressionAttributeNames: {
           '#user': '_user'
@@ -164,14 +163,21 @@ module.exports.inviteUsers = (event, context, callback) => {
           throw err
         })
     })
-    .then((account) => {
-      UserAccountModel
+    .then(() => helper.validateInvite(JSON.parse(event.body)))
+    .then((data) => {
+      const accountUser = new UserAccountModel({
+        _user: data._user,
+        _account: event.pathParameters.id,
+        isAdmin: false
+      })
+      return accountUser.save()
     })
-
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
+    //.then(dtoAccount.public)
+    .then(responses.ok)
+    .catch(responses.error)
+    .then(response => callback(null, response))
 }
-
+"8c787aa0-d134-11e7-9f33-85ef5353e0b2"
 module.exports.getAccountUsers = (event, context, callback) => {
   return passport.checkAuth(event.headers.Authorization)
     .then((decoded) => {

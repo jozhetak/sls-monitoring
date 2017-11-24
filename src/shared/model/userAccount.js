@@ -4,7 +4,7 @@
 
 const Model = require('./model')
 
-module.exports = class Account extends Model {
+module.exports = class UserAccounts extends Model {
   constructor (opts) {
     super(opts)
   }

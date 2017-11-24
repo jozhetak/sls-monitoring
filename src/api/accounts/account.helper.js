@@ -19,3 +19,13 @@ module.exports.validate = (user) => {
       throw errors.invalidJoi(err)
     })
 }
+
+module.exports.validateInvite = (data) => {
+  const inviteScema = joi.object().keys({
+    _user: joi.string().guid()
+  })
+  return joi.validate(data, inviteScema)
+    .catch(err => {
+      throw errors.invalidJoi(err)
+    })
+}
