@@ -2,7 +2,6 @@
 
 const _ = require('lodash')
 const jwt = require('jsonwebtoken')
-const Promise = require('bluebird')
 const crypto = require('crypto')
 const errors = require('../../shared/helper/errors')
 // Returns a boolean whether or not a user is allowed to call a particular method

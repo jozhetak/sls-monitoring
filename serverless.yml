@@ -76,9 +76,15 @@ resources:
 package:
   individually: true
   exclude:
-    - ./**
+    - .git/**
+    - .idea/**
+    - .tmp/**
+    - .webpack/**
+    - .nyc_output/**
+    - package-lock.json
+    - .DS_Store/**
+    - src/**
   include:
-    - node_modules/**
     - src/shared/**
 
 functions:

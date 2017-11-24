@@ -1,7 +1,6 @@
 'use strict'
 
 const sinon = require('sinon')
-const Promise = require('bluebird')
 const proxyquire = require('proxyquire').noCallThru()
 const stub = require('./AWSCollector.stub.js')
 const stubData = require('./AWSCollector.stub.json')
