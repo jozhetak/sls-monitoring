@@ -1,26 +1,29 @@
 'use strict'
 const UserModel = require('../../shared/model/user')
+const helper = require('./user.helper')
 const uuid = require('uuid')
-const _ = require('lodash')
 const passport = require('../passport/passport')
 const errors = require('../../shared/helper/errors')
 const dtoUser = require('../../shared/user.dto')
 const responses = require('../../shared/helper/responses')
 
 module.exports.create = (event, context, callback) => {
-  const timestamp = new Date().getTime()
-  const data = JSON.parse(event.body)
-  const params = {
-    _id: uuid.v1(),
-    firstName: data.firstName,
-    lastName: data.lastName,
-    email: data.email,
-    password: passport.encryptPassword(data.password),
-    createdAt: timestamp,
-    updatedAt: timestamp
-  }
-  const user = new UserModel(params)
-  return user.save()
+  helper.validateCreate(JSON.parse(event.body))
+    .then(data => {
+      const timestamp = new Date().getTime()
+      const params = {
+        _id: uuid.v1(),
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        password: passport.encryptPassword(data.password),
+        createdAt: timestamp,
+        updatedAt: timestamp,
+        isActive: true
+      }
+      const user = new UserModel(params)
+      return user.save()
+    })
     .then(dtoUser.makeDto)
     .then(responses.created)
     .catch(responses.error)
@@ -52,14 +55,18 @@ module.exports.get = (event, context, callback) => {
     .then(() => {
       return UserModel.getById(event.pathParameters.id)
     })
+    .then(dtoUser.makeDto)
     .then(responses.ok)
     .catch(responses.error)
     .then((response) => callback(null, response))
 }
 
 module.exports.update = (event, context, callback) => {
-  return passport.checkAuth(event.headers.Authorization)
-    .then((decoded) => {
+  return Promise.all([
+    passport.checkAuth(event.headers.Authorization),
+    helper.validate(event.body)
+  ])
+    .then(([decoded, data]) => {
       if (decoded.user._id !== event.pathParameters.id) {
         throw Error('User has no permission')
       }
@@ -69,6 +76,7 @@ module.exports.update = (event, context, callback) => {
       const data = JSON.parse(event.body)
       return UserModel.update(user._id, data)
     })
+    .then(dtoUser.makeDto)
     .then(responses.ok)
     .catch(responses.error)
     .then((response) => callback(null, response))
@@ -94,6 +102,7 @@ module.exports.delete = (event, context, callback) => {
       let newUser = new UserModel(user)
       return newUser.save()
     })
+    .then(dtoUser.makeDto)
     .then(responses.deleted)
     .catch(responses.error)
     .then((response) => callback(null, response))

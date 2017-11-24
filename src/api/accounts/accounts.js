@@ -2,16 +2,21 @@
 const AccountModel = require('../../shared/model/account')
 const UserAccountModel = require('../../shared/model/userAccount')
 const uuid = require('uuid')
-const _ = require('lodash')
 const passport = require('./../passport/passport')
+const helper = require('./account.helper')
+const errors = require('../../shared/helper/errors')
+const responses = require('../../shared/helper/responses')
+const dtoAccount = require('../../shared/account.dto')
 
 module.exports.create = (event, context, callback) => {
   console.log('event: ', event)
-  return passport.checkAuth(event.headers.Authorization)
-    .then((decoded) => {
+  return Promise.all([
+    passport.checkAuth(event.headers.Authorization),
+    helper.validate(event.body)
+  ])
+    .then(([decoded, data]) => {
       const user = decoded.user
       const timestamp = new Date().getTime()
-      const data = JSON.parse(event.body)
       const params = {
         _id: uuid.v1(),
         name: data.name,
@@ -33,35 +38,13 @@ module.exports.create = (event, context, callback) => {
       return Promise.all([
         account.save(),
         accountUser.save()
-      ]).then((result) => {
-        return result[0]
-      })
+      ])
     })
-    .then((result) => {
-      return {
-        statusCode: 201,
-        error: null,
-        result: result
-      }
-    })
-    .catch((err) => {
-      return {
-        statusCode: 500,
-        error: err.message,
-        result: null
-      }
-    })
-    .then((object) => {
-      console.log(object)
-      const response = {
-        statusCode: object.statusCode,
-        body: JSON.stringify({
-          error: object.error,
-          result: object.result
-        })
-      }
-      callback(null, response)
-    })
+    .then(result => result[0])
+    .then(dtoAccount.public)
+    .then(responses.created)
+    .catch(responses.error)
+    .then(response => callback(null, response))
 }
 
 module.exports.list = (event, context, callback) => {
@@ -95,30 +78,10 @@ module.exports.list = (event, context, callback) => {
         }
       })
     })
-    .then((result) => {
-      return {
-        statusCode: 200,
-        error: null,
-        result: result
-      }
-    })
-    .catch((err) => {
-      return {
-        statusCode: 500,
-        error: err,
-        result: null
-      }
-    })
-    .then((object) => {
-      const response = {
-        statusCode: object.statusCode,
-        body: JSON.stringify({
-          error: object.error,
-          result: object.result
-        })
-      }
-      callback(null, response)
-    })
+    .then((accounts) => accounts.map(dtoAccount.public))
+    .then(responses.created)
+    .catch(responses.error)
+    .then(response => callback(null, response))
 }
 
 module.exports.get = (event, context, callback) => {
@@ -135,35 +98,20 @@ module.exports.get = (event, context, callback) => {
           throw err
         })
     })
-    .then((result) => {
-      return {
-        statusCode: 200,
-        error: null,
-        result: result
-      }
-    })
-    .catch((err) => {
-      return {
-        statusCode: 500,
-        error: err.message,
-        result: null
-      }
-    })
-    .then((object) => {
-      const response = {
-        statusCode: object.statusCode,
-        body: JSON.stringify({
-          error: object.error,
-          result: object.result
-        })
-      }
-      callback(null, response)
-    })
+    .then(dtoAccount.public)
+    .then(responses.created)
+    .catch(responses.error)
+    .then(response => callback(null, response))
 }
 
 module.exports.update = (event, context, callback) => {
-  return passport.checkAuth(event.headers.Authorization)
-    .then((decoded) => {
+  console.log('event: ', event)
+  return Promise.all([
+    passport.checkAuth(event.headers.Authorization),
+    helper.validate(event.body)
+  ])
+    .then(([decoded, data]) => {
+      console.log(data)
       return AccountModel.getById(event.pathParameters.id)
         .then((account) => {
           if (account._user !== decoded.user._id) {
@@ -179,30 +127,10 @@ module.exports.update = (event, context, callback) => {
       const data = JSON.parse(event.body)
       return AccountModel.update(account._id, data)
     })
-    .then((result) => {
-      return {
-        statusCode: 200,
-        error: null,
-        result: result
-      }
-    })
-    .catch((err) => {
-      return {
-        statusCode: 500,
-        error: err.message,
-        result: null
-      }
-    })
-    .then((object) => {
-      const response = {
-        statusCode: object.statusCode,
-        body: JSON.stringify({
-          error: object.error,
-          result: object.result
-        })
-      }
-      callback(null, response)
-    })
+    .then(dtoAccount.public)
+    .then(responses.created)
+    .catch(responses.error)
+    .then(response => callback(null, response))
 }
 
 module.exports.delete = (event, context, callback) => {

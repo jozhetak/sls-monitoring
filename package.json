@@ -16,11 +16,13 @@
     "aws-sdk": "^2.141.0",
     "bluebird": "^3.5.1",
     "crypto": "^1.0.1",
+    "joi": "^13.0.2",
     "jsonwebtoken": "^8.1.0",
     "lodash": "^4.17.4",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
+    "@types/joi": "^13.0.0",
     "chai": "^4.1.2",
     "eslint": "^4.7.1",
     "eslint-config-standard": "^10.2.1",

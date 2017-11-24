@@ -43,3 +43,11 @@ module.exports.unauthorized = (err) => {
   error.statusCode = HttpStatus.UNAUTHORIZED
   return error
 }
+
+module.exports.invalidJoi = (err) => {
+  let result = ''
+  for (const error of err.details) {
+    result += error.message + ';\n'
+  }
+  return this.badRequest(result)
+}
