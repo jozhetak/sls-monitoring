@@ -39,9 +39,9 @@ functions:
     handler: src/api/accounts/accounts.update
     package:
       include:
-      - src/api/accounts/**
-      - src/api/passport/**
-      - src/shared/**
+        - src/api/accounts/**
+        - src/api/passport/**
+        - src/shared/**
     events:
       - http:
           path: accounts/{id}
@@ -63,9 +63,9 @@ functions:
     handler: src/api/accounts/accounts.inviteUsers
     package:
       include:
-      - src/api/accounts/**
-      - src/api/passport/**
-      - src/shared/**
+        - src/api/accounts/**
+        - src/api/passport/**
+        - src/shared/**
     events:
       - http:
           path: accounts/{id}/users
@@ -75,9 +75,8 @@ functions:
     handler: src/api/accounts/accounts.getAccountUsers
     package:
       include:
-      - src/api/accounts/**
-      - src/api/passport/**
-      - src/shared/**
+        - src/api/accounts/**
+        - src/api/passport/**
     events:
       - http:
           path: accounts/{id}/users
@@ -87,9 +86,9 @@ functions:
     handler: src/api/accounts/accounts.updateAccountUser
     package:
       include:
-      - src/api/accounts/**
-      - src/api/passport/**
-      - src/shared/**
+        - src/api/accounts/**
+        - src/api/passport/**
+        - src/shared/**
     events:
       - http:
           path: accounts/{id}/users/{userId}
@@ -99,9 +98,9 @@ functions:
     handler: src/api/accounts/accounts.deleteAccountUser
     package:
       include:
-      - src/api/accounts/**
-      - src/api/passport/**
-      - src/shared/**
+        - src/api/accounts/**
+        - src/api/passport/**
+        - src/shared/**
     events:
       - http:
           path: accounts/{id}/users/{userId}

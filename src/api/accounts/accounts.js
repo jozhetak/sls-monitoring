@@ -172,12 +172,11 @@ module.exports.inviteUsers = (event, context, callback) => {
       })
       return accountUser.save()
     })
-    //.then(dtoAccount.public)
     .then(responses.ok)
     .catch(responses.error)
     .then(response => callback(null, response))
 }
-"8c787aa0-d134-11e7-9f33-85ef5353e0b2"
+
 module.exports.getAccountUsers = (event, context, callback) => {
   return passport.checkAuth(event.headers.Authorization)
     .then((decoded) => {
@@ -208,7 +207,7 @@ module.exports.getAccountUsers = (event, context, callback) => {
         }
       })
     })
-    .then((users) => users.map(dtoUser.public))
+    .then((users) => users.map(dtoUser.makeDto))
     .then(responses.ok)
     .catch(responses.error)
     .then(response => callback(null, response))
