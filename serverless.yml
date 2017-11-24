@@ -76,7 +76,10 @@ resources:
 package:
   individually: true
   exclude:
-    - src/**
+    - ./**
+  include:
+    - node_modules/**
+    - src/shared/**
 
 functions:
   schedule:
@@ -136,8 +139,13 @@ functions:
   getAccount: ${file(./src/api/accounts/serverless.yml):functions.getAccount}
   updateAccount: ${file(./src/api/accounts/serverless.yml):functions.updateAccount}
   deleteAccount: ${file(./src/api/accounts/serverless.yml):functions.deleteAccount}
+  # ACCOUNT_USERS
+  inviteUsers: ${file(./src/api/accounts/serverless.yml):functions.inviteUsers}
+  getAccountUsers: ${file(./src/api/accounts/serverless.yml):functions.getAccountUsers}
+  updateAccountUser: ${file(./src/api/accounts/serverless.yml):functions.updateAccountUser}
+  deleteAccountUser: ${file(./src/api/accounts/serverless.yml):functions.deleteAccountUser}
   # FUNCTIONS
-#  listFunctions: ${file(./src/api/functions/serverless.yml):functions.listFunctions}
+  listFunctions: ${file(./src/api/functions/serverless.yml):functions.listFunctions}
   getfunction: ${file(./src/api/functions/serverless.yml):functions.getFunction}
   # INVOCATIONS
   listInvocations: ${file(./src/api/invocations/serverless.yml):functions.listInvocations}

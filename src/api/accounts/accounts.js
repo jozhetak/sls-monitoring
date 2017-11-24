@@ -1,5 +1,6 @@
 'use strict'
 const AccountModel = require('../../shared/model/account')
+const UserModel = require('../../shared/model/user')
 const UserAccountModel = require('../../shared/model/userAccount')
 const uuid = require('uuid')
 const passport = require('./../passport/passport')
@@ -7,6 +8,7 @@ const helper = require('./account.helper')
 const errors = require('../../shared/helper/errors')
 const responses = require('../../shared/helper/responses')
 const dtoAccount = require('../../shared/account.dto')
+const dtoUser = require('../../shared/user.dto')
 
 module.exports.create = (event, context, callback) => {
   console.log('event: ', event)
@@ -149,33 +151,61 @@ module.exports.delete = (event, context, callback) => {
 }
 
 module.exports.inviteUsers = (event, context, callback) => {
-  const response = {
-    statusCode: 501,
-    body: JSON.stringify({
-      message: 'NOT_IMPLEMENTED',
-      input: event
+  return passport.checkAuth(event.headers.Authorization)
+    .then((decoded) => {
+      return AccountModel.getById(event.pathParameters.id)
+        .then((account) => {
+          if (account._user !== decoded.user._id) {
+            throw Error('User has no permission')
+          }
+          return account
+        })
+        .catch((err) => {
+          throw err
+        })
     })
-  }
-
-  callback(null, response)
+    .then((account) => {
+      UserAccountModel
+    })
 
   // Use this code if you don't use the http event with the LAMBDA-PROXY integration
   // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
 }
 
 module.exports.getAccountUsers = (event, context, callback) => {
-  const response = {
-    statusCode: 501,
-    body: JSON.stringify({
-      message: 'NOT_IMPLEMENTED',
-      input: event
+  return passport.checkAuth(event.headers.Authorization)
+    .then((decoded) => {
+      console.log('user:', decoded.user)
+      return UserAccountModel.getAll({
+        IndexName: 'AccountUsers',
+        KeyConditionExpression: '#account = :account',
+        ExpressionAttributeNames: {
+          '#account': '_account'
+        },
+        ExpressionAttributeValues: {
+          ':account': event.pathParameters.id
+        }
+      })
     })
-  }
-
-  callback(null, response)
-
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
+    .then((users) => {
+      console.log('users', users)
+      const usersList = []
+      users.forEach((user) => {
+        usersList.push(user._user)
+      })
+      return UserModel.getAllScan({
+        KeyConditions: {
+          _id: {
+            'ComparisonOperator': 'IN',
+            'AttributeValueList': usersList
+          }
+        }
+      })
+    })
+    .then((users) => users.map(dtoUser.public))
+    .then(responses.ok)
+    .catch(responses.error)
+    .then(response => callback(null, response))
 }
 
 module.exports.updateAccountUser = (event, context, callback) => {

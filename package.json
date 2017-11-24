@@ -22,7 +22,6 @@
     "uuid": "^3.1.0"
   },
   "devDependencies": {
-    "@types/joi": "^13.0.0",
     "chai": "^4.1.2",
     "eslint": "^4.7.1",
     "eslint-config-standard": "^10.2.1",
@@ -33,10 +32,6 @@
     "mocha": "^4.0.1",
     "nyc": "^11.3.0",
     "proxyquire": "^1.8.0",
-    "serverless-dynamodb-local": "^0.2.26",
-    "serverless-offline": "^3.16.0",
-    "serverless-webpack": "^4.0.0",
-    "sinon": "^4.1.2",
-    "webpack": "^3.8.1"
+    "sinon": "^4.1.2"
   }
 }
