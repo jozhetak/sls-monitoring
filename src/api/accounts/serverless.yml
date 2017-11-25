@@ -88,7 +88,6 @@ functions:
       include:
         - src/api/accounts/**
         - src/api/passport/**
-        - src/shared/**
     events:
       - http:
           path: accounts/{id}/users/{userId}

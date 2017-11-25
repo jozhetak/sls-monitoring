@@ -202,32 +202,60 @@ module.exports.getAccountUsers = (event, context, callback) => {
     .then((users) => {
       const usersList = []
       users.forEach((user) => {
-        usersList.push({_id: user._user})
+        usersList.push({
+          _id: user._user
+        })
       })
       console.log('users', usersList)
-      return UserModel.getByKeys({
+      return UserModel.getUsersOfAccount({
+        _account: event.pathParameters.id,
         Keys: usersList
       })
     })
-    .then((users) => users.map(dtoUser.makeDto))
+    //.then((users) => users.map(dtoUser.makeDto))
     .then(responses.ok)
     .catch(responses.error)
     .then(response => callback(null, response))
 }
 
 module.exports.updateAccountUser = (event, context, callback) => {
-  const response = {
-    statusCode: 501,
-    body: JSON.stringify({
-      message: 'NOT_IMPLEMENTED',
-      input: event
+  return passport.checkAuth(event.headers.Authorization)
+    .then((decoded) => {
+      return AccountModel.getById(event.pathParameters.id)
+        .then((account) => {
+          if (account._user !== decoded.user._id) {
+            throw Error('User has no permission')
+          }
+          return account
+        })
+        .catch((err) => {
+          throw err
+        })
     })
-  }
-
-  callback(null, response)
-
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
+    .then(() => helper.validateInvite(JSON.parse(event.body)))
+    .then((data) => {
+      let users = []
+      const dbPromises = []
+      if (data._users) {
+        users = data._users
+      }
+      if (data._user) {
+        users.push(data._user)
+      }
+      // TODO: check response for _user + _users with the same user ID
+      users.forEach((user) => {
+        let accountUser = new UserAccountModel({
+          _user: user,
+          _account: event.pathParameters.id,
+          isAdmin: false
+        })
+        dbPromises.push(accountUser.save())
+      })
+      return Promise.all(dbPromises)
+    })
+    .then(responses.ok)
+    .catch(responses.error)
+    .then(response => callback(null, response))
 }
 
 module.exports.deleteAccountUser = (event, context, callback) => {
