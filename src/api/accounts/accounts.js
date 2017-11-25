@@ -232,26 +232,14 @@ module.exports.updateAccountUser = (event, context, callback) => {
           throw err
         })
     })
-    .then(() => helper.validateInvite(JSON.parse(event.body)))
+    .then(() => helper.validateAccountUserUpdate(JSON.parse(event.body)))
     .then((data) => {
-      let users = []
-      const dbPromises = []
-      if (data._users) {
-        users = data._users
-      }
-      if (data._user) {
-        users.push(data._user)
-      }
-      // TODO: check response for _user + _users with the same user ID
-      users.forEach((user) => {
-        let accountUser = new UserAccountModel({
-          _user: user,
-          _account: event.pathParameters.id,
-          isAdmin: false
-        })
-        dbPromises.push(accountUser.save())
+      let accountUser = new UserAccountModel({
+        _user: event.pathParameters.userId,
+        _account: event.pathParameters.id,
+        isAdmin: data.isAdmin
       })
-      return Promise.all(dbPromises)
+      return accountUser.save()
     })
     .then(responses.ok)
     .catch(responses.error)

@@ -30,3 +30,13 @@ module.exports.validateInvite = (data) => {
       throw errors.invalidJoi(err)
     })
 }
+
+module.exports.validateAccountUserUpdate = (data) => {
+  const schema = joi.object().keys({
+    isAdmin: joi.boolean()
+  })
+  return joi.validate(data, schema)
+    .catch(err => {
+      throw errors.invalidJoi(err)
+    })
+}
