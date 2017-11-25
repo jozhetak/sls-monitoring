@@ -193,18 +193,13 @@ module.exports.getAccountUsers = (event, context, callback) => {
       })
     })
     .then((users) => {
-      console.log('users', users)
       const usersList = []
       users.forEach((user) => {
-        usersList.push(user._user)
+        usersList.push({_id: user._user})
       })
-      return UserModel.getAllScan({
-        KeyConditions: {
-          _id: {
-            'ComparisonOperator': 'IN',
-            'AttributeValueList': usersList
-          }
-        }
+      console.log('users', usersList)
+      return UserModel.getByKeys({
+        Keys: usersList
       })
     })
     .then((users) => users.map(dtoUser.makeDto))

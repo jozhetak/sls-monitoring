@@ -110,6 +110,22 @@ module.exports = class Model {
       })
   }
 
+  static getByKeys (params) {
+    var dbparams = {
+      RequestItems: {}
+    }
+    dbparams.RequestItems[this.TABLE] = {
+      Keys: params.Keys
+    }
+    return dynamodb.batchGet(dbparams).promise()
+      .then((data) => {
+        if (data.Responses[this.TABLE].length > 0) {
+          return data.Responses[this.TABLE]
+        }
+        return []
+      })
+  }
+
   static getOne (keyConditionExpression, expressionAttributeValues) {
     const query = {
       TableName: this.TABLE, // process.env.FUNCTIONS_TABLE,

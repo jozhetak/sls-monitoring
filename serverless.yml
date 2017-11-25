@@ -36,6 +36,7 @@ provider:
         - dynamodb:GetItem
         - dynamodb:PutItem
         - dynamodb:UpdateItem
+        - dynamodb:BatchGetItem
         - SNS:Publish
       Resource: "*"
 
