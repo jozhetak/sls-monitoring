@@ -42,7 +42,7 @@ module.exports.list = (event, context, callback) => {
       if (!decoded || !decoded.user) {
         throw errors.forbidden()
       }
-      return UserModel.getAllScan({})
+      return UserModel.getAllScan({}) // TODO: query with isActive and exclude yourself
     })
     .then(users => users.map(dtoUser.makeDto))
     .then(responses.ok)

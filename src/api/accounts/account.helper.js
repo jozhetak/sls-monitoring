@@ -22,7 +22,8 @@ module.exports.validate = (user) => {
 
 module.exports.validateInvite = (data) => {
   const inviteScema = joi.object().keys({
-    _user: joi.string().guid()
+    _user: joi.string().guid(),
+    _users: joi.array().items(joi.string().guid())
   })
   return joi.validate(data, inviteScema)
     .catch(err => {

@@ -160,12 +160,24 @@ module.exports.inviteUsers = (event, context, callback) => {
     })
     .then(() => helper.validateInvite(JSON.parse(event.body)))
     .then((data) => {
-      const accountUser = new UserAccountModel({
-        _user: data._user,
-        _account: event.pathParameters.id,
-        isAdmin: false
+      let users = []
+      const dbPromises = []
+      if (data._users) {
+        users = data._users
+      }
+      if (data._user) {
+        users.push(data._user)
+      }
+      // TODO: check response for _user + _users with the same user ID
+      users.forEach((user) => {
+        let accountUser = new UserAccountModel({
+          _user: user,
+          _account: event.pathParameters.id,
+          isAdmin: false
+        })
+        dbPromises.push(accountUser.save())
       })
-      return accountUser.save()
+      return Promise.all(dbPromises)
     })
     .then(responses.ok)
     .catch(responses.error)
