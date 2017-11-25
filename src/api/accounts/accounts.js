@@ -68,19 +68,14 @@ module.exports.list = (event, context, callback) => {
       console.log('accounts', accounts)
       const accountsList = []
       accounts.forEach((account) => {
-        accountsList.push(account._account)
+        accountsList.push({_id: account._account})
       })
-      return AccountModel.getAllScan({
-        KeyConditions: {
-          _id: {
-            'ComparisonOperator': 'IN',
-            'AttributeValueList': accountsList
-          }
-        }
+      return AccountModel.getByKeys({
+        Keys: accountsList
       })
     })
     .then((accounts) => accounts.map(dtoAccount.public))
-    .then(responses.created)
+    .then(responses.ok)
     .catch(responses.error)
     .then(response => callback(null, response))
 }
