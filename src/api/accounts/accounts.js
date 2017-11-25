@@ -218,6 +218,7 @@ module.exports.getAccountUsers = (event, context, callback) => {
     .then(response => callback(null, response))
 }
 
+// TODO: check user permission
 module.exports.updateAccountUser = (event, context, callback) => {
   return passport.checkAuth(event.headers.Authorization)
     .then((decoded) => {
