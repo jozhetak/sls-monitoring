@@ -2,43 +2,33 @@
 
 const AWS = require('aws-sdk')
 const Promise = require('bluebird')
+const AccountModel = require('./../shared/model/account')
 
 AWS.config.setPromisesDependency(Promise)
 
 module.exports.run = (event, context) => {
   console.log(process.env.SLS_RUN_ARN)
   // read data from accounts
-  var sns = new AWS.SNS()
+  const sns = new AWS.SNS()
 
-  const accounts = []
-
-  // foreach send sns topic
-  accounts.push({
-    acoountId: '157000000',
-    accessKeyId: '',
-    secretAccessKey: ''
+  return AccountModel.getAllScan({
+    FilterExpression: 'isActive = :isActive',
+    ExpressionAttributeValues: {
+      ':isActive': true
+    }
   })
-
-  // foreach send sns topic
-  accounts.push({
-    acoountId: '157000001',
-    accessKeyId: '',
-    secretAccessKey: ''
-  })
-
-  return Promise.map(accounts, account => {
-
-    account = JSON.stringify(account)
-
-    console.log(account)
-    return sns.publish({
-      Message: account,
-      TargetArn: process.env.SLS_RUN_ARN
-    }).promise()
-  }).then(() => {
-    context.succeed()
-
-  }).catch(err => {
-    context.fail(err)
-  })
+    .then((accounts) => {
+      return Promise.map(accounts, account => {
+        account = JSON.stringify(account)
+        console.log(account)
+        return sns.publish({
+          Message: account,
+          TargetArn: process.env.SLS_RUN_ARN
+        }).promise()
+      }).then(() => {
+        context.succeed()
+      }).catch(err => {
+        context.fail(err)
+      })
+    })
 }
