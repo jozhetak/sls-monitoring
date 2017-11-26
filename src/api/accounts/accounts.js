@@ -248,16 +248,28 @@ module.exports.updateAccountUser = (event, context, callback) => {
 }
 
 module.exports.deleteAccountUser = (event, context, callback) => {
-  const response = {
-    statusCode: 501,
-    body: JSON.stringify({
-      message: 'NOT_IMPLEMENTED',
-      input: event
+  return passport.checkAuth(event.headers.Authorization)
+    .then((decoded) => {
+      return AccountModel.getById(event.pathParameters.id)
+        .then((account) => {
+          if (account._user !== decoded.user._id) {
+            throw Error('User has no permission')
+          }
+          return account
+        })
+        .catch((err) => {
+          throw err
+        })
     })
-  }
-
-  callback(null, response)
-
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
+    .then((data) => {
+      return UserAccountModel.delete({
+        Key: {
+          _user: event.pathParameters.userId,
+          _account: event.pathParameters.id
+        }
+      })
+    })
+    .then(responses.ok)
+    .catch(responses.error)
+    .then(response => callback(null, response))
 }

@@ -165,4 +165,20 @@ module.exports = class Model {
         return null
       })
   }
+
+  static delete (params) {
+    return dynamodb.delete(
+      {
+        TableName: this.TABLE,
+        Key: params.Key,
+        ReturnValues: 'ALL_OLD'
+      }
+    ).promise()
+      .then((data) => {
+        if (data) {
+          return data
+        }
+        return null
+      })
+  }
 }

@@ -37,6 +37,7 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:BatchGetItem
+        - dynamodb:DeleteItem
         - SNS:Publish
       Resource: "*"
 
