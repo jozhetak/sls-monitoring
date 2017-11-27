@@ -59,10 +59,17 @@ module.exports.checkAuth = (authToken) => {
     })
   })
 }
-
 module.exports.encryptPassword = (password) => {
   try {
     return crypto.createHash('sha1').update(password).digest('hex')
+  } catch (err) {
+    throw errors.serverError()
+  }
+}
+
+module.exports.generateToken = () => {
+  try {
+    return crypto.randomBytes(16).toString('hex')
   } catch (err) {
     throw errors.serverError()
   }

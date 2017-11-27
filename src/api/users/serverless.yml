@@ -95,6 +95,30 @@ functions:
         - src/shared/**
     events:
       - http:
-          path: users/verify
+          path: users/{id}/verify/{token}
+          method: get
+          cors: true
+  sendResetPasswordEmail:
+    handler: src/api/users/users.sendResetPasswordEmail
+    package:
+      include:
+        - src/api/users/**
+        - src/api/passport/**
+        - src/shared/**
+    events:
+      - http:
+          path: users/{id}/resetEmail
+          method: post
+          cors: true
+  sendVerificationEmail:
+    handler: src/api/users/users.sendVerificationEmail
+    package:
+      include:
+        - src/api/users/**
+        - src/api/passport/**
+        - src/shared/**
+    events:
+      - http:
+          path: users/{id}/verificationEmail
           method: post
           cors: true

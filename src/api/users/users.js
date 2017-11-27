@@ -20,12 +20,13 @@ module.exports.create = (event, context, callback) => {
         password: passport.encryptPassword(data.password),
         createdAt: timestamp,
         updatedAt: timestamp,
-        isActive: true
+        isActive: false,
+        verificationToken: passport.generateToken()
       }
       const user = new UserModel(params)
-      return user.save()
+      return Promise.all([user.save(), emailService.sendVerificationEmail(user.data)])
     })
-    .then(dtoUser.makeDto)
+    .then((res) => dtoUser.makeDto(res[0]))
     .then(responses.created)
     .catch(responses.error)
     .then((response) => callback(null, response))
@@ -115,7 +116,32 @@ module.exports.changePassword = (event, context, callback) => {
 }
 
 module.exports.verify = (event, context, callback) => {
-  return emailService({email: 'genal.igor@gmail.com'})
+  const {id, token} = event.pathParameters
+  UserModel.getById(id)
+    .then(user => {
+      console.log(user)
+      if (user && user.verificationToken === token) {
+        return UserModel.update(user._id, {isActive: true, verificationToken: null})
+      }
+    })
+     .then(responses.redirect)
+     .catch(responses.error)
+     .then((response) => callback(null, response))
+}
+
+module.exports.sendVerificationEmail = (event, contex, callback) => {
+  UserModel.getById(event.pathParameters.id)
+    .then(user => UserModel.update(user._id, {verificationToken: passport.generateToken()}))
+    .then(emailService.sendVerificationEmail)
+    .then(responses.ok)
+    .catch(responses.error)
+    .then((response) => callback(null, response))
+}
+
+module.exports.sendResetPasswordEmail = (event, contex, callback) => {
+  UserModel.getByEmail(JSON.parse(event.body).email)
+    .then(user => UserModel.update(user._id, {resetPasswordToken: passport.generateToken()}))
+    .then(emailService.sendResetPasswordEmail)
     .then(responses.ok)
     .catch(responses.error)
     .then((response) => callback(null, response))
