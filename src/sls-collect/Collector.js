@@ -26,14 +26,14 @@ module.exports = class Collector {
   }
 
   _updateInvocations (funcInstance, invocations) {
-    //var invocations = funcInstance.invocations;
+    console.log('_updateInvocations')
 
     return Promise.each(invocations, invocation => {
       return InvocationModel
-        .getById(invocation.id)
+        .getById(invocation._id)
         .then(invocationDao => {
           if (!invocationDao) {
-            invocation.functionId = funcInstance.id
+            invocation.functionId = funcInstance._id
             invocation.accountId = funcInstance.accountId
             const invocationInstance = new InvocationModel(invocation)
             return invocationInstance.save()

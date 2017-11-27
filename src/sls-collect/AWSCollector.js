@@ -17,6 +17,7 @@ module.exports = class AWSCollector extends Collector {
   }
 
   collectAndSave () {
+    const that = this
     return this.collect()
       .then((functions) => {
         return that.save(functions)
@@ -119,7 +120,7 @@ module.exports = class AWSCollector extends Collector {
           const requestId = event.message.match(START_REQUEST_PATTERN)[2]
           currentInvocation = {
             logStreamName: event.logStreamName,
-            id: requestId,
+            _id: requestId,
             logs: [event]
           }
         } catch (err) {
@@ -131,7 +132,7 @@ module.exports = class AWSCollector extends Collector {
         const requestId = event.message.match(CRASH_PATTERN)[2]
 
         const match = _.find(invocations,
-          function (invocation) { return invocation.id === requestId })
+          function (invocation) { return invocation._id === requestId })
         if (match) {
           match.error = 1
           match.errorType = 'crash'

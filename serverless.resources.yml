@@ -6,14 +6,14 @@ resources:
       #DeletionPolicy: Retain
       Properties:
         AttributeDefinitions:
-          - AttributeName: "id"
+          - AttributeName: "_id"
             AttributeType: "S"
           - AttributeName: "arn"
             AttributeType: "S"
           - AttributeName: "accountId"
             AttributeType: "S"
         KeySchema:
-          - AttributeName: "id"
+          - AttributeName: "_id"
             KeyType: "HASH"
         ProvisionedThroughput:
           ReadCapacityUnits: 1
@@ -46,12 +46,12 @@ resources:
       #DeletionPolicy: Retain
       Properties:
         AttributeDefinitions:
-          - AttributeName: "id"
+          - AttributeName: "_id"
             AttributeType: "S"
           - AttributeName: "accountId"
             AttributeType: "S"
         KeySchema:
-          - AttributeName: "id"
+          - AttributeName: "_id"
             KeyType: "HASH"
         ProvisionedThroughput:
           ReadCapacityUnits: 1

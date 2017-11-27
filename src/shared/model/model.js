@@ -61,6 +61,9 @@ module.exports = class Model {
 
   constructor (opts) {
     this.data = opts || {}
+    if (!this.data._id) {
+      this.data._id = uuid.v1()
+    }
   }
 
   static get TABLE () {

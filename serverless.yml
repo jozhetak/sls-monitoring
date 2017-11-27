@@ -39,6 +39,9 @@ provider:
         - dynamodb:BatchGetItem
         - dynamodb:DeleteItem
         - SNS:Publish
+        - lambda:ListFunctions
+        - logs:DescribeLogStreams
+        - logs:filterLogEvents
       Resource: "*"
 
 #plugins:
