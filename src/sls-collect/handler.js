@@ -4,7 +4,7 @@ const AWSCollector = require('./AWSCollector')
 
 module.exports.run = (event, context) => {
 
-  const message = event.Records[0].Sns.Message
+  const message = JSON.parse(event.Records[0].Sns.Message)
   console.log('From SNS:', message)
   const _account = message._id
   const key = message.key
@@ -14,7 +14,6 @@ module.exports.run = (event, context) => {
     accessKeyId: key,
     secretAccessKey: secret
   })
-
   return collector
     .collectAndSave()
     .then(() => {

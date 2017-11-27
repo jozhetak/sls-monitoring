@@ -5,12 +5,9 @@ functions:
       include:
         - src/api/invocations/**
         - src/api/passport/**
-        - src/shared/model/**
-        - src/shared/helpers/**
-
     events:
       - http:
-          path: invocations/{id}
+          path: /accounts/{id}/functions/{functionId}/invocations/{invocationId}
           method: get
           cors: true
 
@@ -18,10 +15,10 @@ functions:
     handler: src/api/invocations/invocations.list
     package:
       include:
-        - src/api/accounts/**
+        - src/api/invocations/**
         - src/api/passport/**
-        - src/shared/model/**
     events:
       - http:
-          path: invocations
+          path: /accounts/{id}/functions/{functionId}/invocations
           method: get
+          cors: true

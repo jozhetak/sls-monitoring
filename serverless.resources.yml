@@ -10,7 +10,7 @@ resources:
             AttributeType: "S"
           - AttributeName: "arn"
             AttributeType: "S"
-          - AttributeName: "accountId"
+          - AttributeName: "_account"
             AttributeType: "S"
         KeySchema:
           - AttributeName: "_id"
@@ -21,7 +21,7 @@ resources:
         GlobalSecondaryIndexes:
           - IndexName: AccountIdIndex
             KeySchema:
-              - AttributeName: accountId
+              - AttributeName: _account
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
@@ -48,7 +48,9 @@ resources:
         AttributeDefinitions:
           - AttributeName: "_id"
             AttributeType: "S"
-          - AttributeName: "accountId"
+          - AttributeName: "_account"
+            AttributeType: "S"
+          - AttributeName: "_function"
             AttributeType: "S"
         KeySchema:
           - AttributeName: "_id"
@@ -59,7 +61,16 @@ resources:
         GlobalSecondaryIndexes:
           - IndexName: AccountIdIndex
             KeySchema:
-              - AttributeName: accountId
+              - AttributeName: _account
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+          - IndexName: FunctionIdIndex
+            KeySchema:
+              - AttributeName: _function
                 KeyType: HASH
             Projection:
               ProjectionType: ALL

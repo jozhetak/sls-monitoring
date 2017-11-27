@@ -2,36 +2,26 @@
 const FunctionModel = require('../../shared/model/function')
 const _ = require('lodash')
 const passport = require('./../passport/passport')
+const responses = require('../../shared/helper/responses')
 
 module.exports.list = (event, context, callback) => {
   return passport.checkAuth(event.headers.Authorization)
     .then((user) => {
-      return FunctionModel.getAll()
+      return FunctionModel.getAll({
+        IndexName: 'AccountIdIndex',
+        KeyConditionExpression: '#account = :account',
+        ExpressionAttributeNames: {
+          '#account': '_account'
+        },
+        ExpressionAttributeValues: {
+          ':account': event.pathParameters.id
+        }
+      })
     })
-    .then((result) => {
-      return {
-        statusCode: 200,
-        error: null,
-        result: result
-      }
-    })
-    .catch((err) => {
-      return {
-        statusCode: 500,
-        error: err.message,
-        result: null
-      }
-    })
-    .then((object) => {
-      const response = {
-        statusCode: object.statusCode,
-        body: JSON.stringify({
-          error: object.error,
-          result: object.result
-        })
-      }
-      callback(null, response)
-    })
+    //.then((accounts) => accounts.map(dtoAccount.public))
+    .then(responses.ok)
+    .catch(responses.error)
+    .then(response => callback(null, response))
 }
 
 module.exports.get = (event, context, callback) => {

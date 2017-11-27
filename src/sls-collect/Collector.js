@@ -5,14 +5,15 @@ const InvocationModel = require('../shared/model/invocation')
 
 module.exports = class Collector {
   constructor (accountId) {
+    console.log(accountId)
     this.accountId = accountId
   }
 
   save (functions) {
-    AWS.config.update({
-      accessKeyId: process.env.ACCESS_KEY_ID,
-      secretAccessKey: process.SECRET_ACCESS_KEY
-    })
+    // AWS.config.update({
+    //   accessKeyId: process.env.ACCESS_KEY_ID,
+    //   secretAccessKey: process.SECRET_ACCESS_KEY
+    // })
 
     const that = this
 
@@ -26,6 +27,7 @@ module.exports = class Collector {
   }
 
   _updateInvocations (funcInstance, invocations) {
+    console.log('account: ', this.accountId)
     console.log('_updateInvocations')
 
     return Promise.each(invocations, invocation => {
@@ -49,12 +51,14 @@ module.exports = class Collector {
       .getOne('arn = :arn', {':arn': func.FunctionArn})
       .then(funcDao => {
         if (funcDao) {
+          funcDao._account = that.accountId
           funcDao.name = func.FunctionName
           funcDao.codeSize = func.CodeSize
           funcDao.timeout = func.Timeout
           funcDao.memSize = func.MemorySize
         } else {
           funcDao = {
+            _account: that.accountId,
             accountId: that.accountId,
             name: func.FunctionName,
             arn: func.FunctionArn,

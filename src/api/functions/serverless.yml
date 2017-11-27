@@ -5,23 +5,19 @@ functions:
       include:
         - src/api/functions/**
         - src/api/passport/**
-        - src/shared/model/**
-        - src/shared/helpers/**
-
     events:
       - http:
-          path: functions/{id}
+          path: /accounts/{id}/functions/{functionId}
           method: get
           cors: true
-
   listFunctions:
     handler: src/api/functions/functions.list
     package:
       include:
-        - src/api/accounts/**
+        - src/api/functions/**
         - src/api/passport/**
-        - src/shared/model/**
     events:
       - http:
-          path: functions
+          path: /accounts/{id}/functions
           method: get
+          cors: true

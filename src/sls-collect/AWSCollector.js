@@ -11,6 +11,7 @@ AWS.config.setPromisesDependency(Promise)
 
 module.exports = class AWSCollector extends Collector {
   constructor (accountId, opts) {
+    console.log('AWSCollector AccountId: ', accountId)
     super(accountId)
     this.accessKeyId = opts.accessKeyId
     this.secretAccessKey = opts.secretAccessKey
