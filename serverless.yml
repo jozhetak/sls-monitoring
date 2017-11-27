@@ -157,7 +157,7 @@ functions:
   deleteAccountUser: ${file(./src/api/accounts/serverless.yml):functions.deleteAccountUser}
   # FUNCTIONS
   listFunctions: ${file(./src/api/functions/serverless.yml):functions.listFunctions}
-  getfunction: ${file(./src/api/functions/serverless.yml):functions.getFunction}
+  getFunction: ${file(./src/api/functions/serverless.yml):functions.getFunction}
   # INVOCATIONS
   listInvocations: ${file(./src/api/invocations/serverless.yml):functions.listInvocations}
   getInvocation: ${file(./src/api/invocations/serverless.yml):functions.getInvocation}
