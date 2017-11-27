@@ -53,12 +53,11 @@ functions:
       include:
         - src/api/accounts/**
         - src/api/passport/**
-        - src/shared/**
-      events:
-        - http:
-            path: accounts/{id}
-            method: delete
-            cors: true
+    events:
+      - http:
+          path: accounts/{id}
+          method: delete
+          cors: true
   inviteUsers:
     handler: src/api/accounts/accounts.inviteUsers
     package:
