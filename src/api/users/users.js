@@ -6,6 +6,7 @@ const passport = require('../passport/passport')
 const errors = require('../../shared/helper/errors')
 const dtoUser = require('../../shared/user.dto')
 const responses = require('../../shared/helper/responses')
+const emailService = require('../../shared/helper/email.service')
 
 module.exports.create = (event, context, callback) => {
   helper.validateCreate(JSON.parse(event.body))
@@ -31,13 +32,7 @@ module.exports.create = (event, context, callback) => {
 }
 
 module.exports.list = (event, context, callback) => {
-  Promise.resolve()
-    .then(() => {
-      if (!event.headers.Authorization) {
-        throw errors.unauthorized()
-      }
-      return passport.checkAuth(event.headers.Authorization)
-    })
+  return passport.checkAuth(event.headers.Authorization)
     .then(decoded => {
       if (!decoded || !decoded.user) {
         throw errors.forbidden()
@@ -83,13 +78,7 @@ module.exports.update = (event, context, callback) => {
 }
 
 module.exports.delete = (event, context, callback) => {
-  Promise.resolve()
-    .then(() => {
-      if (!event.headers.Authorization) {
-        throw errors.unauthorized()
-      }
-      return passport.checkAuth(event.headers.Authorization)
-    })
+  return passport.checkAuth(event.headers.Authorization)
     .then(decoded => {
       if (!decoded || !decoded.user ||
         !decoded.user._id.equals(event.pathParameters.id)) {
@@ -104,6 +93,30 @@ module.exports.delete = (event, context, callback) => {
     })
     .then(dtoUser.makeDto)
     .then(responses.deleted)
+    .catch(responses.error)
+    .then((response) => callback(null, response))
+}
+
+module.exports.changePassword = (event, context, callback) => {
+  return passport.checkAuth(event.headers.Authorization)
+    .then((decoded) => {
+      const id = event.pathParameters.id
+      if (decoded.user._id !== id) {
+        throw Error('User has no permission')
+      }
+      return UserModel.update(id, {
+        password: passport.encryptPassword(JSON.parse(event.body).password)
+      })
+    })
+    .then(dtoUser.makeDto)
+    .then(responses.ok)
+    .catch(responses.error)
+    .then((response) => callback(null, response))
+}
+
+module.exports.verify = (event, context, callback) => {
+  return emailService({email: 'genal.igor@gmail.com'})
+    .then(responses.ok)
     .catch(responses.error)
     .then((response) => callback(null, response))
 }

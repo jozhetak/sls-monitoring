@@ -44,10 +44,10 @@ provider:
         - logs:filterLogEvents
       Resource: "*"
 
-#plugins:
-#  - serverless-webpack
-#  - serverless-dynamodb-local
-#  - serverless-offline
+plugins:
+  - serverless-webpack
+  - serverless-dynamodb-local
+  - serverless-offline
 
 
 resources:
@@ -139,11 +139,14 @@ functions:
           path: signIn
           method: post
           cors: true
+  # USERS
   createUser: ${file(./src/api/users/serverless.yml):functions.createUser}
   listUsers: ${file(./src/api/users/serverless.yml):functions.listUsers}
   getUser: ${file(./src/api/users/serverless.yml):functions.getUser}
   updateUser: ${file(./src/api/users/serverless.yml):functions.updateUser}
   deleteUser: ${file(./src/api/users/serverless.yml):functions.deleteUser}
+  changePassword: ${file(./src/api/users/serverless.yml):functions.changePassword}
+  verifyUser: ${file(./src/api/users/serverless.yml):functions.verifyUser}
   # ACCOUNTS
   createAccount: ${file(./src/api/accounts/serverless.yml):functions.createAccount}
   listAccounts: ${file(./src/api/accounts/serverless.yml):functions.listAccounts}
