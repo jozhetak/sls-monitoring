@@ -8,21 +8,22 @@ const errors = require('../../shared/helper/errors')
 const dtoUser = require('../../shared/user.dto')
 const responses = require('../../shared/helper/responses')
 const emailService = require('../../shared/helper/email.service')
-
+const hour = 3600000
 module.exports.create = (event, context, callback) => {
   helper.validateCreate(JSON.parse(event.body))
     .then(data => {
-      const timestamp = new Date().getTime()
+      const now = Date.now()
       const params = {
         _id: uuid.v1(),
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
         password: passport.encryptPassword(data.password),
-        createdAt: timestamp,
-        updatedAt: timestamp,
+        createdAt: now,
+        updatedAt: now,
         isActive: false,
-        verificationToken: passport.generateToken()
+        verificationToken: passport.generateToken(),
+        verificationTokenExpires: now + hour * 2
       }
       const user = new UserModel(params)
       return Promise.all([user.save(), emailService.sendVerificationEmail(user.data)])
@@ -123,7 +124,11 @@ module.exports.resetPassword = (event, context, callback) => {
     .then(user => {
       if (!user) throw errors.notFound()
       if (user.resetPasswordToken === token) {
-        return UserModel.update(user._id, {password: passport.encryptPassword(password), resetPassword: null})
+        return UserModel.update(user._id, {
+          password: passport.encryptPassword(password),
+          resetPassword: null,
+          PasswordTokenExpires: null
+        })
       }
     })
     .then(dtoUser.public)
@@ -138,8 +143,9 @@ module.exports.verify = (event, context, callback) => {
   UserModel.getById(id)
     .then(user => {
       if (!user) throw errors.notFound()
+      if(user.verificationTokenExpires < Date.now()) throw errors.expired()
       if (user.verificationToken === token) {
-        return UserModel.update(user._id, {isActive: true, verificationToken: null})
+        return UserModel.update(user._id, {isActive: true, verificationToken: null, verificationTokenExpires: null})
       }
     })
      .then(() => responses.redirect('test'))
@@ -151,7 +157,9 @@ module.exports.sendVerificationEmail = (event, contex, callback) => {
   UserModel.getById(event.pathParameters.id)
     .then(user => {
       if(!user) throw errors.notFound()
-      return UserModel.update(user._id, {verificationToken: passport.generateToken()})
+      return UserModel.update(user._id, {verificationToken: passport.generateToken(),
+        verificationTokenExpires: Date.now() + hour * 2
+      })
     })
     .then(emailService.sendVerificationEmail)
     .then(responses.ok)
@@ -163,7 +171,7 @@ module.exports.sendResetPasswordEmail = (event, contex, callback) => {
   UserModel.getByEmail(JSON.parse(event.body).email)
     .then(user => {
       if(!user) throw errors.notFound()
-      UserModel.update(user._id, {resetPasswordToken: passport.generateToken()})
+      UserModel.update(user._id, {resetPasswordToken: passport.generateToken(), PasswordTokenExpires: Date.now() + hour})
     })
     .then(emailService.sendResetPasswordEmail)
     .then(responses.ok)

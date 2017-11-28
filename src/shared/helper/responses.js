@@ -12,10 +12,6 @@ module.exports.deleted = (body) => {
   return buildResponse(HttpStatus.NO_CONTENT, body)
 }
 
-module.exports.expired = (body) => {
-  return buildResponse(HttpStatus.GONE, body)
-}
-
 module.exports.redirect = (url) => {
   return buildResponse(HttpStatus.MOVED_TEMPORARILY, null, {'Location': `${process.env.WEB_URL}/${url}`})
 }
