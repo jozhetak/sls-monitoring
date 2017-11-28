@@ -86,7 +86,7 @@ module.exports.update = (event, context, callback) => {
 module.exports.delete = (event, context, callback) => {
   return passport.checkAuth(event.headers.Authorization)
     .then(decoded => {
-      if(!decoded.user._id.equals(event.pathParameters.id)) {
+      if(!decoded.user._id === event.pathParameters.id)) {
         throw errors.forbidden()
       }
       return UserModel.getById(event.pathParameters.id)
@@ -123,11 +123,12 @@ module.exports.resetPassword = (event, context, callback) => {
   UserModel.getById(id)
     .then(user => {
       if (!user) throw errors.notFound()
+      if(user.passwordTokenExpires < Date.now()) throw errors.expired()
       if (user.resetPasswordToken === token) {
         return UserModel.update(user._id, {
           password: passport.encryptPassword(password),
           resetPassword: null,
-          PasswordTokenExpires: null
+          passwordTokenExpires: null
         })
       }
     })
@@ -171,7 +172,7 @@ module.exports.sendResetPasswordEmail = (event, contex, callback) => {
   UserModel.getByEmail(JSON.parse(event.body).email)
     .then(user => {
       if(!user) throw errors.notFound()
-      UserModel.update(user._id, {resetPasswordToken: passport.generateToken(), PasswordTokenExpires: Date.now() + hour})
+      UserModel.update(user._id, {resetPasswordToken: passport.generateToken(), passwordTokenExpires: Date.now() + hour})
     })
     .then(emailService.sendResetPasswordEmail)
     .then(responses.ok)
