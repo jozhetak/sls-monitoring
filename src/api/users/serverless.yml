@@ -122,3 +122,15 @@ functions:
           path: users/{id}/verificationEmail
           method: post
           cors: true
+  resetPassword:
+    handler: src/api/users/users.resetPassword
+    package:
+      include:
+        - src/api/users/**
+        - src/api/passport/**
+        - src/shared/**
+    events:
+      - http:
+          path: users/{id}/resetPassword/{token}
+          method: post
+          cors: true

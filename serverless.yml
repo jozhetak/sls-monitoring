@@ -157,6 +157,7 @@ functions:
   verifyUser: ${file(./src/api/users/serverless.yml):functions.verifyUser}
   sendResetPasswordEmail: ${file(./src/api/users/serverless.yml):functions.sendResetPasswordEmail}
   sendVerificationEmail: ${file(./src/api/users/serverless.yml):functions.sendVerificationEmail}
+  resetPassword: ${file(./src/api/users/serverless.yml):functions.resetPassword}
   # ACCOUNTS
   createAccount: ${file(./src/api/accounts/serverless.yml):functions.createAccount}
   listAccounts: ${file(./src/api/accounts/serverless.yml):functions.listAccounts}

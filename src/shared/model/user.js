@@ -52,9 +52,10 @@ module.exports = class User extends Model {
     const params = {
       TableName: this.TABLE,
       IndexName: 'EmailPasswordIndex',
-      KeyConditionExpression: 'email = :email',
+      KeyConditionExpression: 'email = :email and isActive = :isActive',
       ExpressionAttributeValues: {
-        ':email': email
+        ':email': email,
+        ':isActive': true
       }
     }
 

@@ -119,6 +119,8 @@ resources:
         KeySchema:
           - AttributeName: "_id"
             KeyType: "HASH"
+          - AttributeName: "isActive"
+            KeyType: "Range"
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1

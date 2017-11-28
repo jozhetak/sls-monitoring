@@ -1,3 +1,4 @@
+/* eslint-disable keyword-spacing */
 'use strict'
 const UserModel = require('../../shared/model/user')
 const helper = require('./user.helper')
@@ -26,7 +27,7 @@ module.exports.create = (event, context, callback) => {
       const user = new UserModel(params)
       return Promise.all([user.save(), emailService.sendVerificationEmail(user.data)])
     })
-    .then((res) => dtoUser.makeDto(res[0]))
+    .then((res) => dtoUser.public(res[0]))
     .then(responses.created)
     .catch(responses.error)
     .then((response) => callback(null, response))
@@ -56,10 +57,8 @@ module.exports.list = (event, context, callback) => {
 
 module.exports.get = (event, context, callback) => {
   return passport.checkAuth(event.headers.Authorization)
-    .then(() => {
-      return UserModel.getById(event.pathParameters.id)
-    })
-    .then(dtoUser.makeDto)
+    .then(() => UserModel.getById(event.pathParameters.id))
+    .then(dtoUser.public)
     .then(responses.ok)
     .catch(responses.error)
     .then((response) => callback(null, response))
@@ -70,16 +69,13 @@ module.exports.update = (event, context, callback) => {
     passport.checkAuth(event.headers.Authorization),
     helper.validate(event.body)
   ])
-    .then(([decoded, data]) => {
+    .then(([decoded]) => {
       if (decoded.user._id !== event.pathParameters.id) {
-        throw Error('User has no permission')
+        throw errors.forbidden()
       }
       return UserModel.getById(event.pathParameters.id)
     })
-    .then((user) => {
-      const data = JSON.parse(event.body)
-      return UserModel.update(user._id, data)
-    })
+    .then((user) => UserModel.update(user._id, JSON.parse(event.body)))
     .then(dtoUser.makeDto)
     .then(responses.ok)
     .catch(responses.error)
@@ -89,35 +85,48 @@ module.exports.update = (event, context, callback) => {
 module.exports.delete = (event, context, callback) => {
   return passport.checkAuth(event.headers.Authorization)
     .then(decoded => {
-      if (!decoded || !decoded.user ||
-        !decoded.user._id.equals(event.pathParameters.id)) {
+      if(!decoded.user._id.equals(event.pathParameters.id)) {
         throw errors.forbidden()
       }
       return UserModel.getById(event.pathParameters.id)
     })
-    .then(user => {
-      user.isActive = false
-      let newUser = new UserModel(user)
-      return newUser.save()
-    })
-    .then(dtoUser.makeDto)
+    .then((user) => UserModel.update(user._id, {isActive: false}))
+    .then(dtoUser.public)
     .then(responses.deleted)
     .catch(responses.error)
     .then((response) => callback(null, response))
 }
 
 module.exports.changePassword = (event, context, callback) => {
+  const id = event.pathParameters.id
+
   return passport.checkAuth(event.headers.Authorization)
     .then((decoded) => {
-      const id = event.pathParameters.id
       if (decoded.user._id !== id) {
-        throw Error('User has no permission')
+        throw errors.forbidden()
       }
       return UserModel.update(id, {
         password: passport.encryptPassword(JSON.parse(event.body).password)
       })
     })
-    .then(dtoUser.makeDto)
+    .then(dtoUser.public)
+    .then(responses.ok)
+    .catch(responses.error)
+    .then((response) => callback(null, response))
+}
+
+module.exports.resetPassword = (event, context, callback) => {
+  const {id, token} = event.pathParameters
+
+  const password = JSON.parse(event.body).password
+  UserModel.getById(id)
+    .then(user => {
+      if (!user) throw errors.notFound()
+      if (user.resetPasswordToken === token) {
+        return UserModel.update(user._id, {password: passport.encryptPassword(password), resetPassword: null})
+      }
+    })
+    .then(dtoUser.public)
     .then(responses.ok)
     .catch(responses.error)
     .then((response) => callback(null, response))
@@ -125,21 +134,25 @@ module.exports.changePassword = (event, context, callback) => {
 
 module.exports.verify = (event, context, callback) => {
   const {id, token} = event.pathParameters
+
   UserModel.getById(id)
     .then(user => {
-      console.log(user)
-      if (user && user.verificationToken === token) {
+      if (!user) throw errors.notFound()
+      if (user.verificationToken === token) {
         return UserModel.update(user._id, {isActive: true, verificationToken: null})
       }
     })
-     .then(responses.redirect)
+     .then(() => responses.redirect('test'))
      .catch(responses.error)
      .then((response) => callback(null, response))
 }
 
 module.exports.sendVerificationEmail = (event, contex, callback) => {
   UserModel.getById(event.pathParameters.id)
-    .then(user => UserModel.update(user._id, {verificationToken: passport.generateToken()}))
+    .then(user => {
+      if(!user) throw errors.notFound()
+      return UserModel.update(user._id, {verificationToken: passport.generateToken()})
+    })
     .then(emailService.sendVerificationEmail)
     .then(responses.ok)
     .catch(responses.error)
@@ -148,7 +161,10 @@ module.exports.sendVerificationEmail = (event, contex, callback) => {
 
 module.exports.sendResetPasswordEmail = (event, contex, callback) => {
   UserModel.getByEmail(JSON.parse(event.body).email)
-    .then(user => UserModel.update(user._id, {resetPasswordToken: passport.generateToken()}))
+    .then(user => {
+      if(!user) throw errors.notFound()
+      UserModel.update(user._id, {resetPasswordToken: passport.generateToken()})
+    })
     .then(emailService.sendResetPasswordEmail)
     .then(responses.ok)
     .catch(responses.error)

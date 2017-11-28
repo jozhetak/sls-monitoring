@@ -28,7 +28,7 @@ module.exports.sendVerificationEmail = (user) => {
   const options = {
     recipient: user.email,
     subject: 'Verification email',
-    body: `Hello ${user.firstName + ' ' + user.lastName}! Please open the <a href="http://localhost:3000/users/verify/${user.token}">link</a> to verify your account `
+    body: `Hello ${user.firstName + ' ' + user.lastName}! Please open the <a href="http://localhost:3000/users/${user._id}/verify/${user.verificationToken}">link</a> to verify your account `
   }
   return _sendEmail(options)
 }
@@ -37,7 +37,7 @@ module.exports.sendResetPasswordEmail = (user) => {
   const options = {
     recipient: user.email,
     subject: 'Reset password email',
-    body: `Hello ${user.firstName + ' ' + user.lastName}! Please open the <a href="http://localhost:3000/users/reset-password/${user.token}">link</a> to reset your password`
+    body: `Hello ${user.firstName + ' ' + user.lastName}! Please open the <a href="${process.env.WEB_URL}/users/${user._id}/reset-password/${user.resetPasswordToken}">link</a> to reset your password`
   }
   return _sendEmail(options)
 }

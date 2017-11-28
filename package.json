@@ -15,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/jsonwebtoken": "^7.2.3",
     "async": "^2.6.0",
     "aws-sdk": "^2.141.0",
     "bluebird": "^3.5.1",
@@ -28,6 +29,7 @@
     "webpack": "^3.8.1"
   },
   "devDependencies": {
+    "@types/joi": "^13.0.0",
     "chai": "^4.1.2",
     "eslint": "^4.7.1",
     "eslint-config-standard": "^10.2.1",

@@ -1,4 +1,4 @@
-module.exports.makeDto = (user) => {
+module.exports.public = (user) => {
   return {
     _id: user._id ? user._id : null,
     firstName: user.firstName ? user.firstName : null,

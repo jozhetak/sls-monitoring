@@ -12,9 +12,14 @@ module.exports.deleted = (body) => {
   return buildResponse(HttpStatus.NO_CONTENT, body)
 }
 
-module.exports.redirect = (body) => {
-  return buildResponse(HttpStatus.MOVED_TEMPORARILY, body, {'Location': process.env.DOMAIN})
+module.exports.expired = (body) => {
+  return buildResponse(HttpStatus.GONE, body)
 }
+
+module.exports.redirect = (url) => {
+  return buildResponse(HttpStatus.MOVED_TEMPORARILY, null, {'Location': `${process.env.WEB_URL}/${url}`})
+}
+
 module.exports.error = (error) => {
   return buildResponse(error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR, error.message)
 }

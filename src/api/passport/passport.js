@@ -57,6 +57,9 @@ module.exports.checkAuth = (authToken) => {
       }
       return resolve(decoded)
     })
+  }).then(decoded => {
+    if (!decoded || !decoded.user) throw errors.notFound()
+    return decoded
   })
 }
 module.exports.encryptPassword = (password) => {
