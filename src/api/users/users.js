@@ -38,7 +38,15 @@ module.exports.list = (event, context, callback) => {
       if (!decoded || !decoded.user) {
         throw errors.forbidden()
       }
-      return UserModel.getAllScan({}) // TODO: query with isActive and exclude yourself
+      return UserModel.getAllScan({
+        FilterExpression: '#isActive = :isActive',
+        ExpressionAttributeNames: {
+          '#isActive': 'isActive'
+        },
+        ExpressionAttributeValues: {
+          ':isActive': true
+        }
+      })
     })
     .then(users => users.map(dtoUser.makeDto))
     .then(responses.ok)
