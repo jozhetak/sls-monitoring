@@ -32,8 +32,10 @@ module.exports.signIn = (event, content, callback) => {
       return dynamodb.query(query).promise()
     })
     .then((data) => {
-      if (data.Count > 0) {
-        return data.Items[0]
+      const users = data.Items.filter(e => !(e.isActive == null))
+      console.log(users)
+      if (users.length > 0) {
+        return users[0]
       } else {
         throw errors.notFound()
       }
@@ -44,6 +46,7 @@ module.exports.signIn = (event, content, callback) => {
           _id: user._id
         }
       }, 'JWT_SECRET', {expiresIn: 3600 * 24 * 365})
+      return user
     })
     .then(dtoUser.public)
     .then(responses.ok)

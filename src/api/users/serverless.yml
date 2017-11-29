@@ -5,7 +5,6 @@ functions:
       include:
         - src/api/users/**
         - src/api/passport/**
-        - src/shared/**
     events:
       - http:
           path: users
@@ -17,11 +16,16 @@ functions:
       include:
         - src/api/users/**
         - src/api/passport/**
-        - src/shared/**
     events:
       - http:
           path: users
           method: get
+    request:
+      template:
+        application/json: >
+          {
+            "LastEvaluatedKey" : "$input.params('LastEvaluatedKey')"
+          }
 #          authorizer:
 #            name: authorize
 #            identitySource: method.request.header.Authorization
@@ -48,7 +52,6 @@ functions:
       include:
         - src/api/users/**
         - src/api/passport/**
-        - src/shared/**
     events:
       - http:
           path: users/{id}
@@ -64,7 +67,6 @@ functions:
       include:
         - src/api/users/**
         - src/api/passport/**
-        - src/shared/**
     events:
       - http:
           path: users/{id}

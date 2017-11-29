@@ -102,22 +102,12 @@ resources:
         AttributeDefinitions:
           - AttributeName: "_id"
             AttributeType: "S"
-#          - AttributeName: "firstName"
-#            AttributeType: "S"
-#          - AttributeName: "lastName"
-#            AttributeType: "S"
           - AttributeName: "email"
             AttributeType: "S"
           - AttributeName: "password"
             AttributeType: "S"
           - AttributeName: "isActive"
             AttributeType: "N"
-#          - AttributeName: "createdAt"
-#            AttributeType: "S"
-#          - AttributeName: "updatedAt"
-#            AttributeType: "S"
-#          - AttributeName: "accounts"
-#            AttributeType: "L"
         KeySchema:
           - AttributeName: "_id"
             KeyType: "HASH"
@@ -136,8 +126,7 @@ resources:
             ProvisionedThroughput:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1
-#        GlobalSecondaryIndexes:
-          - IndexName: 'Active'
+          - IndexName: isActive
             KeySchema:
               - AttributeName: _id
                 KeyType: HASH
@@ -167,17 +156,6 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         GlobalSecondaryIndexes:
-#          - IndexName: UserAccounts
-#            KeySchema:
-#              - AttributeName: _user
-#                KeyType: HASH
-#              - AttributeName: _account
-#                KeyType: RANGE
-#            Projection:
-#              ProjectionType: ALL
-#            ProvisionedThroughput:
-#              ReadCapacityUnits: 1
-#              WriteCapacityUnits: 1
           - IndexName: AccountUsers
             KeySchema:
               - AttributeName: _account

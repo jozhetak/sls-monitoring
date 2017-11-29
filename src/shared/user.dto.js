@@ -12,6 +12,6 @@ module.exports.public = (user) => {
 module.exports.publicList = (data) => {
   return {
     users: data.Items.map(this.public),
-    lastEvaluatedKey: data.LastEvaluatedKey._id
+    lastEvaluatedKey: data.LastEvaluatedKey ? data.LastEvaluatedKey._id : null
   }
 }

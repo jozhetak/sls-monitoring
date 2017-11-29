@@ -8,8 +8,8 @@ const schema = joi.object().keys({
   email: joi.string().email(),
   password: joi.string().forbidden(),
   createdAt: joi.date().forbidden(),
-  updatedAt: joi.date().forbidden(),
-  isActive: joi.number().equal(1)
+  updatedAt: joi.date().forbidden()
+  // isActive: joi.boolean().truthy()
 })
 
 module.exports.validate = (user) => {

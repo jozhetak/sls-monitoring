@@ -1,5 +1,6 @@
 'use strict'
 const HttpStatus = require('./HttpStatus')
+
 class ProjectError extends Error {
   constructor (message) {
     super(message)

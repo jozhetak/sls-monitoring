@@ -7,7 +7,7 @@ module.exports.public = (account) => {
     region: account.region ? account.region : null,
     createdAt: account.createdAt ? account.createdAt : null,
     updatedAt: account.updatedAt ? account.updatedAt : null,
-    isActive: account.isActive ? account.isActive : null,
+    isActive: account.isActive ? 1 : 0,
     _user: account._user ? account._user : null
   }
 }

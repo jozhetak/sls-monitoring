@@ -37,7 +37,7 @@ module.exports = class User extends Model {
         const result = []
         // return data
         if (data.Responses[this.TABLE].length > 0) {
-        //  return data.Responses[this.TABLE]
+          //  return data.Responses[this.TABLE]
         }
         data.Responses['user-accounts-dev'].forEach((account) => {
           let _user = account._user

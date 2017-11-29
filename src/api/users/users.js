@@ -22,9 +22,10 @@ module.exports.create = (event, context, callback) => {
         password: passport.encryptPassword(data.password),
         createdAt: now,
         updatedAt: now,
-        isActive: 0,
+        isActive: 1,
         verificationToken: passport.generateToken(),
         verificationTokenExpires: now + hour * 2
+
       }
       const user = new UserModel(params)
       return Promise.all([user.save(), emailService.sendVerificationEmail(user.data)])
@@ -56,7 +57,7 @@ module.exports.list = (event, context, callback) => {
         // ExpressionAttributeValues: {
         //   ':isActive': 1
         // },
-        Limit: 3,
+        Limit: 5,
         ExclusiveStartKey: LastEvaluatedKey
       })
     })
