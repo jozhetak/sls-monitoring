@@ -19,7 +19,7 @@ module.exports.create = (event, context, callback) => {
         password: passport.encryptPassword(data.password),
         createdAt: timestamp,
         updatedAt: timestamp,
-        isActive: true
+        isActive: 1
       }
       const user = new UserModel(params)
       return user.save()
@@ -42,17 +42,26 @@ module.exports.list = (event, context, callback) => {
       if (!decoded || !decoded.user) {
         throw errors.forbidden()
       }
+      console.log('event', event)
+      let LastEvaluatedKey = null
+      if (event.queryStringParameters && event.queryStringParameters.hasOwnProperty('LastEvaluatedKey')) {
+        LastEvaluatedKey = {
+          _id: event.queryStringParameters.LastEvaluatedKey
+        }
+      }
       return UserModel.getAllScan({
         FilterExpression: '#isActive = :isActive',
         ExpressionAttributeNames: {
           '#isActive': 'isActive'
         },
         ExpressionAttributeValues: {
-          ':isActive': true
-        }
+          ':isActive': 1
+        },
+        Limit: 3,
+        ExclusiveStartKey: LastEvaluatedKey
       })
     })
-    .then(users => users.map(dtoUser.makeDto))
+    //.then(users => users.map(dtoUser.makeDto))
     .then(responses.ok)
     .catch(responses.error)
     .then((response) => callback(null, response))
@@ -100,15 +109,17 @@ module.exports.delete = (event, context, callback) => {
     })
     .then(decoded => {
       if (!decoded || !decoded.user ||
-        !decoded.user._id.equals(event.pathParameters.id)) {
+        !decoded.user._id === event.pathParameters.id) {
         throw errors.forbidden()
       }
       return UserModel.getById(event.pathParameters.id)
     })
-    .then(user => {
-      user.isActive = false
-      let newUser = new UserModel(user)
-      return newUser.save()
+    .then((user) => {
+      //console.log(user)
+      //user.isActive = 0
+      //let newUser = new UserModel(user)
+      //return newUser.save()
+      return UserModel.update(user._id, {isActive: 0})
     })
     .then(dtoUser.makeDto)
     .then(responses.deleted)

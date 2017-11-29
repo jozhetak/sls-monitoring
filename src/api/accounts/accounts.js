@@ -27,7 +27,7 @@ module.exports.create = (event, context, callback) => {
         region: data.region,
         createdAt: timestamp,
         updatedAt: timestamp,
-        isActive: true,
+        isActive: 1,
         _user: user._id // createdBy
       }
       const account = new AccountModel(params)
@@ -146,7 +146,7 @@ module.exports.delete = (event, context, callback) => {
     })
     .then((account) => {
       return AccountModel.update(account._id, {
-        isActive: false
+        isActive: 0
       })
     })
     .then(responses.deleted)
