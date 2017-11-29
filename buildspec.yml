@@ -1,0 +1,20 @@
+version: 0.1
+
+phases:
+  install:
+    commands:
+      - printenv
+      - npm install
+      - npm install -g nvm
+      - nvm install v6.10.3
+      - npm install -g serverless
+  build:
+    commands:
+      - sls deploy --stage dev --region eu-central-1
+#  post_build:
+#    commands:
+#      - serverless -v -s $(echo ${CODEBUILD_INITIATOR} | cut -d'/' -f2 | cut -d'_' -f3) deploy
+#artifacts:
+#  files:
+#    - build*/**
+#  discard-paths: yes
