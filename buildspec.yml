@@ -4,9 +4,9 @@ phases:
   install:
     commands:
       - printenv
-      - npm install
       - npm install -g nvm
       - nvm install v6.10.3
+      - npm install
       - npm install -g serverless
   build:
     commands:
