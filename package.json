@@ -10,20 +10,28 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "unit": "nyc ./node_modules/mocha/bin/mocha ./src/**/*.test.js",
     "deploy": "sls deploy --aws-profile serverless-admin --stage dev --region eu-central-1",
-    "remove": "sls remove --aws-profile serverless-admin --stage dev --region eu-central-1"
+    "remove": "sls remove --aws-profile serverless-admin --stage dev --region eu-central-1",
+    "func": "sls deploy function --stage dev --region eu-central-1 --function"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/jsonwebtoken": "^7.2.3",
     "async": "^2.6.0",
     "aws-sdk": "^2.141.0",
     "bluebird": "^3.5.1",
     "joi": "^13.0.2",
     "jsonwebtoken": "^8.1.0",
     "lodash": "^4.17.4",
-    "uuid": "^3.1.0"
+
+    "uuid": "^3.1.0",
+    "webpack": "^3.8.1"
   },
   "devDependencies": {
+    "serverless-dynamodb-local": "^0.2.26",
+    "serverless-offline": "^3.16.0",
+    "serverless-webpack": "^4.1.0",
+    "@types/joi": "^13.0.0",
     "chai": "^4.1.2",
     "eslint": "^4.7.1",
     "eslint-config-standard": "^10.2.1",

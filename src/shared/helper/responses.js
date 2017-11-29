@@ -11,14 +11,19 @@ module.exports.created = (body) => {
 module.exports.deleted = (body) => {
   return buildResponse(HttpStatus.NO_CONTENT, body)
 }
+
+module.exports.redirect = (url) => {
+  return buildResponse(HttpStatus.MOVED_TEMPORARILY, null, {'Location': `${process.env.WEB_URL}/${url}`})
+}
+
 module.exports.error = (error) => {
   return buildResponse(error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR, error.message)
 }
 
-function buildResponse (statusCode, body) {
+function buildResponse (statusCode, body, headers) {
   return {
     statusCode: statusCode,
-    headers: {
+    headers: headers || {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Credentials': true
     },

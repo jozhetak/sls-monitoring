@@ -48,18 +48,31 @@ module.exports.handler = (event, context, callback) => {
 module.exports.checkAuth = (authToken) => {
   const tokenSecret = process.env.TOKEN
   return new Promise((resolve, reject) => {
+    if (!authToken) {
+      reject(errors.unauthorized())
+    }
     jwt.verify(authToken, tokenSecret, (err, decoded) => {
       if (err || !decoded) {
         return reject(err)
       }
       return resolve(decoded)
     })
+  }).then(decoded => {
+    if (!decoded || !decoded.user) throw errors.notFound()
+    return decoded
   })
 }
-
 module.exports.encryptPassword = (password) => {
   try {
     return crypto.createHash('sha1').update(password).digest('hex')
+  } catch (err) {
+    throw errors.serverError()
+  }
+}
+
+module.exports.generateToken = () => {
+  try {
+    return crypto.randomBytes(16).toString('hex')
   } catch (err) {
     throw errors.serverError()
   }

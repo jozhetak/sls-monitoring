@@ -52,3 +52,10 @@ module.exports.invalidJoi = (err) => {
   }
   return this.badRequest(result)
 }
+
+module.exports.expired = (err) => {
+  const error = new ProjectError('GONE')
+  if (err) error.message = err
+  error.statusCode = HttpStatus.GONE
+  return error
+}
