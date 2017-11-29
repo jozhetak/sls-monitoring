@@ -56,6 +56,15 @@ module.exports = class Model {
     if (params.ProjectionExpression) {
       result.ProjectionExpression = params.ProjectionExpression
     }
+    if (params.Limit) {
+      result.Limit = params.Limit
+    }
+    if (params.hasOwnProperty('ScanIndexForward')) {
+      result.ScanIndexForward = params.ScanIndexForward
+    }
+    if (params.ExclusiveStartKey) {
+      result.ExclusiveStartKey = params.ExclusiveStartKey
+    }
     return result
   }
 
@@ -109,7 +118,7 @@ module.exports = class Model {
     return dynamodb.scan(query).promise()
       .then((data) => {
         console.log('data', data)
-        return data.Items
+        return data
       })
   }
 

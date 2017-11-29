@@ -9,6 +9,7 @@ const dtoUser = require('../../shared/user.dto')
 const responses = require('../../shared/helper/responses')
 const emailService = require('../../shared/helper/email.service')
 const hour = 3600000
+
 module.exports.create = (event, context, callback) => {
   helper.validateCreate(JSON.parse(event.body))
     .then(data => {
@@ -21,7 +22,7 @@ module.exports.create = (event, context, callback) => {
         password: passport.encryptPassword(data.password),
         createdAt: now,
         updatedAt: now,
-        isActive: false,
+        isActive: 0,
         verificationToken: passport.generateToken(),
         verificationTokenExpires: now + hour * 2
       }
@@ -40,17 +41,26 @@ module.exports.list = (event, context, callback) => {
       if (!decoded || !decoded.user) {
         throw errors.forbidden()
       }
-      return UserModel.getAllScan({
-        FilterExpression: '#isActive = :isActive',
-        ExpressionAttributeNames: {
-          '#isActive': 'isActive'
-        },
-        ExpressionAttributeValues: {
-          ':isActive': true
+      let LastEvaluatedKey = null
+      if (event.queryStringParameters && event.queryStringParameters.hasOwnProperty('LastEvaluatedKey')) {
+        LastEvaluatedKey = {
+          _id: event.queryStringParameters.LastEvaluatedKey
         }
+      }
+      return UserModel.getAllScan({
+        // IndexName: '_id-isActive-index',
+        // FilterExpression: '#isActive = :isActive',
+        // ExpressionAttributeNames: {
+        //   '#isActive': 'isActive'
+        // },
+        // ExpressionAttributeValues: {
+        //   ':isActive': 1
+        // },
+        Limit: 3,
+        ExclusiveStartKey: LastEvaluatedKey
       })
     })
-    .then(users => users.map(dtoUser.makeDto))
+    .then(dtoUser.publicList)
     .then(responses.ok)
     .catch(responses.error)
     .then((response) => callback(null, response))
@@ -77,7 +87,7 @@ module.exports.update = (event, context, callback) => {
       return UserModel.getById(event.pathParameters.id)
     })
     .then((user) => UserModel.update(user._id, JSON.parse(event.body)))
-    .then(dtoUser.makeDto)
+    .then(dtoUser.public)
     .then(responses.ok)
     .catch(responses.error)
     .then((response) => callback(null, response))
@@ -86,12 +96,15 @@ module.exports.update = (event, context, callback) => {
 module.exports.delete = (event, context, callback) => {
   return passport.checkAuth(event.headers.Authorization)
     .then(decoded => {
-      if(!decoded.user._id === event.pathParameters.id)) {
+      if(!decoded.user._id === event.pathParameters.id) {
         throw errors.forbidden()
       }
       return UserModel.getById(event.pathParameters.id)
     })
-    .then((user) => UserModel.update(user._id, {isActive: false}))
+    .then((user) => UserModel.update(user._id, {
+      isActive: false,
+      updatedAt: Date.now()
+    }))
     .then(dtoUser.public)
     .then(responses.deleted)
     .catch(responses.error)
@@ -107,7 +120,8 @@ module.exports.changePassword = (event, context, callback) => {
         throw errors.forbidden()
       }
       return UserModel.update(id, {
-        password: passport.encryptPassword(JSON.parse(event.body).password)
+        password: passport.encryptPassword(JSON.parse(event.body).password),
+        updatedAt: Date.now()
       })
     })
     .then(dtoUser.public)
@@ -128,7 +142,8 @@ module.exports.resetPassword = (event, context, callback) => {
         return UserModel.update(user._id, {
           password: passport.encryptPassword(password),
           resetPassword: null,
-          passwordTokenExpires: null
+          passwordTokenExpires: null,
+          updatedAt: Date.now()
         })
       }
     })
@@ -146,7 +161,12 @@ module.exports.verify = (event, context, callback) => {
       if (!user) throw errors.notFound()
       if(user.verificationTokenExpires < Date.now()) throw errors.expired()
       if (user.verificationToken === token) {
-        return UserModel.update(user._id, {isActive: true, verificationToken: null, verificationTokenExpires: null})
+        return UserModel.update(user._id, {
+          isActive: true,
+          verificationToken: null,
+          verificationTokenExpires: null,
+          updatedAt: Date.now()
+        })
       }
     })
      .then(() => responses.redirect('test'))
@@ -158,8 +178,10 @@ module.exports.sendVerificationEmail = (event, contex, callback) => {
   UserModel.getById(event.pathParameters.id)
     .then(user => {
       if(!user) throw errors.notFound()
-      return UserModel.update(user._id, {verificationToken: passport.generateToken(),
-        verificationTokenExpires: Date.now() + hour * 2
+      return UserModel.update(user._id, {
+        verificationToken: passport.generateToken(),
+        verificationTokenExpires: Date.now() + hour * 2,
+        updatedAt: Date.now()
       })
     })
     .then(emailService.sendVerificationEmail)
@@ -172,7 +194,11 @@ module.exports.sendResetPasswordEmail = (event, contex, callback) => {
   UserModel.getByEmail(JSON.parse(event.body).email)
     .then(user => {
       if(!user) throw errors.notFound()
-      UserModel.update(user._id, {resetPasswordToken: passport.generateToken(), passwordTokenExpires: Date.now() + hour})
+      UserModel.update(user._id, {
+        resetPasswordToken: passport.generateToken(),
+        passwordTokenExpires: Date.now() + hour,
+        updatedAt: Date.now()
+      })
     })
     .then(emailService.sendResetPasswordEmail)
     .then(responses.ok)

@@ -8,3 +8,10 @@ module.exports.public = (user) => {
     updatedAt: user.updatedAt ? user.updatedAt : null
   }
 }
+
+module.exports.publicList = (data) => {
+  return {
+    users: data.Items.map(this.public),
+    lastEvaluatedKey: data.LastEvaluatedKey._id
+  }
+}
