@@ -93,7 +93,8 @@ module.exports = class Model {
     const params = {
       TableName: this.TABLE,
       Key: {
-        _id: id
+        _id: id,
+        isActive: 1
       }
     }
 
@@ -167,6 +168,24 @@ module.exports = class Model {
       ExpressionAttributeNames: ExpressionAttributeNames,
       ExpressionAttributeValues: ExpressionAttributeValues,
       UpdateExpression: UpdateExpression,
+      ReturnValues: 'ALL_NEW'
+    }
+    return dynamodb.update(params).promise()
+      .then((data) => {
+        if (data) {
+          return data.Attributes
+        }
+        return null
+      })
+  }
+
+  static remove (id) {
+    const params = {
+      TableName: this.TABLE,
+      Key: {
+        _id: id
+      },
+      UpdateExpression: 'REMOVE isActive',
       ReturnValues: 'ALL_NEW'
     }
     return dynamodb.update(params).promise()

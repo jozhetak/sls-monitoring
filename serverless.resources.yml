@@ -102,14 +102,12 @@ resources:
         AttributeDefinitions:
           - AttributeName: "_id"
             AttributeType: "S"
-#          - AttributeName: "firstName"
-#            AttributeType: "S"
-#          - AttributeName: "lastName"
-#            AttributeType: "S"
           - AttributeName: "email"
             AttributeType: "S"
           - AttributeName: "password"
             AttributeType: "S"
+          - AttributeName: "isActive"
+            AttributeType: "N"
         KeySchema:
           - AttributeName: "_id"
             KeyType: "HASH"
@@ -122,6 +120,17 @@ resources:
               - AttributeName: email
                 KeyType: HASH
               - AttributeName: password
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+          - IndexName: isActive
+            KeySchema:
+              - AttributeName: _id
+                KeyType: HASH
+              - AttributeName: isActive
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL

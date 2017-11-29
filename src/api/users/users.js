@@ -50,13 +50,14 @@ module.exports.list = (event, context, callback) => {
         }
       }
       return UserModel.getAllScan({
-        FilterExpression: '#isActive = :isActive',
-        ExpressionAttributeNames: {
-          '#isActive': 'isActive'
-        },
-        ExpressionAttributeValues: {
-          ':isActive': 1
-        },
+        // IndexName: '_id-isActive-index',
+        // FilterExpression: '#isActive = :isActive',
+        // ExpressionAttributeNames: {
+        //   '#isActive': 'isActive'
+        // },
+        // ExpressionAttributeValues: {
+        //   ':isActive': 1
+        // },
         Limit: 3,
         ExclusiveStartKey: LastEvaluatedKey
       })
@@ -115,11 +116,7 @@ module.exports.delete = (event, context, callback) => {
       return UserModel.getById(event.pathParameters.id)
     })
     .then((user) => {
-      //console.log(user)
-      //user.isActive = 0
-      //let newUser = new UserModel(user)
-      //return newUser.save()
-      return UserModel.update(user._id, {isActive: 0})
+      return UserModel.remove(user._id)
     })
     .then(dtoUser.makeDto)
     .then(responses.deleted)
