@@ -88,6 +88,7 @@ resources:
 # you can add packaging information here
 package:
   individually: true
+  excludeDevDependencies: false
   exclude:
     - .git/**
     - .idea/**
