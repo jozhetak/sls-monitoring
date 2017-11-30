@@ -9,10 +9,10 @@ phases:
       - npm install -g serverless@1.24.1
   build:
     commands:
-      - serverless package --package my-artifacts --stage dev --region eu-central-1 -v
+      - serverless package --package my-artifacts --stage dev --region eu-central-1
   post_build:
     commands:
-      - serverless deploy --package my-artifacts --stage dev --region eu-central-1 -v
+      - serverless deploy --package my-artifacts --stage dev --region eu-central-1
 #  post_build:
 #    commands:
 #      - serverless -v -s $(echo ${CODEBUILD_INITIATOR} | cut -d'/' -f2 | cut -d'_' -f3) deploy
