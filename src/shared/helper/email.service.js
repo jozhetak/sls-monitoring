@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk')
-const ses = new AWS.SES({region: 'eu-west-1'})
+const ses = new AWS.SES({region: process.env.REGION})
 
 const _sendEmail = (data) => {
   const params = {
