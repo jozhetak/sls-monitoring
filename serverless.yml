@@ -18,6 +18,12 @@ custom:
   dynamodb:
     start:
       migrate: true
+      seed: true
+    seed:
+      domain:
+        sources:
+          - table: users-dev
+            sources: [./seeds/users.json]
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
 # frameworkVersion: "=X.X.X"
@@ -42,9 +48,11 @@ provider:
         - lambda:ListFunctions
         - logs:DescribeLogStreams
         - logs:filterLogEvents
+        - ses:SendEmail
+        - ses:SendRawEmail
       Resource: "*"
 
-#plugins:
+plugins:
 #  - serverless-webpack
 #  - serverless-dynamodb-local
 #  - serverless-offline
@@ -139,11 +147,17 @@ functions:
           path: signIn
           method: post
           cors: true
+  # USERS
   createUser: ${file(./src/api/users/serverless.yml):functions.createUser}
   listUsers: ${file(./src/api/users/serverless.yml):functions.listUsers}
   getUser: ${file(./src/api/users/serverless.yml):functions.getUser}
   updateUser: ${file(./src/api/users/serverless.yml):functions.updateUser}
   deleteUser: ${file(./src/api/users/serverless.yml):functions.deleteUser}
+  changePassword: ${file(./src/api/users/serverless.yml):functions.changePassword}
+  verifyUser: ${file(./src/api/users/serverless.yml):functions.verifyUser}
+  sendResetPasswordEmail: ${file(./src/api/users/serverless.yml):functions.sendResetPasswordEmail}
+  sendVerificationEmail: ${file(./src/api/users/serverless.yml):functions.sendVerificationEmail}
+  resetPassword: ${file(./src/api/users/serverless.yml):functions.resetPassword}
   # ACCOUNTS
   createAccount: ${file(./src/api/accounts/serverless.yml):functions.createAccount}
   listAccounts: ${file(./src/api/accounts/serverless.yml):functions.listAccounts}

@@ -47,4 +47,22 @@ module.exports = class User extends Model {
         return result
       })
   }
+
+  static getByEmail (email) {
+    const params = {
+      TableName: this.TABLE,
+      IndexName: 'EmailPasswordIndex',
+      KeyConditionExpression: 'email = :email and isActive = :isActive',
+      ExpressionAttributeValues: {
+        ':email': email,
+        ':isActive': true
+      }
+    }
+
+    return dynamodb.query(params)
+      .promise()
+      .then((data) => {
+        return data.Items[0]
+      })
+  }
 }

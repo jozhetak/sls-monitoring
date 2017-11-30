@@ -76,3 +76,63 @@ functions:
 #            name: authorize
 #            identitySource: method.request.header.Authorization
 #            type: token
+  changePassword:
+    handler: src/api/users/users.changePassword
+    package:
+      include:
+        - src/api/users/**
+        - src/api/passport/**
+        - src/shared/**
+    events:
+      - http:
+          path: users/{id}/password
+          method: put
+          cors: true
+  verifyUser:
+    handler: src/api/users/users.verify
+    package:
+      include:
+        - src/api/users/**
+        - src/api/passport/**
+        - src/shared/**
+    events:
+      - http:
+          path: users/{id}/verify/{token}
+          method: get
+          cors: true
+  sendResetPasswordEmail:
+    handler: src/api/users/users.sendResetPasswordEmail
+    package:
+      include:
+        - src/api/users/**
+        - src/api/passport/**
+        - src/shared/**
+    events:
+      - http:
+          path: users/{id}/resetEmail
+          method: post
+          cors: true
+  sendVerificationEmail:
+    handler: src/api/users/users.sendVerificationEmail
+    package:
+      include:
+        - src/api/users/**
+        - src/api/passport/**
+        - src/shared/**
+    events:
+      - http:
+          path: users/{id}/verificationEmail
+          method: post
+          cors: true
+  resetPassword:
+    handler: src/api/users/users.resetPassword
+    package:
+      include:
+        - src/api/users/**
+        - src/api/passport/**
+        - src/shared/**
+    events:
+      - http:
+          path: users/{id}/resetPassword/{token}
+          method: post
+          cors: true
