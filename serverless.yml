@@ -124,17 +124,17 @@ functions:
       include:
         - src/sls-collect/**
         - src/shared/**
-  test:
-    handler: src/test-error/handler.run
-    package:
-      include:
-        - src/test-error/**
-  authorize:
-    handler: src/api/passport/passport.handler
-    package:
-      include:
-        - src/api/passport/**
-        - src/shared/model/**
+#  test:
+#    handler: src/test-error/handler.run
+#    package:
+#      include:
+#        - src/test-error/**
+#  authorize:
+#    handler: src/api/passport/passport.handler
+#    package:
+#      include:
+#        - src/api/passport/**
+#        - src/shared/model/**
   userSignIn:
     handler: src/api/auth/auth.signIn
     package:
