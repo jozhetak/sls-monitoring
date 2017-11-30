@@ -93,8 +93,7 @@ module.exports = class Model {
     const params = {
       TableName: this.TABLE,
       Key: {
-        _id: id,
-        isActive: 1
+        _id: id
       }
     }
 
