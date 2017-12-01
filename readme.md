@@ -20,3 +20,24 @@ In event of error:
 Use this: 
     
     echo kern.maxfiles=65536 | sudo tee -a /etc/sysctl.conf && echo kern.maxfilesperproc=65536 | sudo tee -a /etc/sysctl.conf && sudo sysctl -w kern.maxfiles=65536 && sudo sysctl -w kern.maxfilesperproc=65536 && ulimit -n 65536
+    
+    
+UPDATE POLICY
+
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Sid": "VisualEditor0",
+                    "Effect": "Allow",
+                    "Action": [
+                        "s3:*",
+                        "cloudformation:DescribeStackResources",
+                        "cloudformation:DescribeStackResource",
+                        "cloudformation:ValidateTemplate",
+                        "cloudformation:DescribeStacks"
+                    ],
+                    "Resource": "*"
+                }
+            ]
+        }
