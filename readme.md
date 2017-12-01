@@ -24,20 +24,41 @@ Use this:
     
 UPDATE POLICY
 
-        {
-            "Version": "2012-10-17",
-            "Statement": [
-                {
-                    "Sid": "VisualEditor0",
-                    "Effect": "Allow",
-                    "Action": [
-                        "s3:*",
-                        "cloudformation:DescribeStackResources",
-                        "cloudformation:DescribeStackResource",
-                        "cloudformation:ValidateTemplate",
-                        "cloudformation:DescribeStacks"
-                    ],
-                    "Resource": "*"
-                }
-            ]
-        }
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "VisualEditor0",
+                "Effect": "Allow",
+                "Action": [
+                    "apigateway:DELETE",
+                    "apigateway:GET",
+                    "apigateway:HEAD",
+                    "apigateway:OPTIONS",
+                    "apigateway:PATCH",
+                    "apigateway:POST",
+                    "apigateway:PUT",
+                    "cloudformation:CreateStack",
+                    "cloudformation:DeleteStack",
+                    "cloudformation:DescribeStackEvents",
+                    "cloudformation:DescribeStackResource",
+                    "cloudformation:DescribeStackResources",
+                    "cloudformation:DescribeStacks",
+                    "cloudformation:UpdateStack",
+                    "cloudformation:ValidateTemplate",
+                    "dynamodb:CreateTable",
+                    "dynamodb:DescribeTable",
+                    "dynamodb:ListTables",
+                    "iam:GetRole",
+                    "lambda:GetFunctionConfiguration",
+                    "lambda:RemovePermission",
+                    "lambda:UpdateFunctionCode",
+                    "logs:CreateLogGroup",
+                    "logs:DeleteLogGroup",
+                    "logs:DescribeLogGroups",
+                    "s3:*"
+                ],
+                "Resource": "*"
+            }
+        ]
+    }
