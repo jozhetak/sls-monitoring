@@ -9,7 +9,6 @@ const schema = joi.object().keys({
   password: joi.string().forbidden(),
   createdAt: joi.date().forbidden(),
   updatedAt: joi.date().forbidden()
-  // isActive: joi.boolean().truthy()
 })
 
 module.exports.validate = (user) => {

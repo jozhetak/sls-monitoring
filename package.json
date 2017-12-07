@@ -11,27 +11,24 @@
     "unit": "nyc ./node_modules/mocha/bin/mocha ./src/**/*.test.js",
     "deploy": "sls deploy --aws-profile serverless-admin --stage dev --region eu-central-1",
     "remove": "sls remove --aws-profile serverless-admin --stage dev --region eu-central-1",
-    "func": "sls deploy function --stage dev --region eu-central-1 --function"
+    "func": "sls deploy function --stage dev --region eu-central-1 --function",
+    "apidoc": "apidoc -i apidoc/ -o docs/"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/jsonwebtoken": "^7.2.3",
     "async": "^2.6.0",
     "aws-sdk": "^2.141.0",
     "bluebird": "^3.5.1",
     "joi": "^13.0.2",
     "jsonwebtoken": "^8.1.0",
     "lodash": "^4.17.4",
-
-    "uuid": "^3.1.0",
-    "webpack": "^3.8.1"
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
-    "serverless-dynamodb-local": "^0.2.26",
-    "serverless-offline": "^3.16.0",
-    "serverless-webpack": "^4.1.0",
     "@types/joi": "^13.0.0",
+    "@types/jsonwebtoken": "^7.2.3",
+    "apidoc": "^0.17.6",
     "chai": "^4.1.2",
     "eslint": "^4.7.1",
     "eslint-config-standard": "^10.2.1",
@@ -42,6 +39,10 @@
     "mocha": "^4.0.1",
     "nyc": "^11.3.0",
     "proxyquire": "^1.8.0",
-    "sinon": "^4.1.2"
+    "serverless-dynamodb-local": "^0.2.26",
+    "serverless-offline": "^3.16.0",
+    "serverless-webpack": "^4.1.0",
+    "sinon": "^4.1.2",
+    "webpack": "^3.8.1"
   }
 }
