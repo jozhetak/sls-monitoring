@@ -9,11 +9,14 @@ phases:
       - npm install -g serverless@1.24.1
   build:
     commands:
-      - sls deploy --stage dev --region eu-central-1
+      - SLS_DEBUG=* sls deploy --stage dev --region eu-central-1 --verbose
+#  post_build:
+#    commands:
+#      - sls deploy --stage dev --region eu-central-1
 #  post_build:
 #    commands:
 #      - serverless -v -s $(echo ${CODEBUILD_INITIATOR} | cut -d'/' -f2 | cut -d'_' -f3) deploy
 #artifacts:
 #  files:
-#    - build*/**
+#    - my-artifacts*/**
 #  discard-paths: yes

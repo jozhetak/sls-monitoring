@@ -15,15 +15,15 @@
 service: sls-tm-collect
 
 custom:
-  dynamodb:
-    start:
-      migrate: true
-      seed: true
-    seed:
-      domain:
-        sources:
-          - table: users-dev
-            sources: [./seeds/users.json]
+#  dynamodb:
+#    start:
+#      migrate: true
+#      seed: true
+#    seed:
+#      domain:
+#        sources:
+#          - table: users-dev
+#            sources: [./seeds/users.json]
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
 # frameworkVersion: "=X.X.X"
@@ -53,7 +53,7 @@ provider:
       Resource: "*"
 
 plugins:
-#  - serverless-webpack
+ - serverless-webpack
 #  - serverless-dynamodb-local
 #  - serverless-offline
 
@@ -88,6 +88,7 @@ resources:
 # you can add packaging information here
 package:
   individually: true
+  excludeDevDependencies: false
   exclude:
     - .git/**
     - .idea/**
@@ -124,17 +125,17 @@ functions:
       include:
         - src/sls-collect/**
         - src/shared/**
-  test:
-    handler: src/test-error/handler.run
-    package:
-      include:
-        - src/test-error/**
-  authorize:
-    handler: src/api/passport/passport.handler
-    package:
-      include:
-        - src/api/passport/**
-        - src/shared/model/**
+#  test:
+#    handler: src/test-error/handler.run
+#    package:
+#      include:
+#        - src/test-error/**
+#  authorize:
+#    handler: src/api/passport/passport.handler
+#    package:
+#      include:
+#        - src/api/passport/**
+#        - src/shared/model/**
   userSignIn:
     handler: src/api/auth/auth.signIn
     package:
