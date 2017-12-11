@@ -70,6 +70,12 @@ module.exports.list = (event, context, callback) => {
 module.exports.get = (event, context, callback) => {
   return passport.checkAuth(event.headers.Authorization)
     .then(() => UserModel.getById(event.pathParameters.id))
+    .then(user => {
+      if(!user) {
+        throw errors.notFound()
+      }
+      return user
+    })
     .then(dtoUser.public)
     .then(responses.ok)
     .catch(responses.error)
@@ -170,9 +176,9 @@ module.exports.verify = (event, context, callback) => {
         })
       }
     })
-     .then(() => responses.redirect('test'))
-     .catch(responses.error)
-     .then((response) => callback(null, response))
+    .then(() => responses.redirect('test'))
+    .catch(responses.error)
+    .then((response) => callback(null, response))
 }
 
 module.exports.sendVerificationEmail = (event, contex, callback) => {

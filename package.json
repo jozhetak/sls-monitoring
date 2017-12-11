@@ -7,12 +7,13 @@
     "node": "6.10.3"
   },
   "scripts": {
+    "postinstall": "sls dynamodb install",
     "test": "echo \"Error: no test specified\" && exit 1",
     "unit": "nyc ./node_modules/mocha/bin/mocha ./src/**/*.test.js",
     "deploy": "sls deploy --aws-profile serverless-admin --stage dev --region eu-central-1",
     "remove": "sls remove --aws-profile serverless-admin --stage dev --region eu-central-1",
     "func": "sls deploy function --stage dev --region eu-central-1 --function",
-    "apidoc": "apidoc -i apidoc/ -o docs/"
+    "apidoc": "apidoc -i apidoc/sources -o apidoc/build"
   },
   "author": "",
   "license": "ISC",

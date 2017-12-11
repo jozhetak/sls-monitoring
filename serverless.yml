@@ -15,15 +15,15 @@
 service: sls-tm-collect
 
 custom:
-#  dynamodb:
-#    start:
-#      migrate: true
-#      seed: true
-#    seed:
-#      domain:
-#        sources:
-#          - table: users-dev
-#            sources: [./seeds/users.json]
+  dynamodb:
+    start:
+      migrate: true
+      seed: true
+    seed:
+      domain:
+        sources:
+          - table: users-dev
+            sources: [./seeds/users.json]
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
 # frameworkVersion: "=X.X.X"
@@ -54,8 +54,8 @@ provider:
 
 plugins:
  - serverless-webpack
-#  - serverless-dynamodb-local
-#  - serverless-offline
+ - serverless-dynamodb-local
+ - serverless-offline
 
 
 resources:
