@@ -23,7 +23,7 @@ const createSchema = joi.object().keys({
   firstName: joi.string(),
   lastName: joi.string(),
   email: joi.string().email(),
-  password: joi.string(),
+  password: joi.string().min(8).regex(/.*/),
   createdAt: joi.date().forbidden(),
   updatedAt: joi.date().forbidden()
 })
@@ -35,7 +35,15 @@ module.exports.validateCreate = (user) => {
     })
 }
 
+const passwordSchema = joi.string().min(8).max(16).regex(/.*/)
+
+module.exports.validatePassword = (password) => {
+  return joi.validate(password, passwordSchema)
+    .catch(err => {
+      throw errors.invalidJoi(err)
+    })
+}
+
 module.exports.timestamp = () => {
   return Date.now()
 }
-

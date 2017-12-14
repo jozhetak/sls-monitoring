@@ -17,7 +17,6 @@ module.exports.redirect = (url) => {
 }
 
 module.exports.error = (error) => {
-  console.log(error)
   return buildResponse(error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR, error.message)
 }
 

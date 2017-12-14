@@ -7,7 +7,7 @@ const dynamodb = require('../helper/dynamodb')
 
 module.exports = class Model {
   static getUpdateCondition (params) {
-    const timestamp = Math.floor(Date.now() / 1000)
+    const timestamp = Date.now()
     let UpdateExpression = 'SET '
     const ExpressionAttributeValues = {
       ':updatedAt': timestamp

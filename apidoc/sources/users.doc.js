@@ -18,13 +18,7 @@
  *     {
  *       "id": "86ccfa00-d3ae-11e7-8dc5-1f75d4a71f67"
  *     }
- * @apiSuccess (Response fields) {String} _id Unique user identificator across all program. Default uuid v1 value.
- * @apiSuccess (Response fields) {String} firstName Firstname of the User.
- * @apiSuccess (Response fields) {String} lastName Lastname of the User.
- * @apiSuccess (Response fields) {String} email Email of the User.
- * @apiSuccess (Response fields) {Timestamp} createdAt The number of seconds between a users creation and the Unix Epoch.
- * @apiSuccess (Response fields) {Timestamp} updatedAt The number of seconds between a users deletion and the Unix Epoch.
-
+ * @apiUse UserResponseParams
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  {
@@ -35,14 +29,9 @@
      "createdAt": 1512991422,
      "updatedAt": 1513905678
  }
- * @apiError Unauthorized The <code>Authorization</code> filed of the User was not found in header, or token was invalid.
- * @apiError UserNotFound The <code>id</code> of the User was not found.
- * @apiErrorExample {String} Unauthorized:
-   HTTP/1.1 401 Not Authenticated
-   UNAUTHORIZED
- * @apiErrorExample {String} UserNotFound:
- HTTP/1.1 401 Not Authenticated
-   NOT_FOUND
+ * @apiUse Unauthorized
+ * @apiUse Forbidden
+ * @apiUse NotFound
  */
 // -----------------------------------------------------------------
 //                    GET ALL USERS
@@ -92,11 +81,9 @@
      ],
      "lastEvaluatedKey": null
  }
- * @apiError Unauthorized The <code>Authorization</code> filed of the User was not found in header, or token was invalid.
- * @apiErrorExample {String} Unauthorized:
- HTTP/1.1 401 Not Authenticated
- UNAUTHORIZED
-*/
+ * @apiUse Unauthorized
+ * @apiUse Forbidden
+ */
 // -----------------------------------------------------------------
 //                    CREATE USER
 // -----------------------------------------------------------------
@@ -109,7 +96,7 @@
  * @apiGroup User
  * @apiParam {String} email Email of user, where verification email will be send.
  * @apiParam {String} password Password of user, will be hashed on the backend and should be never returned in responses.
- * @apiParam {String} firstName Email of user.
+ * @apiParam {String} firstName FirstName of user.
  * @apiParam {String} lastName Lastname of user.
  * @apiParamExample {json} Request Body Example:
  {
@@ -118,13 +105,7 @@
    "firstName": "Ihor",
    "lastName": "Fito"
  }
- * @apiSuccess (Response fields) {String} _id Unique user identificator across all program. Default uuid v1 value.
- * @apiSuccess (Response fields) {String} firstName Firstname of the User.
- * @apiSuccess (Response fields) {String} lastName Lastname of the User.
- * @apiSuccess (Response fields) {String} email Email of the User.
- * @apiSuccess (Response fields) {Timestamp} createdAt The number of seconds between a users creation and the Unix Epoch.
- * @apiSuccess (Response fields) {Timestamp} updatedAt The number of seconds between a users deletion and the Unix Epoch.
-
+ * @apiUse UserResponseParams
  * @apiSuccessExample {json} Success Response:
  * HTTP/1.1 201 Created
  {
@@ -135,12 +116,7 @@
      "createdAt": 1512993060451,
      "updatedAt": 1512993060451
  }
- * @apiErrorExample {json} Bad Request:
- {
-   "code": 400,
-   "error": "BAD_REQUEST",
-   "message": "BAD_REQUEST"
- }
+ * @apiUse BadRequest
  */
 // -----------------------------------------------------------------
 //                    DELETE USER
@@ -162,13 +138,7 @@
  *     {
  *       "id": "86ccfa00-d3ae-11e7-8dc5-1f75d4a71f67"
  *     }
- * @apiSuccess (Response fields) {String} _id Unique user identificator across all program. Default uuid v1 value.
- * @apiSuccess (Response fields) {String} firstName Firstname of the User.
- * @apiSuccess (Response fields) {String} lastName Lastname of the User.
- * @apiSuccess (Response fields) {String} email Email of the User.
- * @apiSuccess (Response fields) {Timestamp} createdAt The number of seconds between a users creation and the Unix Epoch.
- * @apiSuccess (Response fields) {Timestamp} updatedAt The number of seconds between a users deletion and the Unix Epoch.
-
+ * @apiUse UserResponseParams
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  {
@@ -179,10 +149,8 @@
      "createdAt": 1512991706,
      "updatedAt": 1512994728
  }
- * @apiError Unauthorized The <code>Authorization</code> filed of the User was not found in header, or token was invalid.
- * @apiErrorExample {String} Unauthorized:
- HTTP/1.1 401 Not Authenticated
- UNAUTHORIZED
+ * @apiUse Unauthorized
+ * @apiUse Forbidden
  */
 // -----------------------------------------------------------------
 //                    UPDATE USER
@@ -210,13 +178,7 @@
      "lastName": "Genal",
      "email": "igor.genal@techmagic.co"
  }
- * @apiSuccess (Response fields) {String} _id Unique user identificator across all program. Default uuid v1 value.
- * @apiSuccess (Response fields) {String} firstName Firstname of the User.
- * @apiSuccess (Response fields) {String} lastName Lastname of the User.
- * @apiSuccess (Response fields) {String} email Email of the User.
- * @apiSuccess (Response fields) {Timestamp} createdAt The number of seconds between a users creation and the Unix Epoch.
- * @apiSuccess (Response fields) {Timestamp} updatedAt The number of seconds between a users deletion and the Unix Epoch.
-
+ * @apiUse UserResponseParams
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  {
@@ -227,10 +189,9 @@
      "createdAt": 1512991422,
      "updatedAt": 1513012053
  }
- * @apiError Unauthorized The <code>Authorization</code> filed of the User was not found in header, or token was invalid.
- * @apiErrorExample {String} Unauthorized:
- HTTP/1.1 401 Not Authenticated
- UNAUTHORIZED
+ * @apiUse Unauthorized
+ * @apiUse Forbidden
+ * @apiUse BadRequest
  */
 // -----------------------------------------------------------------
 //                    CHANGE USER PASSWORD
@@ -257,13 +218,7 @@
  *     {
  *       "password": "HelloTrainingCenter"
  *     }
- * @apiSuccess (Response fields) {String} _id Unique user identificator across all program. Default uuid v1 value.
- * @apiSuccess (Response fields) {String} firstName Firstname of the User.
- * @apiSuccess (Response fields) {String} lastName Lastname of the User.
- * @apiSuccess (Response fields) {String} email Email of the User.
- * @apiSuccess (Response fields) {Timestamp} createdAt The number of seconds between a users creation and the Unix Epoch.
- * @apiSuccess (Response fields) {Timestamp} updatedAt The number of seconds between a users deletion and the Unix Epoch.
-
+ * @apiUse UserResponseParams
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  {
@@ -274,41 +229,33 @@
      "createdAt": 1512991422,
      "updatedAt": 1513004802
  }
- * @apiError Unauthorized The <code>Authorization</code> filed of the User was not found in header, or token was invalid.
- * @apiErrorExample {String} Unauthorized:
- HTTP/1.1 401 Not Authenticated
- UNAUTHORIZED
+ * @apiUse Unauthorized
+ * @apiUse Forbidden
+ * @apiUse BadRequest
  */
 // -----------------------------------------------------------------
 //                    VERIFY USER
 // -----------------------------------------------------------------
 
 /**
- * @api {post} /users/:id/verification/:token Verify user
+ * @api {get} /users/:id/verification/:token Verify user
  * @apiName VerifyUser
  * @apiVersion 1.0.0
  * @apiDescription Makes user active.
  * @apiGroup User
  * @apiParam {Number} id Users unique GUID.
- * @apiParam {String} Token randomly generated 32 length hex sequence
+ * @apiParam {String} token Randomly generated 32 length hex sequence
  * @apiParamExample {json} Request Params Example:
  *     {
  *       "id": "86ccfa00-d3ae-11e7-8dc5-1f75d4a71f67",
  *       "token": "f6d34fd632467e8fc85612012b73faad"
  *     }
- * @apiSuccess (Response fields) {String} _id Unique user identificator across all program. Default uuid v1 value.
- * @apiSuccess (Response fields) {String} firstName Firstname of the User.
- * @apiSuccess (Response fields) {String} lastName Lastname of the User.
- * @apiSuccess (Response fields) {String} email Email of the User.
- * @apiSuccess (Response fields) {Timestamp} createdAt The number of seconds between a users creation and the Unix Epoch.
- * @apiSuccess (Response fields) {Timestamp} updatedAt The number of seconds between a users deletion and the Unix Epoch.
+ * @apiUse UserResponseParams
  * @apiSuccessExample {String} Success-Response:
  * HTTP/1.1 200 OK
  * This api call should redirect on some page (start or auth) at frontend.
- * @apiError Unauthorized The <code>Authorization</code> filed of the User was not found in header, or token was invalid.
- * @apiErrorExample {String} Unauthorized:
- HTTP/1.1 401 Not Authenticated
- UNAUTHORIZED
+ * @apiUse BadRequest
+ * @apiUse Gone
  */
 // -----------------------------------------------------------------
 //                    SEND VERIFICATION EMAIL
@@ -327,6 +274,7 @@
  *     }
  * @apiSuccessExample {String} Success-Response:
  * HTTP/1.1 204 No Content
+ * @apiUse Conflict
  */
 // -----------------------------------------------------------------
 //                    SEND RESET PASSWORD EMAIL
@@ -338,13 +286,15 @@
  * @apiVersion 1.0.0
  * @apiDescription Send reset password email.
  * @apiGroup User
- * @apiParam {String} Email of user.
+ * @apiParam {String} email Email of user.
  * @apiParamExample {json} Request Body Example:
  {
    "email": "igor.genal@techmagic.co"
  }
  * @apiSuccessExample {String} Success-Response:
  * HTTP/1.1 204 No Content
+ * @apiUse Forbidden
+ * @apiUse NotFound
  */
 // -----------------------------------------------------------------
 //                    RESET USER PASSWORD
@@ -357,7 +307,8 @@
  * @apiDescription Reset user password
  * @apiGroup User
  * @apiParam {Number} id Users unique GUID.
- * @apiParam {String} Token randomly generated 32 length hex sequence
+ * @apiParam {String} token Randomly generated 32 length hex sequence
+ * @apiParam {String} password New password of user.
  * @apiParamExample {json} Request Params Example:
  *     {
  *       "id": "86ccfa00-d3ae-11e7-8dc5-1f75d4a71f67",
@@ -367,13 +318,7 @@
  {
     "password": "HelloGuys"
  }
- * @apiSuccess (Response fields) {String} _id Unique user identificator across all program. Default uuid v1 value.
- * @apiSuccess (Response fields) {String} firstName Firstname of the User.
- * @apiSuccess (Response fields) {String} lastName Lastname of the User.
- * @apiSuccess (Response fields) {String} email Email of the User.
- * @apiSuccess (Response fields) {Timestamp} createdAt The number of seconds between a users creation and the Unix Epoch.
- * @apiSuccess (Response fields) {Timestamp} updatedAt The number of seconds between a users deletion and the Unix Epoch.
-
+ * @apiUse UserResponseParams
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  {
@@ -384,6 +329,65 @@
      "createdAt": 1512991422,
      "updatedAt": 1513004802
  }
+ * @apiUse BadRequest
+ * @apiUse Gone
  */
 // -----------------------------------------------------------------
+//                    DEFINES
 // -----------------------------------------------------------------
+/**
+ * @apiDefine Unauthorized
+ * @apiError Unauthorized The <code>Authorization</code> filed of the User was not found in header, or token was invalid.
+ * @apiErrorExample {String} Unauthorized:
+ HTTP/1.1 401 Not Authenticated
+ UNAUTHORIZED
+ */
+
+/**
+ * @apiDefine NotFound
+ * @apiError UserNotFound The <code>id</code> of the User was not found.
+ * @apiErrorExample {String} UserNotFound:
+ HTTP/1.1 404 Not Found
+ NOT_FOUND
+ */
+
+/**
+ * @apiDefine Forbidden
+ * @apiError Forbidden User is authorized, but <code>not permitted</code> to perform the requested operation
+ * @apiErrorExample {String} Forbidden:
+ HTTP/1.1 403 Forbidden
+ FORBIDDEN
+ */
+
+/**
+* @apiDefine BadRequest
+* @apiError BadRequest The request parameters is <code>invalid</code>.
+*@apiErrorExample {String} BadRequest:
+ HTTP/1.1 400  Bad Request
+ */
+
+ /**
+ * @apiDefine Gone
+ * @apiError Gone Requested resource is no longer available and will not be available again
+ * @apiErrorExample {String} Gone:
+ HTTP/1.1 410 Gone
+ Gone
+  */
+
+/**
+ * @apiDefine Conflict
+ * @apiError Conflict The request could not be completed due to a conflict with the current state of the resource
+ * @apiErrorExample {String} Conflict:
+ HTTP/1.1 409 Conflict
+ Conflict
+ */
+
+ /**
+ * @apiDefine UserResponseParams
+ * @apiSuccess (Response fields) {String} _id Unique user identificator across all program. Default uuid v1 value.
+ * @apiSuccess (Response fields) {String} firstName Firstname of the User.
+ * @apiSuccess (Response fields) {String} lastName Lastname of the User.
+ * @apiSuccess (Response fields) {String} email Email of the User.
+ * @apiSuccess (Response fields) {Timestamp} createdAt The number of seconds between a users creation and the Unix Epoch.
+ * @apiSuccess (Response fields) {Timestamp} updatedAt The number of seconds between a users deletion and the Unix Epoch.
+ */

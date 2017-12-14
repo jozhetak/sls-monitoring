@@ -48,9 +48,8 @@ module.exports.unauthorized = (err) => {
 module.exports.invalidJoi = (err) => {
   let result = ''
   for (const error of err.details) {
-    result += error.message.toString()
+    result += error.message + ';\n'
   }
-  console.log(result)
   return this.badRequest(result)
 }
 
@@ -58,5 +57,12 @@ module.exports.expired = (err) => {
   const error = new ProjectError('GONE')
   if (err) error.message = err
   error.statusCode = HttpStatus.GONE
+  return error
+}
+
+module.exports.conflict = (err) => {
+  const error = new ProjectError('Conflict')
+  if (err) error.message = err
+  error.statusCode = HttpStatus.CONFLICT
   return error
 }

@@ -97,7 +97,7 @@ module.exports = class User extends Model {
     return User.getById(user._id)
       .then(user => {
         if (!user) {
-          throw errors.notFound()
+          throw errors.unauthorized()
         }
         if (!user.hasOwnProperty('isActive')) throw errors.forbidden()
       })

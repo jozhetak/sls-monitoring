@@ -64,6 +64,7 @@ module.exports.get = (event, context, callback) => {
   const token = event.headers.Authorization
 
   passport.checkAuth(token)
+    .then(UserModel.isActiveOrThrow)
     .then(() => UserModel.getActiveByIdrOrThrow(id))
     .then(dtoUser.public)
     .then(responses.ok)
@@ -108,9 +109,10 @@ module.exports.changePassword = (event, context, callback) => {
 
   passport.checkSelf(token, id)
     .then(UserModel.isActiveOrThrow)
-    .then(() => {
+    .then(() => helper.validatePassword(body.password))
+    .then((password) => {
       return UserModel.update(id, {
-        password: passport.encryptPassword(body.password)
+        password: passport.encryptPassword(password)
       })
     })
     .then(dtoUser.public)
@@ -123,12 +125,15 @@ module.exports.resetPassword = (event, context, callback) => {
   const {id, token} = event.pathParameters
   const body = JSON.parse(event.body)
 
-  UserModel.getActiveByIdrOrThrow(id)
-    .then((user) => {
+  Promise.all([
+    helper.validatePassword(body.password),
+    UserModel.getActiveByIdrOrThrow(id)
+  ])
+    .then(([user, password]) => {
       if (user.resetPasswordTokenExpires < helper.timestamp()) throw errors.expired()
       if (user.resetPasswordToken === token) {
         return UserModel.update(user._id, {
-          password: passport.encryptPassword(body.password),
+          password: passport.encryptPassword(password),
           resetPassword: null,
           resetPasswordTokenExpires: null
         })
@@ -149,13 +154,12 @@ module.exports.verify = (event, context, callback) => {
       console.log(user.verificationTokenExpires)
       console.log(helper.timestamp())
       if (user.verificationTokenExpires < helper.timestamp()) throw errors.expired()
-      if (user.verificationToken === token) {
-        return UserModel.update(user._id, {
-          isActive: 1,
-          verificationToken: null,
-          verificationTokenExpires: null
-        })
-      }
+      if (user.verificationToken !== token) throw errors.badRequest()
+      return UserModel.update(user._id, {
+        isActive: 1,
+        verificationToken: null,
+        verificationTokenExpires: null
+      })
     })
     .then(() => responses.redirect('test'))
     .catch(responses.error)
@@ -168,6 +172,7 @@ module.exports.sendVerificationEmail = (event, contex, callback) => {
   UserModel.getById(id)
     .then((user) => {
       if (!user) throw errors.notFound()
+      if (user.isActive) throw errors.conflict()
       return UserModel.update(id, {
         verificationToken: passport.generateToken(),
         verificationTokenExpires: helper.timestamp() + hour * 2

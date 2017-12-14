@@ -98,7 +98,7 @@ functions:
     events:
       - http:
           path: users/{id}/verification/{token}
-          method: post
+          method: get
           cors: true
   sendResetPasswordEmail:
     handler: src/api/users/users.sendResetPasswordEmail
