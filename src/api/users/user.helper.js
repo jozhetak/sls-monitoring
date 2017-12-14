@@ -1,12 +1,14 @@
 const joi = require('joi')
 const errors = require('../../shared/helper/errors')
 
+const passwordSchema = joi.string().min(8).regex(/.*/)
+
 const schema = joi.object().keys({
   _id: joi.string().guid(),
   firstName: joi.string(),
   lastName: joi.string(),
   email: joi.string().email(),
-  password: joi.string().forbidden(),
+  password: passwordSchema.forbidden(),
   createdAt: joi.date().forbidden(),
   updatedAt: joi.date().forbidden()
 })
@@ -23,7 +25,7 @@ const createSchema = joi.object().keys({
   firstName: joi.string(),
   lastName: joi.string(),
   email: joi.string().email(),
-  password: joi.string().min(8).regex(/.*/),
+  password: passwordSchema,
   createdAt: joi.date().forbidden(),
   updatedAt: joi.date().forbidden()
 })
@@ -35,7 +37,6 @@ module.exports.validateCreate = (user) => {
     })
 }
 
-const passwordSchema = joi.string().min(8).max(16).regex(/.*/)
 
 module.exports.validatePassword = (password) => {
   return joi.validate(password, passwordSchema)
