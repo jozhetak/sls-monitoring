@@ -151,8 +151,6 @@ module.exports.verify = (event, context, callback) => {
   UserModel.getById(id)
     .then(user => {
       if (!user) throw errors.notFound()
-      console.log(user.verificationTokenExpires)
-      console.log(helper.timestamp())
       if (user.verificationTokenExpires < helper.timestamp()) throw errors.expired()
       if (user.verificationToken !== token) throw errors.badRequest()
       return UserModel.update(user._id, {

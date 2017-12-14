@@ -187,7 +187,7 @@ module.exports = class Model {
         _id: id
       },
       UpdateExpression: 'REMOVE isActive',
-      ReturnValues: 'ALL_OLD'
+      ReturnValues: 'ALL_NEW'
     }
     return dynamodb.update(params).promise()
       .then((data) => {

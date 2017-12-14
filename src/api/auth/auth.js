@@ -33,7 +33,6 @@ module.exports.signIn = (event, content, callback) => {
     })
     .then((data) => {
       const users = data.Items.filter(e => !(e.isActive == null))
-      console.log(users)
       if (users.length > 0) {
         return users[0]
       } else {

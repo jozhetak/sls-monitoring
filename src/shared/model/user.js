@@ -67,21 +67,6 @@ module.exports = class User extends Model {
       })
   }
 
-  static getById (id) {
-    const params = {
-      TableName: this.TABLE,
-      Key: {
-        _id: id
-      }
-    }
-
-    return dynamodb.get(params)
-      .promise()
-      .then((data) => {
-        return data.Item
-      })
-  }
-
   static getActiveByIdrOrThrow (id) {
     return User.getById(id)
       .then(user => {
