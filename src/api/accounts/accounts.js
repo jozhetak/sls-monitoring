@@ -149,7 +149,7 @@ module.exports.delete = (event, context, callback) => {
         isActive: 0
       })
     })
-    .then(responses.deleted)
+    .then(responses.ok)
     .catch(responses.error)
     .then(response => callback(null, response))
 }

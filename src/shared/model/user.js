@@ -5,6 +5,7 @@
 const Model = require('./model')
 const dynamodb = require('../helper/dynamodb')
 const _ = require('lodash')
+const errors = require('../../shared/helper/errors')
 
 module.exports = class User extends Model {
   constructor (opts) {
@@ -51,11 +52,11 @@ module.exports = class User extends Model {
   static getByEmail (email) {
     const params = {
       TableName: this.TABLE,
-      IndexName: 'EmailPasswordIndex',
+      IndexName: 'emailIndex',
       KeyConditionExpression: 'email = :email and isActive = :isActive',
       ExpressionAttributeValues: {
         ':email': email,
-        ':isActive': true
+        ':isActive': 1
       }
     }
 
@@ -63,6 +64,42 @@ module.exports = class User extends Model {
       .promise()
       .then((data) => {
         return data.Items[0]
+      })
+  }
+
+  static getById (id) {
+    const params = {
+      TableName: this.TABLE,
+      Key: {
+        _id: id
+      }
+    }
+
+    return dynamodb.get(params)
+      .promise()
+      .then((data) => {
+        return data.Item
+      })
+  }
+
+  static getActiveByIdrOrThrow (id) {
+    return User.getById(id)
+      .then(user => {
+        if (!user) {
+          throw errors.notFound()
+        }
+        if (!user.hasOwnProperty('isActive')) throw errors.notFound()
+        return user
+      })
+  }
+
+  static isActiveOrThrow ({user}) {
+    return User.getById(user._id)
+      .then(user => {
+        if (!user) {
+          throw errors.notFound()
+        }
+        if (!user.hasOwnProperty('isActive')) throw errors.forbidden()
       })
   }
 }

@@ -4,6 +4,8 @@ const _ = require('lodash')
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
 const errors = require('../../shared/helper/errors')
+const tokenSecret = process.env.TOKEN
+
 // Returns a boolean whether or not a user is allowed to call a particular method
 // A user with scopes: ['pangolins'] can
 // call 'arn:aws:execute-api:ap-southeast-1::random-api-id/dev/GET/pangolins'
@@ -46,7 +48,6 @@ module.exports.handler = (event, context, callback) => {
 }
 
 module.exports.checkAuth = (authToken) => {
-  const tokenSecret = process.env.TOKEN
   return new Promise((resolve, reject) => {
     if (!authToken) {
       reject(errors.unauthorized())
@@ -58,10 +59,20 @@ module.exports.checkAuth = (authToken) => {
       return resolve(decoded)
     })
   }).then(decoded => {
-    if (!decoded || !decoded.user) throw errors.notFound()
+    if (!decoded || !decoded.user || !decoded.user._id) throw errors.unauthorized()
     return decoded
   })
 }
+
+module.exports.checkSelf = (authToken, id) => {
+  return this.checkAuth(authToken).then((decoded) => {
+    if (decoded.user._id !== id) {
+      throw errors.forbidden()
+    }
+    return decoded
+  })
+}
+
 module.exports.encryptPassword = (password) => {
   try {
     return crypto.createHash('sha1').update(password).digest('hex')

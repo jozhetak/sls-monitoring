@@ -19,7 +19,7 @@ module.exports.validate = (user) => {
 }
 
 const createSchema = joi.object().keys({
-  _id: joi.string().guid(),
+  _id: joi.string().guid().forbidden(),
   firstName: joi.string(),
   lastName: joi.string(),
   email: joi.string().email(),
@@ -34,3 +34,8 @@ module.exports.validateCreate = (user) => {
       throw errors.invalidJoi(err)
     })
 }
+
+module.exports.timestamp = () => {
+  return Date.now()
+}
+

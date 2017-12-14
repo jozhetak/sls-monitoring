@@ -48,8 +48,9 @@ module.exports.unauthorized = (err) => {
 module.exports.invalidJoi = (err) => {
   let result = ''
   for (const error of err.details) {
-    result += error.message + ';\n'
+    result += error.message.toString()
   }
+  console.log(result)
   return this.badRequest(result)
 }
 

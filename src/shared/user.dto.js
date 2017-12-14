@@ -15,3 +15,9 @@ module.exports.publicList = (data) => {
     lastEvaluatedKey: data.LastEvaluatedKey ? data.LastEvaluatedKey._id : null
   }
 }
+
+module.exports.withToken = (user) => {
+  let dto = this.public(user)
+  dto.accessToken = user.accessToken
+  return dto
+}

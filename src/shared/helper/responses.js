@@ -8,7 +8,7 @@ module.exports.ok = (body) => {
 module.exports.created = (body) => {
   return buildResponse(HttpStatus.CREATED, body)
 }
-module.exports.deleted = (body) => {
+module.exports.empty = (body) => {
   return buildResponse(HttpStatus.NO_CONTENT, body)
 }
 
@@ -17,6 +17,7 @@ module.exports.redirect = (url) => {
 }
 
 module.exports.error = (error) => {
+  console.log(error)
   return buildResponse(error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR, error.message)
 }
 

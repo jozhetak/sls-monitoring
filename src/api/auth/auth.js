@@ -48,7 +48,7 @@ module.exports.signIn = (event, content, callback) => {
       }, 'JWT_SECRET', {expiresIn: 3600 * 24 * 365})
       return user
     })
-    .then(dtoUser.public)
+    .then(dtoUser.withToken)
     .then(responses.ok)
     .catch(responses.error)
     .then(response => callback(null, response))

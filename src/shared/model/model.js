@@ -7,7 +7,7 @@ const dynamodb = require('../helper/dynamodb')
 
 module.exports = class Model {
   static getUpdateCondition (params) {
-    const timestamp = new Date().getTime()
+    const timestamp = Math.floor(Date.now() / 1000)
     let UpdateExpression = 'SET '
     const ExpressionAttributeValues = {
       ':updatedAt': timestamp
@@ -171,6 +171,8 @@ module.exports = class Model {
     }
     return dynamodb.update(params).promise()
       .then((data) => {
+        console.log(data)
+
         if (data) {
           return data.Attributes
         }
@@ -185,7 +187,7 @@ module.exports = class Model {
         _id: id
       },
       UpdateExpression: 'REMOVE isActive',
-      ReturnValues: 'ALL_NEW'
+      ReturnValues: 'ALL_OLD'
     }
     return dynamodb.update(params).promise()
       .then((data) => {
