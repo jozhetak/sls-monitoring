@@ -24,6 +24,10 @@ custom:
         sources:
           - table: users-dev
             sources: [./seeds/users.json]
+          - table: accounts-dev
+            sources: [./seeds/accounts.json]
+          - table: users-accounts-dev
+            sources: [./seeds/users-accounts.json]
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
 # frameworkVersion: "=X.X.X"

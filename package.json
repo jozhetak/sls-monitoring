@@ -24,12 +24,15 @@
     "joi": "^13.0.2",
     "jsonwebtoken": "^8.1.0",
     "lodash": "^4.17.4",
+    "serverless-runtime-babel": "0.0.6",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
     "@types/joi": "^13.0.0",
     "@types/jsonwebtoken": "^7.2.3",
     "apidoc": "^0.17.6",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
     "chai": "^4.1.2",
     "eslint": "^4.7.1",
     "eslint-config-standard": "^10.2.1",

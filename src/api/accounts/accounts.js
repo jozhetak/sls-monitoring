@@ -36,6 +36,7 @@ module.exports.create = (event, context, callback) => {
         _account: params._id,
         isAdmin: true
       })
+
       return Promise.all([
         account.save(),
         accountUser.save()
@@ -51,8 +52,8 @@ module.exports.create = (event, context, callback) => {
 module.exports.list = (event, context, callback) => {
   return passport
     .checkAuth(event.headers.Authorization)
-    .then(UserModel.isActiveOrThrow)
-    .then(UserAccountModel.getAccountsByUser)
+    .then(decoded => UserModel.isActiveOrThrow(decoded))
+    .then(id => UserAccountModel.getAccountsByUser(id))
     .then(({Items}) => Items.map(account => {
       return { _id: account._account }
     }))
@@ -70,7 +71,7 @@ module.exports.list = (event, context, callback) => {
 module.exports.get = (event, context, callback) => {
   return passport.checkAuth(event.headers.Authorization)
     .then((decoded) => {
-      return AccountModel.getById(event.pathParameters.id)
+      return AccountModel.getActiveByIdrOrThrow(event.pathParameters.id)
         .then((account) => {
           if (account._user !== decoded.user._id) {
             throw Error('User has no permission')

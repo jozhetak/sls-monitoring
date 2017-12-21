@@ -30,7 +30,7 @@ module.exports = class Model {
 
   static buildQuery (params) {
     const result = {
-      TableName: params.TableName || this.TABLE
+      TableName: params.TableName
     }
     if (params.Key) {
       result.Key = params.Key
@@ -114,7 +114,6 @@ module.exports = class Model {
 
   static getAllScan (params) {
     const query = this.buildQuery(params)
-    console.log(JSON.stringify(query, null, 4))
     return dynamodb.scan(query).promise()
       .then((data) => {
         return data

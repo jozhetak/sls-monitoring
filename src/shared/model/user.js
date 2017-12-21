@@ -79,7 +79,6 @@ module.exports = class User extends Model {
   }
 
   static isActiveOrThrow ({user}) {
-    console.log(user)
     return User.getById(user._id)
       .then(user => {
         if (!user) {

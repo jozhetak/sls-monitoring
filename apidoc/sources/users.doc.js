@@ -366,7 +366,7 @@
  HTTP/1.1 400  Bad Request
  */
 
- /**
+/**
  * @apiDefine Gone
  * @apiError Gone Requested resource is no longer available and will not be available again
  * @apiErrorExample {String} Gone:
@@ -382,7 +382,7 @@
  Conflict
  */
 
- /**
+/**
  * @apiDefine UserResponseParams
  * @apiSuccess (Response fields) {String} _id Unique user identificator across all program. Default uuid v1 value.
  * @apiSuccess (Response fields) {String} firstName Firstname of the User.

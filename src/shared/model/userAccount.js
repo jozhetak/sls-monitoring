@@ -14,7 +14,7 @@ module.exports = class UserAccounts extends Model {
   }
 
   static getAccountsByUser (id) {
-    return super.getAll({
+    return this.getAll({
       TableName: UserAccounts.TABLE,
       KeyConditionExpression: '#user = :user',
       ExpressionAttributeNames: {
