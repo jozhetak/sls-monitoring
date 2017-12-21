@@ -18,7 +18,7 @@ module.exports.create = (event, context, callback) => {
   ])
     .then(([decoded, data]) => {
       const user = decoded.user
-      const timestamp = new Date().getTime()
+      const timestamp = Date.now()
       const params = {
         _id: uuid.v1(),
         name: data.name,
@@ -49,27 +49,14 @@ module.exports.create = (event, context, callback) => {
 }
 
 module.exports.list = (event, context, callback) => {
-  return passport.checkAuth(event.headers.Authorization)
-    .then((decoded) => {
-      console.log('user:', decoded.user)
-      return UserAccountModel.getAll({
-        // IndexName: 'UserAccounts',
-        KeyConditionExpression: '#user = :user',
-        ExpressionAttributeNames: {
-          '#user': '_user'
-        },
-        ExpressionAttributeValues: {
-          ':user': decoded.user._id
-        }
-        // ProjectionExpression: "_account"
-      })
-    })
-    .then((accounts) => {
-      console.log('accounts', accounts)
-      const accountsList = []
-      accounts.forEach((account) => {
-        accountsList.push({_id: account._account})
-      })
+  return passport
+    .checkAuth(event.headers.Authorization)
+    .then(UserModel.isActiveOrThrow)
+    .then(UserAccountModel.getAccountsByUser)
+    .then(({Items}) => Items.map(account => {
+      return { _id: account._account }
+    }))
+    .then(accountsList => {
       return AccountModel.getByKeys({
         Keys: accountsList
       })
@@ -222,7 +209,7 @@ module.exports.getAccountUsers = (event, context, callback) => {
         Keys: usersList
       })
     })
-    //.then((users) => users.map(dtoUser.makeDto))
+    // .then((users) => users.map(dtoUser.makeDto))
     .then(responses.ok)
     .catch(responses.error)
     .then(response => callback(null, response))

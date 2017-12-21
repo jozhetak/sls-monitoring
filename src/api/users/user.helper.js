@@ -37,7 +37,6 @@ module.exports.validateCreate = (user) => {
     })
 }
 
-
 module.exports.validatePassword = (password) => {
   return joi.validate(password, passwordSchema)
     .catch(err => {

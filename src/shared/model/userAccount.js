@@ -12,4 +12,18 @@ module.exports = class UserAccounts extends Model {
   static get TABLE () {
     return process.env.USER_ACCOUNTS_TABLE
   }
+
+  static getAccountsByUser (id) {
+    return super.getAll({
+      TableName: UserAccounts.TABLE,
+      KeyConditionExpression: '#user = :user',
+      ExpressionAttributeNames: {
+        '#user': '_user'
+      },
+      ExpressionAttributeValues: {
+        ':user': id
+      }
+      // ProjectionExpression: "_account"
+    })
+  }
 }

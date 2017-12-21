@@ -24,7 +24,8 @@
   "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6ImZhYzQ2MDAwLWUxMDEtMTFlNy04OGM3LTk3MzQyZjRiNmFkNyJ9LCJpYXQiOjE1MTMyODA2NjYsImV4cCI6MTU0NDgxNjY2Nn0.pyczLauspgXM5HbCF5IdPfx7ZU1bvsOFoyxc2JHmGs8"
 }
 * @apiUse NotFound
-*/
+* @apiUse BadRequest
+ */
 
 /**
  * @apiDefine NotFound
@@ -32,4 +33,11 @@
  * @apiErrorExample {String} UserNotFound:
  HTTP/1.1 404 Not Found
  NOT_FOUND
+ */
+
+/**
+ * @apiDefine BadRequest
+ * @apiError BadRequest The request parameters is <code>invalid</code>.
+ *@apiErrorExample {String} BadRequest:
+ HTTP/1.1 400  Bad Request
  */

@@ -37,19 +37,22 @@ module.exports.create = (event, context, callback) => {
 
 module.exports.list = (event, context, callback) => {
   const token = event.headers.Authorization
+  const query = event.queryStringParameters
 
   passport.checkAuth(token)
     .then(UserModel.isActiveOrThrow)
     .then(() => {
       let LastEvaluatedKey = null
-      if (event.queryStringParameters && Object.prototype.hasOwnProperty.call(event.queryStringParameters, 'LastEvaluatedKey')) {
+      if (query && Object.prototype.hasOwnProperty.call(query, 'LastEvaluatedKey')) {
         LastEvaluatedKey = {
-          _id: event.queryStringParameters.LastEvaluatedKey
+          _id: query.LastEvaluatedKey,
+          isActive: 1
         }
       }
+
       return UserModel.getAllScan({
         IndexName: 'isActive',
-        Limit: 5,
+        Limit: 2,
         ExclusiveStartKey: LastEvaluatedKey
       })
     })
@@ -151,6 +154,7 @@ module.exports.verify = (event, context, callback) => {
   UserModel.getById(id)
     .then(user => {
       if (!user) throw errors.notFound()
+      if (user.isActive) throw errors.conflict()
       if (user.verificationTokenExpires < helper.timestamp()) throw errors.expired()
       if (user.verificationToken !== token) throw errors.badRequest()
       return UserModel.update(user._id, {
