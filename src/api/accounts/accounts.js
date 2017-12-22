@@ -11,7 +11,6 @@ const dtoAccount = require('../../shared/account.dto')
 const dtoUser = require('../../shared/user.dto')
 
 module.exports.create = (event, context, callback) => {
-  console.log('event: ', event)
   return Promise.all([
     passport.checkAuth(event.headers.Authorization),
     helper.validate(event.body)
@@ -54,14 +53,10 @@ module.exports.list = (event, context, callback) => {
     .checkAuth(event.headers.Authorization)
     .then(decoded => UserModel.isActiveOrThrow(decoded))
     .then(id => UserAccountModel.getAccountsByUser(id))
-    .then(({Items}) => Items.map(account => {
+    .then(accounts => accounts.map(account => {
       return { _id: account._account }
     }))
-    .then(accountsList => {
-      return AccountModel.getByKeys({
-        Keys: accountsList
-      })
-    })
+    .then(keysList => AccountModel.getByKeys({Keys: keysList}))
     .then((accounts) => accounts.map(dtoAccount.public))
     .then(responses.ok)
     .catch(responses.error)
@@ -69,47 +64,28 @@ module.exports.list = (event, context, callback) => {
 }
 
 module.exports.get = (event, context, callback) => {
-  return passport.checkAuth(event.headers.Authorization)
-    .then((decoded) => {
-      return AccountModel.getActiveByIdrOrThrow(event.pathParameters.id)
-        .then((account) => {
-          if (account._user !== decoded.user._id) {
-            throw Error('User has no permission')
-          }
-          return account
-        })
-        .catch((err) => {
-          throw err
-        })
+  return Promise.all([
+    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    AccountModel.getActiveByIdrOrThrow(event.pathParameters.id)])
+    .then(([id, account]) => {
+      if (id !== account._user) throw errors.forbidden()
+      return account
     })
     .then(dtoAccount.public)
-    .then(responses.created)
+    .then(responses.ok)
     .catch(responses.error)
     .then(response => callback(null, response))
 }
 
 module.exports.update = (event, context, callback) => {
-  console.log('event: ', event)
   return Promise.all([
-    passport.checkAuth(event.headers.Authorization),
+    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    AccountModel.getActiveByIdrOrThrow(event.pathParameters.id),
     helper.validate(event.body)
   ])
-    .then(([decoded, data]) => {
-      console.log(data)
-      return AccountModel.getById(event.pathParameters.id)
-        .then((account) => {
-          if (account._user !== decoded.user._id) {
-            throw Error('User has no permission')
-          }
-          return account
-        })
-        .catch((err) => {
-          throw err
-        })
-    })
-    .then((account) => {
-      const data = JSON.parse(event.body)
-      return AccountModel.update(account._id, data)
+    .then(([id, account, body]) => {
+      if (id !== account._user) throw errors.forbidden()
+      return AccountModel.update(account._id, body)
     })
     .then(dtoAccount.public)
     .then(responses.created)
@@ -118,24 +94,12 @@ module.exports.update = (event, context, callback) => {
 }
 
 module.exports.delete = (event, context, callback) => {
-  console.log('event: ', event)
-  return passport.checkAuth(event.headers.Authorization)
-    .then((decoded) => {
-      return AccountModel.getById(event.pathParameters.id)
-        .then((account) => {
-          if (account._user !== decoded.user._id) {
-            throw Error('User has no permission')
-          }
-          return account
-        })
-        .catch((err) => {
-          throw err
-        })
-    })
-    .then((account) => {
-      return AccountModel.update(account._id, {
-        isActive: 0
-      })
+  return Promise.all([
+    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    AccountModel.getActiveByIdrOrThrow(event.pathParameters.id)])
+    .then(([id, account]) => {
+      if (id !== account._user) throw errors.forbidden()
+      return AccountModel.remove(account._id)
     })
     .then(responses.ok)
     .catch(responses.error)
@@ -143,28 +107,19 @@ module.exports.delete = (event, context, callback) => {
 }
 
 module.exports.inviteUsers = (event, context, callback) => {
-  return passport.checkAuth(event.headers.Authorization)
-    .then((decoded) => {
-      return AccountModel.getById(event.pathParameters.id)
-        .then((account) => {
-          if (account._user !== decoded.user._id) {
-            throw Error('User has no permission')
-          }
-          return account
-        })
-        .catch((err) => {
-          throw err
-        })
-    })
-    .then(() => helper.validateInvite(JSON.parse(event.body)))
-    .then((data) => {
+  return Promise.all([
+    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    AccountModel.getActiveByIdrOrThrow(event.pathParameters.id),
+    helper.validateInvite(event.body)
+  ])
+    .then(([id, account, body]) => {
       let users = []
       const dbPromises = []
-      if (data._users) {
-        users = data._users
+      if (body._users) {
+        users = body._users
       }
-      if (data._user) {
-        users.push(data._user)
+      if (body._user) {
+        users.push(body._user)
       }
       // TODO: check response for _user + _users with the same user ID
       users.forEach((user) => {
@@ -184,19 +139,8 @@ module.exports.inviteUsers = (event, context, callback) => {
 
 module.exports.getAccountUsers = (event, context, callback) => {
   return passport.checkAuth(event.headers.Authorization)
-    .then((decoded) => {
-      console.log('user:', decoded.user)
-      return UserAccountModel.getAll({
-        IndexName: 'AccountUsers',
-        KeyConditionExpression: '#account = :account',
-        ExpressionAttributeNames: {
-          '#account': '_account'
-        },
-        ExpressionAttributeValues: {
-          ':account': event.pathParameters.id
-        }
-      })
-    })
+    .then(decoded => UserModel.isActiveOrThrow(decoded))
+    .then(id => UserAccountModel.getUsersByAccount(event.pathParameters.id))
     .then((users) => {
       const usersList = []
       users.forEach((user) => {

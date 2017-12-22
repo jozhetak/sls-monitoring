@@ -10,7 +10,16 @@ const schema = joi.object().keys({
   createdAt: joi.date().forbidden(),
   updatedAt: joi.date().forbidden(),
   // isActive: joi.boolean().truthy(),
-  _user: joi.string().guid()
+  _user: joi.string().guid().forbidden()
+})
+
+const inviteScema = joi.object().keys({
+  _user: joi.string().guid(),
+  _users: joi.array().items(joi.string().guid())
+})
+
+const userUpdateSchema = joi.object().keys({
+  isAdmin: joi.boolean()
 })
 
 module.exports.validate = (user) => {
@@ -21,10 +30,6 @@ module.exports.validate = (user) => {
 }
 
 module.exports.validateInvite = (data) => {
-  const inviteScema = joi.object().keys({
-    _user: joi.string().guid(),
-    _users: joi.array().items(joi.string().guid())
-  })
   return joi.validate(data, inviteScema)
     .catch(err => {
       throw errors.invalidJoi(err)
@@ -32,10 +37,7 @@ module.exports.validateInvite = (data) => {
 }
 
 module.exports.validateAccountUserUpdate = (data) => {
-  const schema = joi.object().keys({
-    isAdmin: joi.boolean()
-  })
-  return joi.validate(data, schema)
+  return joi.validate(data, userUpdateSchema)
     .catch(err => {
       throw errors.invalidJoi(err)
     })

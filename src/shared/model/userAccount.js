@@ -24,6 +24,19 @@ module.exports = class UserAccounts extends Model {
         ':user': id
       }
       // ProjectionExpression: "_account"
-    })
+    }).then(data => data.Items)
+  }
+
+  static getUsersByAccount (id) {
+    return this.getAll({
+      IndexName: 'AccountUsers',
+      KeyConditionExpression: '#account = :account',
+      ExpressionAttributeNames: {
+        '#account': '_account'
+      },
+      ExpressionAttributeValues: {
+        ':account': id
+      }
+    }).then(data => data.Items)
   }
 }

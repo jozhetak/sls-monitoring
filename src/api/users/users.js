@@ -40,7 +40,7 @@ module.exports.list = (event, context, callback) => {
   const query = event.queryStringParameters
 
   passport.checkAuth(token)
-    .then(UserModel.isActiveOrThrow)
+    .then((decoded) => UserModel.isActiveOrThrow(decoded))
     .then(() => {
       let LastEvaluatedKey = null
       if (query && Object.prototype.hasOwnProperty.call(query, 'LastEvaluatedKey')) {
@@ -49,7 +49,6 @@ module.exports.list = (event, context, callback) => {
           isActive: 1
         }
       }
-
       return UserModel.getAllScan({
         IndexName: 'isActive',
         Limit: 2,
@@ -67,7 +66,7 @@ module.exports.get = (event, context, callback) => {
   const token = event.headers.Authorization
 
   passport.checkAuth(token)
-    .then(UserModel.isActiveOrThrow)
+    .then((decoded) => UserModel.isActiveOrThrow(decoded))
     .then(() => UserModel.getActiveByIdrOrThrow(id))
     .then(dtoUser.public)
     .then(responses.ok)
@@ -97,7 +96,7 @@ module.exports.delete = (event, context, callback) => {
   const token = event.headers.Authorization
 
   passport.checkSelf(token, id)
-    .then(UserModel.isActiveOrThrow)
+    .then((decoded) => UserModel.isActiveOrThrow(decoded))
     .then(() => UserModel.remove(id))
     .then(dtoUser.public)
     .then(responses.ok)
@@ -111,7 +110,7 @@ module.exports.changePassword = (event, context, callback) => {
   const body = JSON.parse(event.body)
 
   passport.checkSelf(token, id)
-    .then(UserModel.isActiveOrThrow)
+    .then((decoded) => UserModel.isActiveOrThrow(decoded))
     .then(() => helper.validatePassword(body.password))
     .then((password) => {
       return UserModel.update(id, {

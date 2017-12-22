@@ -24,4 +24,15 @@ module.exports = class Account extends Model {
         return account
       })
   }
+
+  static isActiveOrThrow (accounts) {
+    return this.getById(accounts._id)
+      .then(user => {
+        if (!user) {
+          throw errors.notFound()
+        }
+        if (!user.hasOwnProperty('isActive')) throw errors.forbidden()
+        return user._id
+      })
+  }
 }

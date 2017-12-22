@@ -30,7 +30,7 @@ module.exports = class User extends Model {
         _account: params._account
       })
     })
-    dbparams.RequestItems['user-accounts-dev'] = {
+    dbparams.RequestItems[process.env.USER_ACCOUNTS_TABLE] = {
       Keys: userAccounts
     }
     return dynamodb.batchGet(dbparams).promise()
@@ -40,7 +40,7 @@ module.exports = class User extends Model {
         if (data.Responses[this.TABLE].length > 0) {
           //  return data.Responses[this.TABLE]
         }
-        data.Responses['user-accounts-dev'].forEach((account) => {
+        data.Responses[process.env.USER_ACCOUNTS_TABLE].forEach((account) => {
           let _user = account._user
           account._user = _.find(data.Responses[this.TABLE], {_id: _user})
           result.push(account)
@@ -68,7 +68,7 @@ module.exports = class User extends Model {
   }
 
   static getActiveByIdrOrThrow (id) {
-    return User.getById(id)
+    return this.getById(id)
       .then(user => {
         if (!user) {
           throw errors.notFound()
@@ -79,7 +79,7 @@ module.exports = class User extends Model {
   }
 
   static isActiveOrThrow ({user}) {
-    return User.getById(user._id)
+    return this.getById(user._id)
       .then(user => {
         if (!user) {
           throw errors.unauthorized()

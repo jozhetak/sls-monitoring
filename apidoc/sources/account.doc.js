@@ -1,38 +1,376 @@
 // -----------------------------------------------------------------
-//                    GET USER
+//                    GET Account
 // -----------------------------------------------------------------
 /**
- * @api {get} /users/:id Get user
- * @apiName GetUser
+ * @api {get} /accounts/:id Get account
+ * @apiName GetAccount
  * @apiVersion 1.0.0
- * @apiDescription Get user information by id
- * @apiGroup User
+ * @apiDescription Get account information by id
+ * @apiGroup Account
  * @apiHeader {String} Authorization Users access token.
  * @apiHeaderExample {json} Header Example:
  {
    "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6Ijg2Y2NmYTAwLWQzYWUtMTFlNy04ZGM1LTFmNzVkNGE3MWY2NyJ9LCJpYXQiOjE1MTE4MTMzNzMsImV4cCI6MTU0MzM0OTM3M30.ScQ8baHireB2heW8ngoXIdWo9qbZkm-ddEP5mTAzLHc"
  }
- * @apiParam {Number} id Users unique GUID.
+ * @apiParam {Number} id Account unique GUID.
  * @apiParamExample {json} Request Params Example:
  *     {
- *       "id": "86ccfa00-d3ae-11e7-8dc5-1f75d4a71f67"
+ *       "id": "6beaa4e0-e663-11e7-a4b1-53f92960e92c"
  *     }
- * @apiUse UserResponseParams
+ * @apiUse AccountResponseParams
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  {
-     "_id": "86ccfa00-d3ae-11e7-8dc5-1f75d4a71f67",
-     "firstName": "Ihor",
-     "lastName": "Fito",
-     "email": "igor.genal@techmagic.co",
-     "createdAt": 1512991422,
-     "updatedAt": 1513905678
- }
+    "_id": "6beaa4e0-e663-11e7-a4b1-53f92960e92c",
+    "name": "Techmagic",
+    "key": "qwe1qwe1qwe1qwe1qwe1qwe1",
+    "secret": "rty1",
+    "region": "eu-central-1",
+    "createdAt": 1513870034477,
+    "updatedAt": 1513870034477,
+    "isActive": 1,
+    "_user": "86ccfa00-d3ae-11e7-8dc5-1f75d4a71f67"
+}
  * @apiUse Unauthorized
  * @apiUse Forbidden
  * @apiUse NotFound
  */
 
+// -----------------------------------------------------------------
+//                    GET ALL Accounts
+// -----------------------------------------------------------------
+/**
+ * @api {get} /accounts Get accounts
+ * @apiName GetAccounts
+ * @apiVersion 1.0.0
+ * @apiDescription Get information about all active accounts.
+ * @apiGroup Account
+ * @apiHeader {String} Authorization Users access token.
+ * @apiHeaderExample {json} Header Example:
+ {
+   "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6Ijg2Y2NmYTAwLWQzYWUtMTFlNy04ZGM1LTFmNzVkNGE3MWY2NyJ9LCJpYXQiOjE1MTE4MTMzNzMsImV4cCI6MTU0MzM0OTM3M30.ScQ8baHireB2heW8ngoXIdWo9qbZkm-ddEP5mTAzLHc"
+ }
+ * @apiSuccess (Response fields) {Account[]} accounts Array of accounts.
+ * @apiSuccessExample {json} Success-Response:
+ * HTTP/1.1 200 OK
+ [
+ {
+     "_id": "6beaa4e0-e663-11e7-a4b1-53f92960e92c",
+     "name": "Techmagic",
+     "key": "qwe1qwe1qwe1qwe1qwe1qwe1",
+     "secret": "rty1",
+     "region": "eu-central-1",
+     "createdAt": 1513870034477,
+     "updatedAt": 1513870034477,
+     "_user": "86ccfa00-d3ae-11e7-8dc5-1f75d4a71f67"
+ }
+ ]
+ * @apiUse Unauthorized
+ * @apiUse Forbidden
+ */
+
+// -----------------------------------------------------------------
+//                    CREATE ACCOUNT
+// -----------------------------------------------------------------
+/**
+ * @api {post} /accounts/ Create account
+ * @apiName CreateAccount
+ * @apiVersion 1.0.0
+ * @apiDescription Create account
+ * @apiGroup Account
+ * @apiHeader {String} Authorization Users access token.
+ * @apiHeaderExample {json} Header Example:
+ {
+   "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6Ijg2Y2NmYTAwLWQzYWUtMTFlNy04ZGM1LTFmNzVkNGE3MWY2NyJ9LCJpYXQiOjE1MTE4MTMzNzMsImV4cCI6MTU0MzM0OTM3M30.ScQ8baHireB2heW8ngoXIdWo9qbZkm-ddEP5mTAzLHc"
+ }
+ * @apiParam  {String} name Account name.
+ * @apiParam  {String} key AWS Access Key.
+ * @apiParam  {String} secret AWS Secret for access key.
+ * @apiParam  {String} region AWS region.
+ * @apiParamExample {json} Request Body Example:
+ {
+   "name": "Techmagic",
+   "key": "qwe1qwe1qwe1qwe1qwe1qwe1",
+   "secret": "rty1",
+   "region": "eu-central-1"
+ }
+ * @apiUse AccountResponseParams
+ * @apiSuccessExample {json} Success-Response:
+ * HTTP/1.1 201 Created
+ {
+     "_id": "1d72b840-e710-11e7-b0cc-77a5cace9bc4",
+     "name": "Techmagic",
+     "key": "qwe1qwe1qwe1qwe1qwe1qwe1",
+     "secret": "rty1",
+     "region": "eu-central-1",
+     "createdAt": 1513944205764,
+     "updatedAt": 1513944205764,
+     "isActive": 1,
+     "_user": "86ccfa00-d3ae-11e7-8dc5-1f75d4a71f67"
+ }
+ * @apiUse Unauthorized
+ * @apiUse Forbidden
+ * @apiUse AccountNotFound
+ */
+
+// -----------------------------------------------------------------
+//                    UPDATE ACCOUNT
+// -----------------------------------------------------------------
+/**
+ * @api {put} /accounts/:id Update account
+ * @apiName UpdateAccount
+ * @apiVersion 1.0.0
+ * @apiDescription Update account
+ * @apiGroup Account
+ * @apiHeader {String} Authorization Users access token.
+ * @apiHeaderExample {json} Header Example:
+ {
+   "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6Ijg2Y2NmYTAwLWQzYWUtMTFlNy04ZGM1LTFmNzVkNGE3MWY2NyJ9LCJpYXQiOjE1MTE4MTMzNzMsImV4cCI6MTU0MzM0OTM3M30.ScQ8baHireB2heW8ngoXIdWo9qbZkm-ddEP5mTAzLHc"
+ }
+ * @apiParam {Number} id Account unique GUID.
+ * @apiParamExample {json} Request Params Example:
+ *     {
+ *       "id": "6beaa4e0-e663-11e7-a4b1-53f92960e92c"
+ *     }
+ * @apiParam  {String} name Account name.
+ * @apiParam  {String} key AWS Access Key.
+ * @apiParam  {String} secret AWS Secret for access key.
+ * @apiParam  {String} region AWS region.
+ * @apiParamExample {json} Request Body Example:
+ {
+   "name": "Techmagic",
+   "key": "qwe1qwe1qwe1qwe1qwe1qwe1",
+   "secret": "rty1",
+   "region": "eu-central-1"
+ }
+ * @apiUse AccountResponseParams
+ * @apiSuccessExample {json} Success-Response:
+ * HTTP/1.1 200 OK
+ {
+     "_id": "1d72b840-e710-11e7-b0cc-77a5cace9bc4",
+     "name": "Techmagic",
+     "key": "qwe1qwe1qwe1qwe1qwe1qwe1",
+     "secret": "rty1",
+     "region": "eu-central-1",
+     "createdAt": 1513944205764,
+     "updatedAt": 1513944205764,
+     "isActive": 1,
+     "_user": "86ccfa00-d3ae-11e7-8dc5-1f75d4a71f67"
+ }
+ * @apiUse Unauthorized
+ * @apiUse Forbidden
+ * @apiUse AccountNotFound
+ */
+
+// -----------------------------------------------------------------
+//                    INVITE USERS INTO ACCOUNT
+// -----------------------------------------------------------------
+/**
+ * @api {post} /accounts/:id/users Invite users
+ * @apiName InviteUsers
+ * @apiVersion 1.0.0
+ * @apiDescription Invite users into account
+ * @apiGroup Account
+ * @apiHeader {String} Authorization Users access token.
+ * @apiHeaderExample {json} Header Example:
+ {
+   "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6Ijg2Y2NmYTAwLWQzYWUtMTFlNy04ZGM1LTFmNzVkNGE3MWY2NyJ9LCJpYXQiOjE1MTE4MTMzNzMsImV4cCI6MTU0MzM0OTM3M30.ScQ8baHireB2heW8ngoXIdWo9qbZkm-ddEP5mTAzLHc"
+ }
+ * @apiParam {Number} id Account unique GUID.
+ * @apiParamExample {json} Request Params Example:
+ *     {
+ *       "id": "6beaa4e0-e663-11e7-a4b1-53f92960e92c"
+ *     }
+ * @apiParam  {String} _users Array of users id.
+ * @apiParamExample {json} Request Body Example:
+{
+"_users": ["86ccfa00-d3ae-11e7-8dc5-1f75d4a71f67"]
+}
+ // * @apiUse AccountResponseParams
+ * @apiSuccessExample {json} Success-Response:
+ * HTTP/1.1 200 OK
+ [
+ {
+     "_user": "86ccfa00-d3ae-11e7-8dc5-1f75d4a71f67",
+     "_account": "6beaa4e0-e663-11e7-a4b1-53f92960e92c",
+     "isAdmin": false,
+     "_id": "ba5316f0-e710-11e7-9657-c149dea0905e"
+ }
+ ]
+ * @apiUse Unauthorized
+ * @apiUse Forbidden
+ * @apiUse AccountNotFound
+ */
+
+// -----------------------------------------------------------------
+//                    GET ACCOUNT USERS
+// -----------------------------------------------------------------
+/**
+ * @api {get} /accounts/:id/users Get account users
+ * @apiName GetAccountUsers
+ * @apiVersion 1.0.0
+ * @apiDescription Get users of account
+ * @apiGroup Account
+ * @apiHeader {String} Authorization Users access token.
+ * @apiHeaderExample {json} Header Example:
+ {
+   "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6Ijg2Y2NmYTAwLWQzYWUtMTFlNy04ZGM1LTFmNzVkNGE3MWY2NyJ9LCJpYXQiOjE1MTE4MTMzNzMsImV4cCI6MTU0MzM0OTM3M30.ScQ8baHireB2heW8ngoXIdWo9qbZkm-ddEP5mTAzLHc"
+ }
+ * @apiParam {Number} id Account unique GUID.
+ * @apiParamExample {json} Request Params Example:
+ *     {
+ *       "id": "6beaa4e0-e663-11e7-a4b1-53f92960e92c"
+ *     }
+ // * @apiUse AccountResponseParams
+ * @apiSuccessExample {json} Success-Response:
+ * HTTP/1.1 200 OK
+ [
+ {
+     "_user": {
+         "firstName": "Taras",
+         "lastName": "Buchko",
+         "createdAt": 1512991422,
+         "password": "70ccd9007338d6d81dd3b6271621b9cf9a97ea00",
+         "verificationToken": "61d763885d3f54a41061f54992f80040",
+         "verificationTokenExpires": 1612991422,
+         "_id": "86ccfa00-d3ae-11e7-8dc5-1f75d4a71f68",
+         "isActive": 1,
+         "email": "adminl@techmagic.co",
+         "updatedAt": 1512991422
+     },
+     "isAdmin": false,
+     "_id": "82e45390-e685-11e7-9adb-8b6d5ba9a9e6",
+     "_account": "6beaa4e0-e663-11e7-a4b1-53f92960e92c"
+ }
+ ]
+ * @apiUse Unauthorized
+ * @apiUse Forbidden
+ * @apiUse AccountNotFound
+ */
+
+// -----------------------------------------------------------------
+//                    UPDATE ACCOUNT USERS
+// -----------------------------------------------------------------
+/**
+ * @api {get} /accounts/:accountId/users/:id Update account users
+ * @apiName UpdateAccountUsers
+ * @apiVersion 1.0.0
+ * @apiDescription Update user of account
+ * @apiGroup Account
+ * @apiHeader {String} Authorization Users access token.
+ * @apiHeaderExample {json} Header Example:
+ {
+   "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6Ijg2Y2NmYTAwLWQzYWUtMTFlNy04ZGM1LTFmNzVkNGE3MWY2NyJ9LCJpYXQiOjE1MTE4MTMzNzMsImV4cCI6MTU0MzM0OTM3M30.ScQ8baHireB2heW8ngoXIdWo9qbZkm-ddEP5mTAzLHc"
+ }
+ * @apiParam {Number} accountId Account unique GUID.
+ * @apiParam {Number} id Users unique GUID.
+ * @apiParamExample {json} Request Params Example:
+ *     {
+ *       "accountId": "6beaa4e0-e663-11e7-a4b1-53f92960e92c"
+ *       "id": "86ccfa00-d3ae-11e7-8dc5-1f75d4a71f67"
+ *     }
+ * @apiParamExample {json} Request Body Example:
+ {
+   "isAdmin": true
+ }
+ // * @apiUse AccountResponseParams
+ * @apiSuccessExample {json} Success-Response:
+ * HTTP/1.1 200 OK
+ {
+     "_user": "86ccfa00-d3ae-11e7-8dc5-1f75d4a71f67",
+     "_account": "6beaa4e0-e663-11e7-a4b1-53f92960e92c",
+     "isAdmin": true,
+     "_id": "dacf4510-e70c-11e7-8dd7-5fac8fcb80fe"
+ }
+ * @apiUse Unauthorized
+ * @apiUse Forbidden
+ * @apiUse AccountNotFound
+ */
+
+// -----------------------------------------------------------------
+//                    DELETE ACCOUNT USERS
+// -----------------------------------------------------------------
+/**
+ * @api {delete} /accounts/:accountId/users/:id Delete account users
+ * @apiName DeleteAccountUsers
+ * @apiVersion 1.0.0
+ * @apiDescription Delete user of account
+ * @apiGroup Account
+ * @apiHeader {String} Authorization Users access token.
+ * @apiHeaderExample {json} Header Example:
+ {
+   "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6Ijg2Y2NmYTAwLWQzYWUtMTFlNy04ZGM1LTFmNzVkNGE3MWY2NyJ9LCJpYXQiOjE1MTE4MTMzNzMsImV4cCI6MTU0MzM0OTM3M30.ScQ8baHireB2heW8ngoXIdWo9qbZkm-ddEP5mTAzLHc"
+ }
+ * @apiParam {Number} accountId Account unique GUID.
+ * @apiParam {Number} id Users unique GUID.
+ * @apiParamExample {json} Request Params Example:
+ *     {
+ *       "accountId": "6beaa4e0-e663-11e7-a4b1-53f92960e92c"
+ *       "id": "86ccfa00-d3ae-11e7-8dc5-1f75d4a71f67"
+ *     }
+ // * @apiUse AccountResponseParams
+ * @apiSuccessExample {json} Success-Response:
+ * HTTP/1.1 200 OK
+ {
+     "Attributes": {
+         "_user": "86ccfa00-d3ae-11e7-8dc5-1f75d4a71f67",
+         "isAdmin": true,
+         "_id": "dacf4510-e70c-11e7-8dd7-5fac8fcb80fe",
+         "_account": "6beaa4e0-e663-11e7-a4b1-53f92960e92c"
+     }
+ }
+ * @apiUse Unauthorized
+ * @apiUse Forbidden
+ * @apiUse AccountNotFound
+ */
+// -----------------------------------------------------------------
+//                    DELETE ACCOUNT
+// -----------------------------------------------------------------
+/**
+ * @api {delete} /accounts/:id Delete account
+ * @apiName DeleteAccount
+ * @apiVersion 1.0.0
+ * @apiDescription Delete account
+ * @apiGroup Account
+ * @apiHeader {String} Authorization Users access token.
+ * @apiHeaderExample {json} Header Example:
+ {
+   "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6Ijg2Y2NmYTAwLWQzYWUtMTFlNy04ZGM1LTFmNzVkNGE3MWY2NyJ9LCJpYXQiOjE1MTE4MTMzNzMsImV4cCI6MTU0MzM0OTM3M30.ScQ8baHireB2heW8ngoXIdWo9qbZkm-ddEP5mTAzLHc"
+ }
+ * @apiParam {Number} id Account unique GUID.
+ * @apiParamExample {json} Request Params Example:
+ *     {
+ *       "id": "6beaa4e0-e663-11e7-a4b1-53f92960e92c"
+ *     }
+ * @apiParam  {String} name Account name.
+ * @apiParam  {String} key AWS Access Key.
+ * @apiParam  {String} secret AWS Secret for access key.
+ * @apiParam  {String} region AWS region.
+ * @apiParamExample {json} Request Body Example:
+ {
+   "name": "Techmagic",
+   "key": "qwe1qwe1qwe1qwe1qwe1qwe1",
+   "secret": "rty1",
+   "region": "eu-central-1"
+ }
+ * @apiUse AccountResponseParams
+ * @apiSuccessExample {json} Success-Response:
+ * HTTP/1.1 200 OK
+ {
+     "_id": "1d72b840-e710-11e7-b0cc-77a5cace9bc4",
+     "name": "Techmagic",
+     "key": "qwe1qwe1qwe1qwe1qwe1qwe1",
+     "secret": "rty1",
+     "region": "eu-central-1",
+     "createdAt": 1513944205764,
+     "updatedAt": 1513944205764,
+     "isActive": 1,
+     "_user": "86ccfa00-d3ae-11e7-8dc5-1f75d4a71f67"
+ }
+ * @apiUse Unauthorized
+ * @apiUse Forbidden
+ * @apiUse AccountNotFound
+ */
 // -----------------------------------------------------------------
 //                    DEFINES
 // -----------------------------------------------------------------
@@ -45,9 +383,9 @@
  */
 
 /**
- * @apiDefine NotFound
- * @apiError UserNotFound The <code>id</code> of the User was not found.
- * @apiErrorExample {String} UserNotFound:
+ * @apiDefine AccountNotFound
+ * @apiError AccountNotFound The <code>id</code> of the Account was not found.
+ * @apiErrorExample {String} AccountNotFound:
  HTTP/1.1 404 Not Found
  NOT_FOUND
  */
@@ -84,11 +422,13 @@
  */
 
 /**
- * @apiDefine UserResponseParams
- * @apiSuccess (Response fields) {String} _id Unique user identificator across all program. Default uuid v1 value.
- * @apiSuccess (Response fields) {String} firstName Firstname of the User.
- * @apiSuccess (Response fields) {String} lastName Lastname of the User.
- * @apiSuccess (Response fields) {String} email Email of the User.
+ * @apiDefine AccountResponseParams
+ * @apiSuccess (Response fields) {String} _id Unique account identificator across all program. Default uuid v1 value.
+ * @apiSuccess (Response fields) {String} name Account name.
+ * @apiSuccess (Response fields) {String} key AWS Access Key.
+ * @apiSuccess (Response fields) {String} secret AWS Secret for access key.
+ * @apiSuccess (Response fields) {String} region AWS region.
+ * @apiSuccess (Response fields) {String} _user Account creator.
  * @apiSuccess (Response fields) {Timestamp} createdAt The number of seconds between a users creation and the Unix Epoch.
  * @apiSuccess (Response fields) {Timestamp} updatedAt The number of seconds between a users deletion and the Unix Epoch.
  */

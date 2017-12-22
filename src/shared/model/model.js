@@ -30,7 +30,7 @@ module.exports = class Model {
 
   static buildQuery (params) {
     const result = {
-      TableName: params.TableName
+      TableName: params.TableName || this.TABLE
     }
     if (params.Key) {
       result.Key = params.Key

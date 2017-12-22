@@ -8,6 +8,10 @@
     "GetUser",
     "UpdateUser",
     "DeleteUser",
-    "VerifyUser"
+    "VerifyUser",
+    "CreateAccount",
+    "GetAccounts",
+    "GetAccount",
+    "UpdateAccount"
   ]
 }
