@@ -22,3 +22,4 @@ functions:
           path: /accounts/{id}/functions/{functionId}/invocations
           method: get
           cors: true
+

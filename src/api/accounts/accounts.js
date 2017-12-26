@@ -110,26 +110,34 @@ module.exports.inviteUsers = (event, context, callback) => {
   return Promise.all([
     passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
     AccountModel.getActiveByIdrOrThrow(event.pathParameters.id),
-    helper.validateInvite(event.body)
+    helper.validateInvite(event.body),
+    UserAccountModel.getUsersByAccount(event.pathParameters.id)
   ])
-    .then(([id, account, body]) => {
+    .then(([id, account, body, invitedUsers]) => {
+      let invitedUsersIds = invitedUsers.map(user => user._user)
+      if (id !== account._user) throw errors.forbidden()
       let users = []
-      const dbPromises = []
       if (body._users) {
         users = body._users
       }
       if (body._user) {
         users.push(body._user)
       }
-      // TODO: check response for _user + _users with the same user ID
+      users = users.filter(user => !invitedUsersIds.includes(user))
+      return Promise.all(users.map(user => UserModel.getById(user)))
+    })
+    .then(users => {
+      console.log(users)
+      let dbPromises = []
       users.forEach((user) => {
         let accountUser = new UserAccountModel({
-          _user: user,
+          _user: user._id,
           _account: event.pathParameters.id,
           isAdmin: false
         })
         dbPromises.push(accountUser.save())
       })
+
       return Promise.all(dbPromises)
     })
     .then(responses.ok)
@@ -190,20 +198,11 @@ module.exports.updateAccountUser = (event, context, callback) => {
 }
 
 module.exports.deleteAccountUser = (event, context, callback) => {
-  return passport.checkAuth(event.headers.Authorization)
-    .then((decoded) => {
-      return AccountModel.getById(event.pathParameters.id)
-        .then((account) => {
-          if (account._user !== decoded.user._id) {
-            throw Error('User has no permission')
-          }
-          return account
-        })
-        .catch((err) => {
-          throw err
-        })
-    })
-    .then((data) => {
+  return Promise.all([
+    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    AccountModel.getActiveByIdrOrThrow(event.pathParameters.id)])
+    .then(([id, account]) => {
+      if (id !== account._user) throw errors.forbidden()
       return UserAccountModel.delete({
         Key: {
           _user: event.pathParameters.userId,

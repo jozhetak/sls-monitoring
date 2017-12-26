@@ -177,6 +177,8 @@ functions:
   # FUNCTIONS
   listFunctions: ${file(./src/api/functions/serverless.yml):functions.listFunctions}
   getFunction: ${file(./src/api/functions/serverless.yml):functions.getFunction}
+  populateFunction: ${file(./src/api/functions/serverless.yml):functions.populateFunction}
+
   # INVOCATIONS
   listInvocations: ${file(./src/api/invocations/serverless.yml):functions.listInvocations}
   getInvocation: ${file(./src/api/invocations/serverless.yml):functions.getInvocation}

@@ -37,7 +37,6 @@ module.exports = class AWSCollector extends Collector {
     const lambda = new AWS.Lambda()
     return lambda.listFunctions({}).promise()
       .then((data) => {
-
         console.log('data', data)
         return Promise.map(data.Functions, func => {
           return that._getInvocations(func)
@@ -115,7 +114,6 @@ module.exports = class AWSCollector extends Collector {
     const invocations = []
     let currentInvocation = {}
     events.forEach((event) => {
-
       if (START_REQUEST_PATTERN.test(event.message)) {
         try {
           const requestId = event.message.match(START_REQUEST_PATTERN)[2]
@@ -128,8 +126,7 @@ module.exports = class AWSCollector extends Collector {
           console.log('error parsing log event, START REQUEST PATTERN: ', err,
             event.message)
         }
-      }
-      else if (CRASH_PATTERN.test(event.message)) {
+      } else if (CRASH_PATTERN.test(event.message)) {
         const requestId = event.message.match(CRASH_PATTERN)[2]
 
         const match = _.find(invocations,
@@ -139,15 +136,13 @@ module.exports = class AWSCollector extends Collector {
           match.errorType = 'crash'
           match.logs.push(event)
         }
-      }
-      else if (ERROR_PATTERN.test(event.message)) {
+      } else if (ERROR_PATTERN.test(event.message)) {
         currentInvocation.error = 1
         currentInvocation.errorType = 'error'
         if (currentInvocation.logs) {
           currentInvocation.logs.push(event)
         }
-      }
-      else if (CONFIG_ERROR_PATTERN_1.test(event.message) ||
+      } else if (CONFIG_ERROR_PATTERN_1.test(event.message) ||
         CONFIG_ERROR_PATTERN_2.test(event.message) ||
         CONFIG_ERROR_PATTERN_3.test(event.message)) {
         currentInvocation.error = 1
@@ -155,8 +150,7 @@ module.exports = class AWSCollector extends Collector {
         if (currentInvocation.logs) {
           currentInvocation.logs.push(event)
         }
-      }
-      else if (REPORT_PATTERN.test(event.message)) {
+      } else if (REPORT_PATTERN.test(event.message)) {
         try {
           const req = event.message.match(REPORT_PATTERN)[2]
           currentInvocation.duration = parseFloat(
@@ -179,9 +173,7 @@ module.exports = class AWSCollector extends Collector {
             event.message)
           throw err
         }
-
-      }
-      else {
+      } else {
         if (currentInvocation.logs) {
           currentInvocation.logs.push(event)
         }
