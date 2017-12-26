@@ -7,7 +7,7 @@ const dynamodb = require('../helper/dynamodb')
 
 module.exports = class Model {
   static getUpdateCondition (params) {
-    const timestamp = new Date().getTime()
+    const timestamp = Date.now()
     let UpdateExpression = 'SET '
     const ExpressionAttributeValues = {
       ':updatedAt': timestamp
@@ -30,7 +30,7 @@ module.exports = class Model {
 
   static buildQuery (params) {
     const result = {
-      TableName: this.TABLE
+      TableName: params.TableName || this.TABLE
     }
     if (params.Key) {
       result.Key = params.Key
@@ -114,10 +114,8 @@ module.exports = class Model {
 
   static getAllScan (params) {
     const query = this.buildQuery(params)
-    console.log(JSON.stringify(query, null, 4))
     return dynamodb.scan(query).promise()
       .then((data) => {
-        console.log('data', data)
         return data
       })
   }
@@ -171,6 +169,8 @@ module.exports = class Model {
     }
     return dynamodb.update(params).promise()
       .then((data) => {
+        console.log(data)
+
         if (data) {
           return data.Attributes
         }

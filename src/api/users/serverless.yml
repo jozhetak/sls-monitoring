@@ -97,7 +97,7 @@ functions:
         - src/shared/**
     events:
       - http:
-          path: users/{id}/verify/{token}
+          path: users/{id}/verification/{token}
           method: get
           cors: true
   sendResetPasswordEmail:
@@ -109,7 +109,7 @@ functions:
         - src/shared/**
     events:
       - http:
-          path: users/{id}/resetEmail
+          path: users/email/password
           method: post
           cors: true
   sendVerificationEmail:
@@ -121,7 +121,7 @@ functions:
         - src/shared/**
     events:
       - http:
-          path: users/{id}/verificationEmail
+          path: users/{id}/email/verification
           method: post
           cors: true
   resetPassword:

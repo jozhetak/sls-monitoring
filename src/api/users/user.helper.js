@@ -1,15 +1,16 @@
 const joi = require('joi')
 const errors = require('../../shared/helper/errors')
 
+const passwordSchema = joi.string().min(8).regex(/.*/)
+
 const schema = joi.object().keys({
   _id: joi.string().guid(),
   firstName: joi.string(),
   lastName: joi.string(),
   email: joi.string().email(),
-  password: joi.string().forbidden(),
+  password: passwordSchema.forbidden(),
   createdAt: joi.date().forbidden(),
   updatedAt: joi.date().forbidden()
-  // isActive: joi.boolean().truthy()
 })
 
 module.exports.validate = (user) => {
@@ -20,11 +21,11 @@ module.exports.validate = (user) => {
 }
 
 const createSchema = joi.object().keys({
-  _id: joi.string().guid(),
+  _id: joi.string().guid().forbidden(),
   firstName: joi.string(),
   lastName: joi.string(),
   email: joi.string().email(),
-  password: joi.string(),
+  password: passwordSchema,
   createdAt: joi.date().forbidden(),
   updatedAt: joi.date().forbidden()
 })
@@ -34,4 +35,15 @@ module.exports.validateCreate = (user) => {
     .catch(err => {
       throw errors.invalidJoi(err)
     })
+}
+
+module.exports.validatePassword = (password) => {
+  return joi.validate(password, passwordSchema)
+    .catch(err => {
+      throw errors.invalidJoi(err)
+    })
+}
+
+module.exports.timestamp = () => {
+  return Date.now()
 }

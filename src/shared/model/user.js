@@ -5,6 +5,7 @@
 const Model = require('./model')
 const dynamodb = require('../helper/dynamodb')
 const _ = require('lodash')
+const errors = require('../../shared/helper/errors')
 
 module.exports = class User extends Model {
   constructor (opts) {
@@ -29,7 +30,7 @@ module.exports = class User extends Model {
         _account: params._account
       })
     })
-    dbparams.RequestItems['user-accounts-dev'] = {
+    dbparams.RequestItems[process.env.USER_ACCOUNTS_TABLE] = {
       Keys: userAccounts
     }
     return dynamodb.batchGet(dbparams).promise()
@@ -39,7 +40,7 @@ module.exports = class User extends Model {
         if (data.Responses[this.TABLE].length > 0) {
           //  return data.Responses[this.TABLE]
         }
-        data.Responses['user-accounts-dev'].forEach((account) => {
+        data.Responses[process.env.USER_ACCOUNTS_TABLE].forEach((account) => {
           let _user = account._user
           account._user = _.find(data.Responses[this.TABLE], {_id: _user})
           result.push(account)
@@ -51,11 +52,11 @@ module.exports = class User extends Model {
   static getByEmail (email) {
     const params = {
       TableName: this.TABLE,
-      IndexName: 'EmailPasswordIndex',
+      IndexName: 'emailIndex',
       KeyConditionExpression: 'email = :email and isActive = :isActive',
       ExpressionAttributeValues: {
         ':email': email,
-        ':isActive': true
+        ':isActive': 1
       }
     }
 
@@ -63,6 +64,28 @@ module.exports = class User extends Model {
       .promise()
       .then((data) => {
         return data.Items[0]
+      })
+  }
+
+  static getActiveByIdrOrThrow (id) {
+    return this.getById(id)
+      .then(user => {
+        if (!user) {
+          throw errors.notFound()
+        }
+        if (!user.hasOwnProperty('isActive')) throw errors.notFound()
+        return user
+      })
+  }
+
+  static isActiveOrThrow ({user}) {
+    return this.getById(user._id)
+      .then(user => {
+        if (!user) {
+          throw errors.unauthorized()
+        }
+        if (!user.hasOwnProperty('isActive')) throw errors.forbidden()
+        return user._id
       })
   }
 }

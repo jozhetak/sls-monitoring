@@ -33,7 +33,6 @@ module.exports.signIn = (event, content, callback) => {
     })
     .then((data) => {
       const users = data.Items.filter(e => !(e.isActive == null))
-      console.log(users)
       if (users.length > 0) {
         return users[0]
       } else {
@@ -48,7 +47,7 @@ module.exports.signIn = (event, content, callback) => {
       }, 'JWT_SECRET', {expiresIn: 3600 * 24 * 365})
       return user
     })
-    .then(dtoUser.public)
+    .then(dtoUser.withToken)
     .then(responses.ok)
     .catch(responses.error)
     .then(response => callback(null, response))

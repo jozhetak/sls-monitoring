@@ -59,3 +59,10 @@ module.exports.expired = (err) => {
   error.statusCode = HttpStatus.GONE
   return error
 }
+
+module.exports.conflict = (err) => {
+  const error = new ProjectError('Conflict')
+  if (err) error.message = err
+  error.statusCode = HttpStatus.CONFLICT
+  return error
+}

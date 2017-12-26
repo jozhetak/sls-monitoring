@@ -8,7 +8,7 @@ module.exports.ok = (body) => {
 module.exports.created = (body) => {
   return buildResponse(HttpStatus.CREATED, body)
 }
-module.exports.deleted = (body) => {
+module.exports.empty = (body) => {
   return buildResponse(HttpStatus.NO_CONTENT, body)
 }
 
