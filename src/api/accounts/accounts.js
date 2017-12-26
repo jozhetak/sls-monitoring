@@ -113,21 +113,23 @@ module.exports.inviteUsers = (event, context, callback) => {
     helper.validateInvite(event.body),
     UserAccountModel.getUsersByAccount(event.pathParameters.id)
   ])
-    .then(([id, account, body, invitedUsers]) => {
-      let invitedUsersIds = invitedUsers.map(user => user._user)
-      if (id !== account._user) throw errors.forbidden()
+    .then(([id, account, body, accountUsers]) => {
       let users = []
+      let accountUsersIds = accountUsers.map(user => user._user)
+      if (!(accountUsersIds.includes(id) && accountUsers.find(user => user._user === id).isAdmin)) {
+        throw errors.forbidden()
+      }
+
       if (body._users) {
         users = body._users
       }
       if (body._user) {
         users.push(body._user)
       }
-      users = users.filter(user => !invitedUsersIds.includes(user))
+      users = users.filter(user => !accountUsersIds.includes(user))
       return Promise.all(users.map(user => UserModel.getById(user)))
     })
     .then(users => {
-      console.log(users)
       let dbPromises = []
       users.forEach((user) => {
         let accountUser = new UserAccountModel({
@@ -156,13 +158,15 @@ module.exports.getAccountUsers = (event, context, callback) => {
           _id: user._user
         })
       })
-      console.log('users', usersList)
       return UserModel.getUsersOfAccount({
         _account: event.pathParameters.id,
         Keys: usersList
       })
     })
-    // .then((users) => users.map(dtoUser.makeDto))
+    .then((users) => users.map(user => {
+      user._user = dtoUser.public(user._user)
+      return user
+    }))
     .then(responses.ok)
     .catch(responses.error)
     .then(response => callback(null, response))
@@ -170,18 +174,15 @@ module.exports.getAccountUsers = (event, context, callback) => {
 
 // TODO: check user permission
 module.exports.updateAccountUser = (event, context, callback) => {
-  return passport.checkAuth(event.headers.Authorization)
-    .then((decoded) => {
-      return AccountModel.getById(event.pathParameters.id)
-        .then((account) => {
-          if (account._user !== decoded.user._id) {
-            throw Error('User has no permission')
-          }
-          return account
-        })
-        .catch((err) => {
-          throw err
-        })
+  return Promise.all([
+    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    UserAccountModel.getUsersByAccount(event.pathParameters.id)
+  ])
+    .then(([id, accountUsers]) => {
+      let accountUsersIds = accountUsers.map(user => user._user)
+      if (!(accountUsersIds.includes(id) && accountUsers.find(user => user._user === id).isAdmin)) {
+        throw errors.forbidden()
+      }
     })
     .then(() => helper.validateAccountUserUpdate(JSON.parse(event.body)))
     .then((data) => {
