@@ -17,6 +17,7 @@ module.exports.run = (event, context) => {
       ':isActive': 1
     }
   }).then((accounts) => {
+    // console.log(accounts)
     const promises = []
     accounts.Items.forEach((account) => {
       account = JSON.stringify(account)
