@@ -24,6 +24,7 @@ const _sendEmail = (data) => {
   return ses.sendEmail(params).promise()
 }
 
+// TODO: remove "localhost" and project url
 module.exports.sendVerificationEmail = (user) => {
   const options = {
     recipient: user.email,

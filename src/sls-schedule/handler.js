@@ -14,21 +14,21 @@ module.exports.run = (event, context) => {
   return AccountModel.getAllScan({
     FilterExpression: 'isActive = :isActive',
     ExpressionAttributeValues: {
-      ':isActive': true
+      ':isActive': 1
     }
-  })
-    .then((accounts) => {
-      return Promise.map(accounts, account => {
-        account = JSON.stringify(account)
-        console.log(account)
-        return sns.publish({
-          Message: account,
-          TargetArn: process.env.SLS_RUN_ARN
-        }).promise()
-      }).then(() => {
-        context.succeed()
-      }).catch(err => {
-        context.fail(err)
-      })
+  }).then((accounts) => {
+    const promises = []
+    accounts.Items.forEach((account) => {
+      account = JSON.stringify(account)
+      promises.push(sns.publish({
+        Message: account,
+        TargetArn: process.env.SLS_RUN_ARN
+      }).promise())
     })
+    return Promise.all(promises)
+  }).then(() => {
+    context.succeed()
+  }).catch(err => {
+    context.fail(err)
+  })
 }
