@@ -10,4 +10,4 @@ phases:
   build:
     commands:
       - npm install -g serverless@1.24.1
-      - SLS_DEBUG=* serverless -v -s $(echo ${CODEBUILD_INITIATOR} | cut -d'/' -f2 | cut -d'_' -f3) deploy --stage dev --region eu-central-1 --verbose
+      - SLS_DEBUG=* serverless deploy --stage dev --region eu-central-1 --verbose

@@ -1,8 +1,8 @@
 Deploy (region is ignored from ~/.aws/config)
 
-        `sls deploy --aws-profile serverless-admin --stage dev --region eu-central-1`
-        `sls deploy function --aws-profile serverless-admin --stage dev --region eu-central-1 --function _`
-        `sls remove --aws-profile serverless-admin --stage dev --region us-central-1`
+        `sls deploy --aws-profile serverless-deploy --stage dev --region eu-central-1`
+        `sls deploy function --aws-profile serverless-deploy --stage dev --region eu-central-1 --function _`
+        `sls remove --aws-profile serverless-deploy --stage dev --region us-central-1`
         `serverless package --package my-artifacts --stage dev --region eu-central-1`
         
 How to run:
@@ -47,21 +47,45 @@ UPDATE POLICY
                     "cloudformation:UpdateStack",
                     "cloudformation:ValidateTemplate",
                     "dynamodb:CreateTable",
+                    "dynamodb:DeleteTable",
                     "dynamodb:DescribeTable",
                     "dynamodb:ListTables",
+                    "iam:CreateRole",
+                    "iam:DeleteRole",
+                    "iam:DeleteRolePolicy",
                     "iam:GetRole",
+                    "iam:PassRole",
+                    "iam:PutRolePolicy",
+                    "lambda:AddPermission",
+                    "lambda:CreateFunction",
+                    "lambda:DeleteFunction",
+                    "lambda:GetFunction",
                     "lambda:GetFunctionConfiguration",
+                    "lambda:ListVersionsByFunction",
+                    "lambda:PublishVersion",
                     "lambda:RemovePermission",
                     "lambda:UpdateFunctionCode",
                     "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
                     "logs:DeleteLogGroup",
                     "logs:DescribeLogGroups",
-                    "s3:*"
+                    "s3:*",
+                    "SNS:CreateTopic",
+                    "SNS:DeleteTopic",
+                    "SNS:GetTopicAttributes",
+                    "SNS:ListTopics",
+                    "SNS:Subscribe"
                 ],
                 "Resource": "*"
             }
         ]
     }
+    
+How to clean up:
+    - delete s3 sources
+    - delete sns and Subscription
+    - delete IAM lambda role
+    - delete CloudFormation stack
 
 Functions Model Schema
 
