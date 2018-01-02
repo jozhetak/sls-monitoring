@@ -1,13 +1,22 @@
-version: 0.1
+version: 0.2
 
 phases:
   install:
     commands:
-#      - npm install -g nvm
-#      - nvm install v6.10.3
+      - echo Entered the install phase...
       - printenv
       - npm install
+      - npm install -g serverless@1.24.1
+  pre_build:
+    commands:
+      - echo Entered the pre_build phase...
+      - npm run unit
   build:
     commands:
-      - npm install -g serverless@1.24.1
+      - echo Entered the build phase...
+      - echo Build started on `date`
       - SLS_DEBUG=* serverless deploy --stage dev --region eu-central-1 --verbose
+  post_build:
+    commands:
+      - echo Entered the post_build phase...
+      - echo Build completed on `date`
