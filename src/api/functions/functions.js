@@ -5,6 +5,7 @@ const _ = require('lodash')
 const passport = require('./../passport/passport')
 const responses = require('../../shared/helper/responses')
 const faker = require('faker')
+const BigInteger = require('big-integer')
 
 module.exports.list = (event, context, callback) => {
   return passport.checkAuth(event.headers.Authorization)
@@ -40,6 +41,10 @@ module.exports.populate = (event, context, callback) => {
   let functionsCount = event.queryStringParameters ? event.queryStringParameters.functions_count : 5
   let invocationsMin = event.queryStringParameters ? event.queryStringParameters.invocations_min : 5
   let invocationsMax = event.queryStringParameters ? event.queryStringParameters.invocations_max : 10
+  let daysInThePast = event.queryStringParameters ? event.queryStringParameters.days : 365
+  const max = new Date()
+  const min = new Date()
+  min.setFullYear(max.getFullYear() - 1)
   console.log(functionsCount)
   console.log(invocationsMin)
   console.log(invocationsMax)
@@ -82,46 +87,52 @@ module.exports.populate = (event, context, callback) => {
       return Promise.all(promises)
     })
     .then(value => {
-      let eventCounter = faker.random.number({min: 33769902588851484788521757190824674485845186067860094976, max: 53769902588851484788521757190824674485845186067860094976})
+      let eventCounter = new BigInteger('33773592922032033623252972461104249685054501853208182784').plus(faker.random.number({min: 1000, max: 5000}))
       let promises = []
       for (let func of value) {
         let invocationsCount = faker.random.number({min: invocationsMin, max: invocationsMax})
         for (let i = 0; i < invocationsCount; i++) {
-          let duration = faker.random.number({min: 0, max: func.timeout * 1000})
+          let duration = faker.finance.amount(0, func.timeout * 100)
+          let randomDate = faker.date.between(min, max)
+          let randomDateMillis = randomDate.getTime()
+          let _id = faker.random.uuid()
+          let logStreamName = `${randomDate.getFullYear()}/${randomDate.getMonth() + 1}/${randomDate.getDate()}[$LATEST]${faker.random.uuid()}`
+          let billedDuration = Math.round(duration / 100) * 100
+          let memoryUsed = faker.random.number({min: 10, max: func.memSize})
           let invocation = {
             '_account': func._account,
             '_function': func._id,
-            '_id': faker.random.uuid(),
+            '_id': _id,
             'accountId': func.accountId,
-            'billedDuration': Math.round(duration / 100) * 100,
+            'billedDuration': billedDuration,
             'duration': duration,
             'functionId': func._id,
             'logs': [
               {
-                'eventId': eventCounter,
-                'ingestionTime': 1514294804409,
-                'logStreamName': '2017/12/26/[$LATEST]bb229c89263b4b9e8f4b7875db4ebb70',
-                'message': 'START RequestId: 6a869218-ea40-11e7-8417-bbb6fde68b2a Version: $LATEST\n',
-                'timestamp': 1514294804421
+                'eventId': (eventCounter = eventCounter.plus(faker.random.number({min: 1, max: 1000}))).toString(),
+                'ingestionTime': randomDateMillis,
+                'logStreamName': logStreamName,
+                'message': `START RequestId: ${_id}  Version: $LATEST\n`,
+                'timestamp': randomDateMillis - faker.random.number({min: 5, max: 15})
               },
               {
-                'eventId': eventCounter += faker.random.number({min: 1, max: 1000}).toString(),
-                'ingestionTime': 1514294804477,
-                'logStreamName': '2017/12/26/[$LATEST]bb229c89263b4b9e8f4b7875db4ebb70',
-                'message': 'END RequestId: 6a869218-ea40-11e7-8417-bbb6fde68b2a\n',
-                'timestamp': 1514294804489
+                'eventId': (eventCounter = eventCounter.plus(faker.random.number({min: 1, max: 1000}))).toString(),
+                'ingestionTime': randomDateMillis += faker.random.number({min: 0, max: duration / 3}),
+                'logStreamName': logStreamName,
+                'message': `END RequestId: ${_id}\n`,
+                'timestamp': randomDateMillis += faker.random.number({min: 0, max: duration / 3})
               },
               {
-                'eventId': eventCounter += faker.random.number({min: 1, max: 1000}).toString(),
-                'ingestionTime': 1514294804477,
-                'logStreamName': '2017/12/26/[$LATEST]bb229c89263b4b9e8f4b7875db4ebb70',
-                'message': 'REPORT RequestId: 6a869218-ea40-11e7-8417-bbb6fde68b2a\tDuration: 65.21 ms\tBilled Duration: 100 ms \tMemory Size: 1024 MB\tMax Memory Used: 98 MB\t\n',
-                'timestamp': 1514294804489
+                'eventId': (eventCounter = eventCounter.plus(faker.random.number({min: 1, max: 1000}))).toString(),
+                'ingestionTime': randomDateMillis += faker.random.number({min: 0, max: duration / 3}),
+                'logStreamName': logStreamName,
+                'message': `REPORT RequestId: ${_id}\tDuration: ${duration} ms\tBilled Duration: ${billedDuration} ms \tMemory Size: ${func.memSize} MB\tMax Memory Used: ${memoryUsed} MB\t\n`,
+                'timestamp': randomDateMillis += faker.random.number({min: 0, max: duration / 3})
               }
             ],
-            'logStreamName': '2017/12/26/[$LATEST]bb229c89263b4b9e8f4b7875db4ebb70',
+            'logStreamName': logStreamName,
             'memory': func.memSize,
-            'memoryUsed': faker.random.number({min: 10, max: func.memSize})
+            'memoryUsed': memoryUsed
 
           }
           let invocationModel = new InvocationModel(invocation)
@@ -131,8 +142,19 @@ module.exports.populate = (event, context, callback) => {
       return Promise.all(promises)
     })
     .then(value => {
-      console.log(value)
-      return value
+ //     console.log(value)
+      return undefined
+    })
+    .then(responses.ok)
+    .catch(responses.error)
+    .then(response => callback(null, response))
+}
+
+module.exports.clear = (event, context, callback) => {
+  InvocationModel.getAllScan({})
+    .then(({Items}) => {
+      console.log(Items)
+      return Promise.all(Items.map(item => InvocationModel.delete({Key: item._id})))
     })
     .then(responses.ok)
     .catch(responses.error)

@@ -139,13 +139,13 @@ module.exports.resetPassword = (event, context, callback) => {
   ])
     .then(([user, password]) => {
       if (user.resetPasswordTokenExpires < helper.timestamp()) throw errors.expired()
-      if (user.resetPasswordToken === token) {
-        return UserModel.update(user._id, {
-          password: passport.encryptPassword(password),
-          resetPassword: null,
-          resetPasswordTokenExpires: null
-        })
-      }
+      if (!user.resetPasswordToken === token) throw errors.forbidden()
+
+      return UserModel.update(user._id, {
+        password: passport.encryptPassword(password),
+        resetPassword: null,
+        resetPasswordTokenExpires: null
+      })
     })
     .then(dtoUser.public)
     .then(responses.ok)

@@ -10,6 +10,6 @@ module.exports = class Function extends Model {
   }
 
   static get TABLE () {
-    return process.env.FUNCTIONS_TABLE
+    return process.env.INVOCATIONS_TABLE
   }
 }
