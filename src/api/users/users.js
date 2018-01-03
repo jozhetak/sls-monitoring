@@ -131,7 +131,7 @@ module.exports.resetPassword = (event, context, callback) => {
     helper.validatePassword(body.password),
     UserModel.getActiveByIdrOrThrow(id)
   ])
-    .then(([user, password]) => {
+    .then(([password, user]) => {
       if (user.resetPasswordTokenExpires < helper.timestamp()) throw errors.expired()
       if (user.resetPasswordToken === token) {
         return UserModel.update(user._id, {
