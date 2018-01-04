@@ -26,5 +26,5 @@ phases:
     commands:
       - echo Entered the post_build phase...
       - echo Deploy Documantation
-      - aws s3 sync apidoc/build/ s3://sls-bucket-apidoc-$STAGE
+      - aws s3 sync apidoc/build/ s3://sls-bucket-apidoc-$STAGE --acl public-read
       - echo Build completed on `date`

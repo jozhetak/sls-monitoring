@@ -36,6 +36,7 @@ POLICY (Deployment permissions)
                 "Sid": "VisualEditor0",
                 "Effect": "Allow",
                 "Action": [
+                    "ssm:GetParameters",
                     "apigateway:DELETE",
                     "apigateway:GET",
                     "apigateway:HEAD",
