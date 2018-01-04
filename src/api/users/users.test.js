@@ -5,37 +5,50 @@ const chai = require('chai')
 const users = require('./users')
 
 const UserModel = require('../../shared/model/user')
-// const helper = require('./user.helper')
-// const uuid = require('uuid')
-// const passport = require('../passport/passport')
-// const errors = require('../../shared/helper/errors')
-// const dtoUser = require('../../shared/user.dto')
-// const responses = require('../../shared/helper/responses')
-// const emailService = require('../../shared/helper/email.service')
-// const hour = 360000
+const emailService = require('../../shared/helper/email.service')
 
 chai.should()
 describe('users', () => {
   describe('create', () => {
-    let sandbox
-    beforeEach(() => {
-      sandbox = sinon.sandbox.create()
-    })
+    describe('should create user without errors', () => {
+      let sandbox
+      before((done) => {
+        sandbox = sinon.sandbox.create()
+        sandbox.stub(UserModel.prototype, 'save').resolves({
+          _id: 1,
+          email: 'test@test.test',
+          firstName: 'jon',
+          lastName: 'doe'
+        })
+        sandbox.stub(emailService, 'sendVerificationEmail').resolves(true)
+        done()
+      })
+      after(() => {
+        sandbox.restore()
+      })
+      it('should create user', (done) => {
+        users.create({
+          body: JSON.stringify({
+            firstName: 'jon',
+            lastName: 'doe',
+            email: 'test@test.com',
+            password: '12345678'
+          })
+        }, null, (err, response) => {
+          response.statusCode.should.be.equal(201)
+          done()
+        })
 
-    afterEach(() => {
-      sandbox.restore()
-    })
-    it('should create user', (done) => {
-      done()
+      })
     })
   })
 
   describe('resetPassword', () => {
-    let sandbox
-    afterEach(() => {
-      sandbox.restore()
-    })
     describe('should reset password', () => {
+      let sandbox
+      after(() => {
+        sandbox.restore()
+      })
       before((done) => {
         sandbox = sinon.createSandbox()
         sandbox.stub(UserModel, 'getActiveByIdrOrThrow').withArgs(1).resolves({
@@ -62,8 +75,6 @@ describe('users', () => {
           done()
         })
       })
-
-      // done()
     })
   })
 })

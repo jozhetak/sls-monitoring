@@ -148,7 +148,6 @@ module.exports.getAccountUsers = (event, context, callback) => {
           _id: user._user
         })
       })
-      console.log('users', usersList)
       return UserModel.getUsersOfAccount({
         _account: event.pathParameters.id,
         Keys: usersList
