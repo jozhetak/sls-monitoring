@@ -1,5 +1,9 @@
 version: 0.2
 
+env:
+  parameter-store:
+    STAGE: 'dev'
+
 phases:
   install:
     commands:
@@ -16,7 +20,11 @@ phases:
       - echo Entered the build phase...
       - echo Build started on `date`
       - SLS_DEBUG=* serverless deploy --stage dev --region eu-central-1 --verbose
+      - echo Generate api documantation
+      - npm run apidoc
   post_build:
     commands:
       - echo Entered the post_build phase...
+      - echo Deploy Documantation
+      - aws s3 sync apidoc/build/ s3://sls-bucket-apidoc-$STAGE
       - echo Build completed on `date`
