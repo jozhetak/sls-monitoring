@@ -21,6 +21,7 @@ describe('users', () => {
           lastName: 'doe'
         })
         sandbox.stub(emailService, 'sendVerificationEmail').resolves(true)
+        sandbox.stub(UserModel, 'getByEmail').resolves(false)
         done()
       })
       after(() => {
@@ -35,10 +36,10 @@ describe('users', () => {
             password: '12345678'
           })
         }, null, (err, response) => {
+          console.log(response)
           response.statusCode.should.be.equal(201)
           done()
         })
-
       })
     })
   })
