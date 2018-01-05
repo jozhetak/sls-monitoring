@@ -1,6 +1,6 @@
 'use strict'
 const FunctionModel = require('../../shared/model/function')
-const InvocationModel = require('../../shared/model/function')
+const InvocationModel = require('../../shared/model/invocation')
 const _ = require('lodash')
 const passport = require('./../passport/passport')
 const responses = require('../../shared/helper/responses')
@@ -38,16 +38,16 @@ module.exports.get = (event, context, callback) => {
 }
 
 module.exports.populate = (event, context, callback) => {
-  let functionsCount = event.queryStringParameters ? event.queryStringParameters.functions_count : 5
-  let invocationsMin = event.queryStringParameters ? event.queryStringParameters.invocations_min : 5
-  let invocationsMax = event.queryStringParameters ? event.queryStringParameters.invocations_max : 10
-  let daysInThePast = event.queryStringParameters ? event.queryStringParameters.days : 365
+  let functionsCount = event.queryStringParameters.functions_count ? event.queryStringParameters.functions_count : 5
+  let invocationsMin = event.queryStringParameters.invocations_min ? event.queryStringParameters.invocations_min : 5
+  let invocationsMax = event.queryStringParameters.invocations_max ? event.queryStringParameters.invocations_max : 10
+  let daysInThePast = event.queryStringParameters.days ? event.queryStringParameters.days : 365
+  let errorsCoef = event.queryStringParameters.errors ? event.queryStringParameters.errors : 0.5
+  const accountId = event.pathParameters.id
   const max = new Date()
   const min = new Date()
-  min.setFullYear(max.getFullYear() - 1)
-  console.log(functionsCount)
-  console.log(invocationsMin)
-  console.log(invocationsMax)
+  min.setDate(max.getDate() - daysInThePast)
+
   Promise.resolve()
     .then(() => {
       const regions = [
@@ -71,11 +71,9 @@ module.exports.populate = (event, context, callback) => {
       let promises = []
       for (let i = 0; i < functionsCount; i++) {
         let func = {}
-        let accountId = faker.random.uuid()
-        let name = faker.hacker.verb()
+        let name = faker.hacker.verb() + ' ' + faker.hacker.noun()
         func._id = faker.random.uuid()
         func._account = accountId
-        func.accountId = accountId
         func.arn = `arn:aws:lambda:${faker.helpers.randomize(regions)}:${faker.random.number({min: 100000000000, max: 999999999999})}:function:${name}`
         func.codeSize = faker.random.number(({min: 100, max: 999999999}))
         func.memSize = Math.round(faker.random.number(({min: 128, max: 3008})) / 64) * 64
@@ -88,9 +86,10 @@ module.exports.populate = (event, context, callback) => {
     })
     .then(value => {
       let eventCounter = new BigInteger('33773592922032033623252972461104249685054501853208182784').plus(faker.random.number({min: 1000, max: 5000}))
-      let promises = []
+      let promisesInv = []
       for (let func of value) {
-        let invocationsCount = faker.random.number({min: invocationsMin, max: invocationsMax})
+        let invocationsCount = faker.random.number({min: Math.min(invocationsMin, invocationsMax), max: Math.max(invocationsMax, invocationsMin)})
+        let errorsCount = Math.round(errorsCoef * invocationsCount)
         for (let i = 0; i < invocationsCount; i++) {
           let duration = faker.finance.amount(0, func.timeout * 100)
           let randomDate = faker.date.between(min, max)
@@ -103,10 +102,8 @@ module.exports.populate = (event, context, callback) => {
             '_account': func._account,
             '_function': func._id,
             '_id': _id,
-            'accountId': func.accountId,
             'billedDuration': billedDuration,
             'duration': duration,
-            'functionId': func._id,
             'logs': [
               {
                 'eventId': (eventCounter = eventCounter.plus(faker.random.number({min: 1, max: 1000}))).toString(),
@@ -135,27 +132,68 @@ module.exports.populate = (event, context, callback) => {
             'memoryUsed': memoryUsed
 
           }
+          if (errorsCount > 0) {
+            invocation.error = 1
+            invocation.errorType = faker.helpers.randomize([
+              'crash',
+              'error',
+              'config'
+            ])
+
+            if (invocation.errorType === 'error') {
+              invocation.logs.splice(2, 0, {
+                'eventId': (eventCounter = eventCounter.plus(faker.random.number({min: 1, max: 1000}))).toString(),
+                'ingestionTime': randomDateMillis += faker.random.number({min: 0, max: duration / 3}),
+                'logStreamName': invocation.logStreamName,
+                'message': '{"errorMessage":\t "some error"\t}',
+                'timestamp': randomDateMillis += faker.random.number({min: 0, max: duration / 3})
+              })
+            }
+            if (invocation.errorType === 'crash') {
+              invocation.logs.splice(2, 0, {
+                'eventId': (eventCounter = eventCounter.plus(faker.random.number({min: 1, max: 1000}))).toString(),
+                'ingestionTime': randomDateMillis += faker.random.number({min: 0, max: duration / 3}),
+                'logStreamName': invocation.logStreamName,
+                'message': `RequestId: ${_id} Process exited before completing request`,
+                'timestamp': randomDateMillis += faker.random.number({min: 0, max: duration / 3})
+              })
+            }
+            if (invocation.errorType === 'config') {
+              invocation.logs.splice(2, 0, {
+                'eventId': (eventCounter = eventCounter.plus(faker.random.number({min: 1, max: 1000}))).toString(),
+                'ingestionTime': randomDateMillis += faker.random.number({min: 0, max: duration / 3}),
+                'logStreamName': invocation.logStreamName,
+                'message': `${new Date(randomDateMillis).toISOString()} ${_id} Error: [object Object]\tat module.exports.run (/var/task/src/test-error/handler.js:8:11)`,
+                'timestamp': randomDateMillis += faker.random.number({min: 0, max: duration / 3})
+              })
+            }
+
+            errorsCount--
+          }
           let invocationModel = new InvocationModel(invocation)
-          promises.push(invocationModel.save())
+          promisesInv.push(invocationModel.save())
         }
       }
-      return Promise.all(promises)
+      return Promise.all(promisesInv)
     })
     .then(value => {
  //     console.log(value)
       return undefined
     })
-    .then(responses.ok)
+    .then(responses.created)
     .catch(responses.error)
     .then(response => callback(null, response))
 }
 
 module.exports.clear = (event, context, callback) => {
-  InvocationModel.getAllScan({})
+  return Promise.all([InvocationModel.getAllScan({})
     .then(({Items}) => {
-      console.log(Items)
-      return Promise.all(Items.map(item => InvocationModel.delete({Key: item._id})))
+      return InvocationModel.bulkDelete({Keys: Items.map((item) => { return {_id: item._id} })})
+    }), FunctionModel.getAllScan({})
+    .then(({Items}) => {
+      return FunctionModel.bulkDelete({Keys: Items.map((item) => { return {_id: item._id} })})
     })
+  ])
     .then(responses.ok)
     .catch(responses.error)
     .then(response => callback(null, response))

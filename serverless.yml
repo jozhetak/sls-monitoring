@@ -17,6 +17,7 @@ service: sls-tm-collect
 custom:
   dynamodb:
     start:
+      inMemory: false
       migrate: true
       seed: true
     seed:
