@@ -10,7 +10,7 @@ phases:
       - echo Entered the install phase...
       - printenv
       - npm install
-      - npm install -g serverless@1.24.1
+      - npm install -g serverless@1.25.0
   pre_build:
     commands:
       - echo Entered the pre_build phase...
