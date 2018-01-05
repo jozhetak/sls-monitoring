@@ -6,6 +6,7 @@ const _ = require('lodash')
 const dynamodb = require('../helper/dynamodb')
 
 module.exports = class Model {
+  // TEST FOR SEVERLESS 1.25.0
   static getUpdateCondition (params) {
     const timestamp = Date.now()
     let UpdateExpression = 'SET '

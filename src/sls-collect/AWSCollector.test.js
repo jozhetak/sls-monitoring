@@ -4,10 +4,12 @@ const sinon = require('sinon')
 const proxyquire = require('proxyquire').noCallThru()
 const stub = require('./AWSCollector.stub.js')
 const stubData = require('./AWSCollector.stub.json')
-const should = require('should')
+const chai = require('chai')
 const _ = require('lodash')
 
 let AWSStub = {}
+
+chai.should()
 
 describe('--- AWSCollector ---', () => {
 
@@ -17,7 +19,6 @@ describe('--- AWSCollector ---', () => {
 
     beforeEach(() => {
       sandbox = sinon.sandbox.create()
-
     })
 
     afterEach(() => {

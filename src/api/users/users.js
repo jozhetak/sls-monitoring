@@ -12,7 +12,6 @@ const hour = 360000
 module.exports.create = (event, context, callback) => {
   const body = JSON.parse(event.body)
   const now = helper.timestamp()
-
   helper.validateCreate(body)
     .then(data => UserModel.getByEmail(data.email))
     .then(duplicate => {
@@ -137,7 +136,7 @@ module.exports.resetPassword = (event, context, callback) => {
     helper.validatePassword(body.password),
     UserModel.getActiveByIdrOrThrow(id)
   ])
-    .then(([user, password]) => {
+    .then(([password, user]) => {
       if (user.resetPasswordTokenExpires < helper.timestamp()) throw errors.expired()
       if (!user.resetPasswordToken === token) throw errors.forbidden()
 

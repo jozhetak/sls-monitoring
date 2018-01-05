@@ -179,3 +179,20 @@ resources:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1
         TableName: ${self:provider.environment.USER_ACCOUNTS_TABLE}
+    S3BucketStuffBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: sls-bucket-apidoc-${opt:stage}
+        AccessControl: 'PublicRead'
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: index.html
+        CorsConfiguration:
+          CorsRules:
+            - AllowedMethods:
+              - GET
+              - HEAD
+              AllowedOrigins:
+              - "*"
+              AllowedHeaders:
+              - "*"

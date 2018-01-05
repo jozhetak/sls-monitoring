@@ -35,9 +35,9 @@ module.exports = class Collector {
         .getById(invocation._id)
         .then(invocationDao => {
           if (!invocationDao) {
-            invocation.functionId = funcInstance._id
+            // invocation.functionId = funcInstance._id
             invocation._function = funcInstance._id
-            invocation.accountId = funcInstance.accountId
+            // invocation.accountId = funcInstance.accountId
             invocation._account = funcInstance.accountId
             const invocationInstance = new InvocationModel(invocation)
             return invocationInstance.save()
@@ -61,7 +61,7 @@ module.exports = class Collector {
         } else {
           funcDao = {
             _account: that.accountId,
-            accountId: that.accountId,
+            // accountId: that.accountId,
             name: func.FunctionName,
             arn: func.FunctionArn,
             codeSize: func.CodeSize,

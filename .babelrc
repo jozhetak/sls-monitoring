@@ -1,4 +1,0 @@
-{
-  "plugins": ["transform-runtime", "transform-async-to-generator"],
-  "presets": ["latest-minimal"]
-}

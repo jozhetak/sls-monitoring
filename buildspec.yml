@@ -1,22 +1,30 @@
-version: 0.1
+version: 0.2
+
+env:
+  variables:
+    STAGE: 'dev'
 
 phases:
   install:
     commands:
-#      - npm install -g nvm
-#      - nvm install v6.10.3
+      - echo Entered the install phase...
+      - printenv
       - npm install
-      - npm install -g serverless@1.24.1
+      - npm install -g serverless@1.25.0
+  pre_build:
+    commands:
+      - echo Entered the pre_build phase...
+      - npm run unit
   build:
     commands:
-      - SLS_DEBUG=* sls deploy --stage dev --region eu-central-1 --verbose
-#  post_build:
-#    commands:
-#      - sls deploy --stage dev --region eu-central-1
-#  post_build:
-#    commands:
-#      - serverless -v -s $(echo ${CODEBUILD_INITIATOR} | cut -d'/' -f2 | cut -d'_' -f3) deploy
-#artifacts:
-#  files:
-#    - my-artifacts*/**
-#  discard-paths: yes
+      - echo Entered the build phase...
+      - echo Build started on `date`
+      - SLS_DEBUG=* serverless deploy --stage dev --region eu-central-1 --verbose
+      - echo Generate api documantation
+      - npm run apidoc
+  post_build:
+    commands:
+      - echo Entered the post_build phase...
+      - echo Deploy Documantation
+      - aws s3 sync apidoc/build/ s3://sls-bucket-apidoc-$STAGE --acl public-read
+      - echo Build completed on `date`
