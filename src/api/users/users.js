@@ -12,7 +12,6 @@ const hour = 360000
 module.exports.create = (event, context, callback) => {
   const body = JSON.parse(event.body)
   const now = helper.timestamp()
-
   helper.validateCreate(body)
     .then(data => {
       const params = {
