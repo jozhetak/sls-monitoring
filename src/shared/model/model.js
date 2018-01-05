@@ -212,4 +212,38 @@ module.exports = class Model {
         return null
       })
   }
+
+  static bulkDelete (params) {
+    const dbparams = {
+      RequestItems: {}
+    }
+    const responses = []
+
+    while (params.Keys.length > 25) {
+      let keys = params.Keys.splice(0, 25)
+      dbparams.RequestItems[this.TABLE] = keys.map(key => {
+        return {DeleteRequest: {
+          Key: key
+        }}
+      })
+      dynamodb.batchWrite(dbparams)
+        .promise()
+        .then(result => {
+          console.log(result)
+          return result
+        })
+    }
+    dbparams.RequestItems[this.TABLE] = params.Keys.map(key => {
+      return {DeleteRequest: {
+        Key: key
+      }}
+    })
+
+    return dynamodb.batchWrite(dbparams)
+      .promise()
+      .then(result => {
+        console.log(result)
+        return result
+      })
+  }
 }

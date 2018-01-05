@@ -88,4 +88,5 @@ module.exports = class User extends Model {
         return user._id
       })
   }
+
 }

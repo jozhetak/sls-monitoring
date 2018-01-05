@@ -17,6 +17,7 @@ service: sls-tm-collect
 custom:
   dynamodb:
     start:
+      inMemory: false
       migrate: true
       seed: true
     seed:
@@ -28,6 +29,10 @@ custom:
             sources: [./seeds/accounts.json]
           - table: users-accounts-dev
             sources: [./seeds/users-accounts.json]
+          - table: functions-dev
+            sources: [./seeds/functions.json]
+          - table: invocations-dev
+            sources: [./seeds/invocations.json]
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
 # frameworkVersion: "=X.X.X"
@@ -177,6 +182,9 @@ functions:
   # FUNCTIONS
   listFunctions: ${file(./src/api/functions/serverless.yml):functions.listFunctions}
   getFunction: ${file(./src/api/functions/serverless.yml):functions.getFunction}
+  populateFunction: ${file(./src/api/functions/serverless.yml):functions.populateFunction}
+  clean: ${file(./src/api/functions/serverless.yml):functions.clear}
+
   # INVOCATIONS
   listInvocations: ${file(./src/api/invocations/serverless.yml):functions.listInvocations}
   getInvocation: ${file(./src/api/invocations/serverless.yml):functions.getInvocation}

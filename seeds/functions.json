@@ -1,0 +1,272 @@
+[
+  {
+    "_id": "5dbf8040-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-listUsers",
+    "codeSize": 1639333,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-listUsers",
+    "timeout": 300
+  },
+  {
+    "_id": "5d849a20-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-sendResetPasswordEmail",
+    "codeSize": 1639333,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-sendResetPasswordEmail",
+    "timeout": 300
+  },
+  {
+    "_id": "5dead600-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-listAccounts",
+    "codeSize": 1640541,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-listAccounts",
+    "timeout": 300
+  },
+  {
+    "_id": "5d8eac40-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-createAccount",
+    "codeSize": 1640541,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-createAccount",
+    "timeout": 300
+  },
+  {
+    "_id": "5de5a5e0-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-getAccountUsers",
+    "codeSize": 1640541,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-getAccountUsers",
+    "timeout": 300
+  },
+  {
+    "_id": "5d2cdd30-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-deleteAccountUser",
+    "codeSize": 1640541,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-deleteAccountUser",
+    "timeout": 300
+  },
+  {
+    "_id": "5dc3c600-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-populateFunction",
+    "codeSize": 2391158,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-populateFunction",
+    "timeout": 300
+  },
+  {
+    "_id": "5dbb88a0-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-createUser",
+    "codeSize": 1639333,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-createUser",
+    "timeout": 300
+  },
+  {
+    "_id": "5df75920-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-listInvocations",
+    "codeSize": 1497539,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-listInvocations",
+    "timeout": 300
+  },
+  {
+    "_id": "5d391230-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-changePassword",
+    "codeSize": 1639333,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-changePassword",
+    "timeout": 300
+  },
+  {
+    "_id": "5d47df40-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-schedule",
+    "codeSize": 1547048,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-schedule",
+    "timeout": 300
+  },
+  {
+    "_id": "5dc8cf10-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-getFunction",
+    "codeSize": 2391158,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-getFunction",
+    "timeout": 300
+  },
+  {
+    "_id": "5d98be60-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-verifyUser",
+    "codeSize": 1639333,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-verifyUser",
+    "timeout": 300
+  },
+  {
+    "_id": "5d7a12d0-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-sendVerificationEmail",
+    "codeSize": 1639333,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-sendVerificationEmail",
+    "timeout": 300
+  },
+  {
+    "_id": "5db0da40-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-updateUser",
+    "codeSize": 1639333,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-updateUser",
+    "timeout": 300
+  },
+  {
+    "_id": "5dfa3f50-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-deleteAccount",
+    "codeSize": 1640541,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-deleteAccount",
+    "timeout": 300
+  },
+  {
+    "_id": "5d6e04e0-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-getInvocation",
+    "codeSize": 1497539,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-getInvocation",
+    "timeout": 300
+  },
+  {
+    "_id": "5d9f4e10-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-resetPassword",
+    "codeSize": 1639333,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-resetPassword",
+    "timeout": 300
+  },
+  {
+    "_id": "5dd726f0-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-collect",
+    "codeSize": 1539627,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-collect",
+    "timeout": 300
+  },
+  {
+    "_id": "5da93920-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-getAccount",
+    "codeSize": 1640541,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-getAccount",
+    "timeout": 300
+  },
+  {
+    "_id": "5dd21de0-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-inviteUsers",
+    "codeSize": 1640541,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-inviteUsers",
+    "timeout": 300
+  },
+  {
+    "_id": "5d572180-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-listFunctions",
+    "codeSize": 2391158,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-listFunctions",
+    "timeout": 300
+  },
+  {
+    "_id": "5e04edb0-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-deleteUser",
+    "codeSize": 1639333,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-deleteUser",
+    "timeout": 300
+  },
+  {
+    "_id": "5df02d30-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-updateAccount",
+    "codeSize": 1640541,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-updateAccount",
+    "timeout": 300
+  },
+  {
+    "_id": "5d5cede0-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-userSignIn",
+    "codeSize": 1636363,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-userSignIn",
+    "timeout": 300
+  },
+  {
+    "_id": "5e011d20-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-getUser",
+    "codeSize": 1639333,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-getUser",
+    "timeout": 300
+  },
+  {
+    "_id": "5de075c0-ea3f-11e7-a811-d510f1d901a3",
+    "_account": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "accountId": "f7402fa0-ea33-11e7-9326-19eaaf955009",
+    "arn": "arn:aws:lambda:eu-central-1:797832150046:function:sls-tm-collect-dev-updateAccountUser",
+    "codeSize": 1640541,
+    "memSize": 1024,
+    "name": "sls-tm-collect-dev-updateAccountUser",
+    "timeout": 300
+  }
+]

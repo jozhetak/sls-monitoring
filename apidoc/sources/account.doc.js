@@ -177,10 +177,10 @@
    "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6Ijg2Y2NmYTAwLWQzYWUtMTFlNy04ZGM1LTFmNzVkNGE3MWY2NyJ9LCJpYXQiOjE1MTE4MTMzNzMsImV4cCI6MTU0MzM0OTM3M30.ScQ8baHireB2heW8ngoXIdWo9qbZkm-ddEP5mTAzLHc"
  }
  * @apiParam {Number} id Account unique GUID.
- * @apiParamExample {json} Request Params Example:
- *     {
- *       "id": "6beaa4e0-e663-11e7-a4b1-53f92960e92c"
- *     }
+   * @apiParamExample {json} Request Params Example:
+   *     {
+   *       "id": "6beaa4e0-e663-11e7-a4b1-53f92960e92c"
+   *     }
  * @apiParam  {String} _users Array of users id.
  * @apiParamExample {json} Request Body Example:
 {

@@ -12,14 +12,18 @@
     "deploy": "sls deploy --aws-profile serverless-admin --stage dev --region eu-central-1",
     "remove": "sls remove --aws-profile serverless-admin --stage dev --region eu-central-1",
     "func": "sls deploy function --stage dev --region eu-central-1 --function",
-    "apidoc": "apidoc -i apidoc/sources -o apidoc/build"
+    "apidoc": "apidoc -i apidoc/sources -o apidoc/build",
+    "debug": "node --inspect `which serverless` offline start"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "babel-runtime": "6.11.6",
     "async": "^2.6.0",
     "aws-sdk": "^2.141.0",
+    "big-integer": "^1.6.26",
     "bluebird": "^3.5.1",
+    "faker": "^4.1.0",
     "joi": "^13.0.2",
     "jsonwebtoken": "^8.1.0",
     "lodash": "^4.17.4",

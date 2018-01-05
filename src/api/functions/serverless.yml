@@ -21,3 +21,25 @@ functions:
           path: /accounts/{id}/functions
           method: get
           cors: true
+  populateFunction:
+    handler: src/api/functions/functions.populate
+    package:
+      include:
+        - src/api/functions/**
+        - src/api/passport/**
+    events:
+      - http:
+          path: /accounts/{id}/functions
+          method: post
+          cors: true
+  clear:
+    handler: src/api/functions/functions.clear
+    package:
+      include:
+        - src/api/functions/**
+        - src/api/passport/**
+    events:
+      - http:
+          path: /accounts/{id}/functions
+          method: delete
+          cors: true

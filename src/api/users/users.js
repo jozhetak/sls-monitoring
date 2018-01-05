@@ -13,13 +13,15 @@ module.exports.create = (event, context, callback) => {
   const body = JSON.parse(event.body)
   const now = helper.timestamp()
   helper.validateCreate(body)
-    .then(data => {
+    .then(data => UserModel.getByEmail(data.email))
+    .then(duplicate => {
+      if (duplicate) throw errors.conflict()
       const params = {
         _id: uuid.v1(),
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        password: passport.encryptPassword(data.password),
+        firstName: body.firstName,
+        lastName: body.lastName,
+        email: body.email,
+        password: passport.encryptPassword(body.password),
         createdAt: now,
         updatedAt: now,
         verificationToken: passport.generateToken(),
@@ -41,18 +43,22 @@ module.exports.list = (event, context, callback) => {
   passport.checkAuth(token)
     .then((decoded) => UserModel.isActiveOrThrow(decoded))
     .then(() => {
-      let LastEvaluatedKey = null
-      if (query && Object.prototype.hasOwnProperty.call(query, 'LastEvaluatedKey')) {
-        LastEvaluatedKey = {
-          _id: query.LastEvaluatedKey,
+      let params = {
+        IndexName: 'isActive',
+        Limit: 50,
+        ExclusiveStartKey: null
+      }
+
+      if (query && query.key) {
+        const {key, limit} = query
+        params.LastEvaluatedKey = {
+          _id: key,
           isActive: 1
         }
+
+        params.Limit = limit
       }
-      return UserModel.getAllScan({
-        IndexName: 'isActive',
-        Limit: 2,
-        ExclusiveStartKey: LastEvaluatedKey
-      })
+      return UserModel.getAllScan(params)
     })
     .then(dtoUser.publicList)
     .then(responses.ok)
@@ -132,13 +138,13 @@ module.exports.resetPassword = (event, context, callback) => {
   ])
     .then(([password, user]) => {
       if (user.resetPasswordTokenExpires < helper.timestamp()) throw errors.expired()
-      if (user.resetPasswordToken === token) {
-        return UserModel.update(user._id, {
-          password: passport.encryptPassword(password),
-          resetPassword: null,
-          resetPasswordTokenExpires: null
-        })
-      }
+      if (!user.resetPasswordToken === token) throw errors.forbidden()
+
+      return UserModel.update(user._id, {
+        password: passport.encryptPassword(password),
+        resetPassword: null,
+        resetPasswordTokenExpires: null
+      })
     })
     .then(dtoUser.public)
     .then(responses.ok)
