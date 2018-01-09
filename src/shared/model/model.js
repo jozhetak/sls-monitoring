@@ -112,8 +112,30 @@ module.exports = class Model {
         return data
       })
   }
+  static _recursiveScan (query) {
+    const results = {
+      Items: []
+    }
+
+    return dynamodb.scan(query).promise()
+      .then((data) => {
+        if (data.LastEvaluatedKey) {
+          query.ExclusiveStartKey = data.LastEvaluatedKey
+          return this._recursiveScan(query).then(({Items}) => {
+            results.Items.push(...Items, ...data.Items)
+            return results
+          })
+        }
+        return data
+      })
+  }
 
   static getAllScan (params) {
+    const query = this.buildQuery(params)
+    return this._recursiveScan(query)
+  }
+
+  static getScan (params) {
     const query = this.buildQuery(params)
     return dynamodb.scan(query).promise()
       .then((data) => {
@@ -170,8 +192,6 @@ module.exports = class Model {
     }
     return dynamodb.update(params).promise()
       .then((data) => {
-        console.log(data)
-
         if (data) {
           return data.Attributes
         }
@@ -217,7 +237,6 @@ module.exports = class Model {
     const dbparams = {
       RequestItems: {}
     }
-    const responses = []
 
     while (params.Keys.length > 25) {
       let keys = params.Keys.splice(0, 25)
@@ -229,7 +248,6 @@ module.exports = class Model {
       dynamodb.batchWrite(dbparams)
         .promise()
         .then(result => {
-          console.log(result)
           return result
         })
     }
@@ -242,7 +260,37 @@ module.exports = class Model {
     return dynamodb.batchWrite(dbparams)
       .promise()
       .then(result => {
-        console.log(result)
+        return result
+      })
+  }
+
+  static batchWrite (items) {
+    const dbparams = {
+      RequestItems: {}
+    }
+
+    while (items.length > 25) {
+      let requestItems = items.splice(0, 25)
+      dbparams.RequestItems[this.TABLE] = requestItems.map(item => {
+        return {PutRequest: {
+          Item: item
+        }}
+      })
+      dynamodb.batchWrite(dbparams)
+        .promise()
+        .then(result => {
+          return result
+        })
+    }
+    dbparams.RequestItems[this.TABLE] = items.map(item => {
+      return {PutRequest: {
+        Item: item
+      }}
+    })
+
+    return dynamodb.batchWrite(dbparams)
+      .promise()
+      .then(result => {
         return result
       })
   }

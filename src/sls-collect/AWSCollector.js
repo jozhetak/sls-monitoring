@@ -164,6 +164,7 @@ module.exports = class AWSCollector extends Collector {
 
           if (currentInvocation.logs) {
             currentInvocation.logs.push(event)
+            currentInvocation.startTime = currentInvocation.logs[0].ingestionTime
           }
 
           invocations.push(currentInvocation)
