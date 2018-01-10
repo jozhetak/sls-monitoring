@@ -39,26 +39,19 @@ module.exports.create = (event, context, callback) => {
 module.exports.list = (event, context, callback) => {
   const token = event.headers.Authorization
   const query = event.queryStringParameters
+  const limit = query.limit ? query.limit : 50
+  const key = query.key ? {_id: query.key, isActive: 1} : undefined
 
   passport.checkAuth(token)
     .then((decoded) => UserModel.isActiveOrThrow(decoded))
     .then(() => {
       let params = {
         IndexName: 'isActive',
-        Limit: 50,
-        ExclusiveStartKey: null
+        Limit: limit,
+        ExclusiveStartKey: key
       }
 
-      if (query && query.key) {
-        const {key, limit} = query
-        params.LastEvaluatedKey = {
-          _id: key,
-          isActive: 1
-        }
-
-        params.Limit = limit
-      }
-      return UserModel.getAllScan(params)
+      return UserModel.getScan(params)
     })
     .then(dtoUser.publicList)
     .then(responses.ok)
