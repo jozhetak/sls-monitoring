@@ -60,6 +60,10 @@ module.exports.get = (event, context, callback) => {
       }
       return FunctionModel.getById(functionId)
     })
+    .then(func => {
+      if (func._account !== accountId) throw errors.forbidden()
+      return func
+    })
     .then(responses.ok)
     .catch(responses.error)
     .then(response => callback(null, response))
@@ -209,7 +213,6 @@ module.exports.populate = (event, context, callback) => {
       }
     })
     .then(({functions, invocations}) => {
- //     console.log(value)
       return Promise.all([FunctionModel.batchWrite(functions), InvocationModel.batchWrite(invocations)])
     })
     .then(responses.created)
