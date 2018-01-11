@@ -1,7 +1,16 @@
 {
   "name": "sls-monitoring",
   "version": "1.0.0",
-  "description": "",
+  "description": "Service for monitoring your Lambda functions",
+  "apidoc": {
+    "title": "Serverless Monitoring API documentation",
+    "url": "http://sls-bucket-apidoc-dev.s3-website.eu-central-1.amazonaws.com",
+    "template": {
+      "forceLanguage": "en",
+      "withCompare": false,
+      "withGenerator": false
+    }
+  },
   "main": "handler.js",
   "engine": {
     "node": "6.10.3"
