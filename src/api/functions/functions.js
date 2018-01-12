@@ -215,6 +215,7 @@ module.exports.populate = (event, context, callback) => {
     .then(({functions, invocations}) => {
       return Promise.all([FunctionModel.batchWrite(functions), InvocationModel.batchWrite(invocations)])
     })
+    .then(() => console.log(new Date() - max))
     .then(responses.created)
     .catch(responses.error)
     .then(response => callback(null, response))

@@ -39,8 +39,8 @@ module.exports.create = (event, context, callback) => {
 module.exports.list = (event, context, callback) => {
   const token = event.headers.Authorization
   const query = event.queryStringParameters
-  const limit = query.limit ? query.limit : 50
-  const key = query.key ? {_id: query.key, isActive: 1} : undefined
+  const limit = query && query.limit ? query.limit : 50
+  const key = query && query.key ? {_id: query.key, isActive: 1} : undefined
 
   passport.checkAuth(token)
     .then((decoded) => UserModel.isActiveOrThrow(decoded))
