@@ -55,13 +55,16 @@ module.exports = class Collector {
         if (funcDao) {
           funcDao._account = that.accountId
           funcDao.name = func.FunctionName
+          funcDao.description = func.Description
+          funcDao.runtime = func.Runtime
           funcDao.codeSize = func.CodeSize
           funcDao.timeout = func.Timeout
           funcDao.memSize = func.MemorySize
         } else {
           funcDao = {
             _account: that.accountId,
-            // accountId: that.accountId,
+            description: that.Description,
+            runtime: that.Runtime,
             name: func.FunctionName,
             arn: func.FunctionArn,
             codeSize: func.CodeSize,
