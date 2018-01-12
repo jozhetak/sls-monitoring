@@ -1,19 +1,23 @@
-'use strict';
-const AccountModel = require('../../shared/model/account');
-const uuid = require('uuid');
-const _ = require('lodash');
+'use strict'
+const AccountModel = require('../../shared/model/account')
+const UserModel = require('../../shared/model/user')
+const UserAccountModel = require('../../shared/model/userAccount')
+const uuid = require('uuid')
 const passport = require('./../passport/passport')
-const waterfall = require('async/waterfall')
+const helper = require('./account.helper')
+const errors = require('../../shared/helper/errors')
+const responses = require('../../shared/helper/responses')
+const dtoAccount = require('../../shared/account.dto')
+const dtoUser = require('../../shared/user.dto')
 
 module.exports.create = (event, context, callback) => {
-  waterfall([
-    (cb) => passport.handler(event, context, cb),
-    (policyDocument, cb) => {
-      cb(null, JSON.parse(policyDocument.context.user))
-    },
-    (user, cb) => {
-      const timestamp = new Date().getTime();
-      const data = JSON.parse(event.body);
+  return Promise.all([
+    passport.checkAuth(event.headers.Authorization),
+    helper.validate(event.body)
+  ])
+    .then(([decoded, data]) => {
+      const user = decoded.user
+      const timestamp = Date.now()
       const params = {
         _id: uuid.v1(),
         name: data.name,
@@ -22,155 +26,232 @@ module.exports.create = (event, context, callback) => {
         region: data.region,
         createdAt: timestamp,
         updatedAt: timestamp,
-        _users:[user._id]
-      };
+        isActive: 1,
+        _user: user._id // createdBy
+      }
       const account = new AccountModel(params)
-      return account.save()
-        .then((account) => {
-          cb(null, account);
-        })
-        .catch((e) => {
-          cb(e)
-        })
-    }
-  ], (err, result) => {
-    const response = {
-      statusCode: 200,
-      body: JSON.stringify({
-        event: event,
-        error: err,
-        result: result
-      }),
-    };
-    callback(null, response);
-  })
+      const accountUser = new UserAccountModel({
+        _user: user._id,
+        _account: params._id,
+        isAdmin: true
+      })
+
+      return Promise.all([
+        account.save(),
+        accountUser.save()
+      ])
+    })
+    .then(result => result[0])
+    .then(dtoAccount.public)
+    .then(responses.created)
+    .catch(responses.error)
+    .then(response => callback(null, response))
+}
+// TODO If Empty
+module.exports.list = (event, context, callback) => {
+  return passport
+    .checkAuth(event.headers.Authorization)
+    .then(decoded => UserModel.isActiveOrThrow(decoded))
+    .then(id => UserAccountModel.getAccountsByUser(id))
+    .then(accounts => {
+      if (!accounts) throw errors.notFound()
+      return accounts.map(account => {
+        return { _id: account._account }
+      })
+    })
+    .then(keysList => AccountModel.getByKeys({Keys: keysList}))
+    .then((accounts) => accounts.map(dtoAccount.public))
+    .then(responses.ok)
+    .catch(responses.error)
+    .then(response => callback(null, response))
 }
 
-module.exports.list = (event, context, callback) => {
-  waterfall([
-    (cb) => passport.handler(event, context, cb),
-    (policyDocument, cb) => {
-      cb(null, JSON.parse(policyDocument.context.user))
-    },
-    (user, cb) => {
-      return AccountModel.getAll(
-
-      )
-        .then((account) => {
-          if (_.indexOf(account._users, user._id) === -1) {
-            cb('User has no permission')
-          }
-          console.log(_.indexOf(account._users, user._id))
-          cb(null, account);
-        })
-        .catch((e) => {
-          cb(e)
-        })
-    }
-  ], (err, result) => {
-    const response = {
-      statusCode: 200,
-      body: JSON.stringify({
-        event: event,
-        error: err,
-        result: result
-      }),
-    };
-    callback(null, response);
-  })
-};
-
 module.exports.get = (event, context, callback) => {
-    waterfall([
-      (cb) => passport.handler(event, context, cb),
-      (policyDocument, cb) => {
-        cb(null, JSON.parse(policyDocument.context.user))
-      },
-      (user, cb) => {
-        AccountModel.getById(event.pathParameters.id)
-          .then((account) => {
-            if (_.indexOf(account._users, user._id) === -1) {
-              cb('User has no permission')
-            }
-            cb(null, account)
-          })
-          .catch((e) => {
-            cb(e)
-          })
+  return Promise.all([
+    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    AccountModel.getActiveByIdrOrThrow(event.pathParameters.id),
+    UserAccountModel.getUsersByAccount(event.pathParameters.id)]
+  )
+    .then(([id, account, accountUsers]) => {
+      let accountUsersIds = accountUsers.map(user => user._user)
+      if (!account) throw errors.notFound()
+      if (!accountUsersIds.includes(id)) {
+        throw errors.forbidden()
       }
-    ], (err, result) => {
-      const response = {
-        statusCode: 200,
-        body: JSON.stringify({
-          error: err,
-          result: result
-        }),
-      };
-      callback(null, response);
+      return account
     })
-
-
-
-
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
-};
+    .then(dtoAccount.public)
+    .then(responses.ok)
+    .catch(responses.error)
+    .then(response => callback(null, response))
+}
 
 module.exports.update = (event, context, callback) => {
-  const user = JSON.parse(event.requestContext.authorizer.user);
-  const data = JSON.parse(event.body);
+  return Promise.all([
+    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    AccountModel.getActiveByIdrOrThrow(event.pathParameters.id),
+    helper.validate(event.body),
+    UserAccountModel.getUsersByAccount(event.pathParameters.id)
+  ])
+    .then(([id, account, body, accountUsers]) => {
+      let accountUsersIds = accountUsers.map(user => user._user)
+      if (!(accountUsersIds.includes(id) && accountUsers.find(user => user._user === id).isAdmin)) {
+        throw errors.forbidden()
+      }
 
-  if (user._id !== event.pathParameters.id){
-    return callback(null, {
-      statusCode: 403,
-      body: JSON.stringify({
-        message: 'Cannot edit other user',
-        user: user,
-        input: event
-      })
-    });
-  }
-
-  return UserModel.update(user._id, data).then((user) => {
-    const response = {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: 'Go Serverless v1.0! Your function executed successfully!',
-        user: user,
-        input: event
-      }),
-    };
-
-    callback(null, response);
-  }).catch((e) => {
-    const response = {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: e.message,
-        params: data,
-        input: event
-      }),
-    };
-
-    callback(null, response);
-  })
-
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
-};
-
+      return AccountModel.update(account._id, body)
+    })
+    .then(dtoAccount.public)
+    .then(responses.created)
+    .catch(responses.error)
+    .then(response => callback(null, response))
+}
 
 module.exports.delete = (event, context, callback) => {
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Go Serverless v1.0! Your function executed successfully!',
-      input: event,
-    }),
-  };
+  return Promise.all([
+    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    AccountModel.getActiveByIdrOrThrow(event.pathParameters.id),
+    UserAccountModel.getUsersByAccount(event.pathParameters.id)]
+  )
+    .then(([id, account, accountUsers]) => {
+     //  if(!accountUsers) throw errors.notFound()
+      let accountUsersIds = accountUsers.map(user => user._user)
+      if (!(accountUsersIds.includes(id) && accountUsers.find(user => user._user === id).isAdmin)) {
+        throw errors.forbidden()
+      }
 
-  callback(null, response);
+      return AccountModel.remove(account._id)
+    })
+    .then(responses.ok)
+    .catch(responses.error)
+    .then(response => callback(null, response))
+}
 
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
-};
+module.exports.inviteUsers = (event, context, callback) => {
+  return Promise.all([
+    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    AccountModel.getActiveByIdrOrThrow(event.pathParameters.id),
+    helper.validateInvite(event.body),
+    UserAccountModel.getUsersByAccount(event.pathParameters.id)
+  ])
+    .then(([id, account, body, accountUsers]) => {
+      let users = []
+      let accountUsersIds = accountUsers.map(user => user._user)
+      if (!(accountUsersIds.includes(id) && accountUsers.find(user => user._user === id).isAdmin)) {
+        throw errors.forbidden()
+      }
+
+      if (body._users) {
+        users = body._users
+      }
+      if (body._user) {
+        users.push(body._user)
+      }
+      users = users.filter(user => !accountUsersIds.includes(user))
+      return Promise.all(users.map(user => UserModel.getById(user)))
+    })
+    .then(users => {
+      let dbPromises = []
+      users.forEach((user) => {
+        let accountUser = new UserAccountModel({
+          _user: user._id,
+          _account: event.pathParameters.id,
+          isAdmin: false
+        })
+        dbPromises.push(accountUser.save())
+      })
+
+      return Promise.all(dbPromises)
+    })
+    .then(responses.ok)
+    .catch(responses.error)
+    .then(response => callback(null, response))
+}
+
+module.exports.getAccountUsers = (event, context, callback) => {
+  return Promise.all([
+    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    UserAccountModel.getUsersByAccount(event.pathParameters.id)
+  ])
+    .then(([id, accountUsers]) => {
+      if (!accountUsers || accountUsers.length === 0) throw errors.notFound()
+      let accountUsersIds = accountUsers.map(user => user._user)
+      if (!accountUsersIds.includes(id)) {
+        throw errors.forbidden()
+      }
+      const usersList = []
+      accountUsers.forEach((user) => {
+        usersList.push({
+          _id: user._user
+        })
+      })
+      return UserModel.getUsersOfAccount({
+        _account: event.pathParameters.id,
+        Keys: usersList
+      })
+    })
+    .then((users) => users.map(user => {
+      user._user = dtoUser.public(user._user)
+      return user
+    }))
+    .then(responses.ok)
+    .catch(responses.error)
+    .then(response => callback(null, response))
+}
+
+// TODO: check user permission
+module.exports.updateAccountUser = (event, context, callback) => {
+  return Promise.all([
+    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    UserAccountModel.getUsersByAccount(event.pathParameters.id)
+  ])
+    .then(([id, accountUsers]) => {
+      let accountUsersIds = accountUsers.map(user => user._user)
+      if (!(accountUsersIds.includes(id) && accountUsers.find(user => user._user === id).isAdmin)) {
+        throw errors.forbidden()
+      }
+    })
+    .then(() => helper.validateAccountUserUpdate(JSON.parse(event.body)))
+    .then((data) => {
+      let accountUser = new UserAccountModel({
+        _user: event.pathParameters.userId,
+        _account: event.pathParameters.id,
+        isAdmin: data.isAdmin
+      })
+      return accountUser.save()
+    })
+    .then(responses.ok)
+    .catch(responses.error)
+    .then(response => callback(null, response))
+}
+
+module.exports.deleteAccountUser = (event, context, callback) => {
+  const userId = event.pathParameters.userId
+  const accountId = event.pathParameters.id
+  const token = event.headers.Authorization
+
+  return Promise.all([
+    passport.checkAuth(token).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    AccountModel.getActiveByIdrOrThrow(accountId),
+    UserAccountModel.getUsersByAccount(accountId)]
+  )
+    .then(([id, account, accountUsers]) => {
+      let accountUsersIds = accountUsers.map(user => user._user)
+      if (userId === id) {
+        throw errors.forbidden()
+      }
+      if (!(accountUsersIds.includes(id) && accountUsers.find(user => user._user === id).isAdmin)) {
+        throw errors.forbidden()
+      }
+
+      return UserAccountModel.delete({
+        Key: {
+          _user: userId,
+          _account: accountId
+        }
+      })
+    })
+    .then(responses.ok)
+    .catch(responses.error)
+    .then(response => callback(null, response))
+}

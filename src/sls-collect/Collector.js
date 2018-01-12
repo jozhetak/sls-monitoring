@@ -1,80 +1,86 @@
-const AWS = require('aws-sdk');
-const Promise = require('bluebird');
-const FunctionModel = require('../shared/model/function');
-const InvocationModel = require('../shared/model/invocation');
+const AWS = require('aws-sdk')
+const Promise = require('bluebird')
+const FunctionModel = require('../shared/model/function')
+const InvocationModel = require('../shared/model/invocation')
 
 module.exports = class Collector {
-    constructor(accountId) {
-        this.accountId = accountId;
-    }
+  constructor (accountId) {
+    console.log(accountId)
+    this.accountId = accountId
+  }
 
-    collect() {
+  save (functions) {
+    // AWS.config.update({
+    //   accessKeyId: process.env.ACCESS_KEY_ID,
+    //   secretAccessKey: process.SECRET_ACCESS_KEY
+    // })
 
-    }
+    const that = this
 
-    save(functions) {
-        AWS.config.update({
-            accessKeyId: process.env.ACCESS_KEY_ID,
-            secretAccessKey: process.SECRET_ACCESS_KEY
-        });
-
-        const that = this;
-
-        return Promise.each(functions, func => {
-            return that._updateFunction(func)
-                .then((result) => {
-                    return that._updateInvocations(result.functionInstance, result.invocations);
-                })
-        });
-    }
-
-    _updateInvocations(funcInstance, invocations) {
-        //var invocations = funcInstance.invocations;
-
-        return Promise.each(invocations, invocation => {
-            return InvocationModel
-                .getById(invocation.id)
-                .then(invocationDao => {
-                    if(!invocationDao) {
-                        invocation.functionId = funcInstance.id;
-                        invocation.accountId = funcInstance.accountId;
-                        const invocationInstance = new InvocationModel(invocation)
-                        return invocationInstance.save()
-                    }
-                });
+    return Promise.each(functions, func => {
+      return that._updateFunction(func)
+        .then((result) => {
+          return that._updateInvocations(result.functionInstance,
+            result.invocations)
         })
-    };
+    })
+  }
 
-    _updateFunction(func) {
-        const that = this;
+  _updateInvocations (funcInstance, invocations) {
+    console.log('account: ', this.accountId)
+    console.log('_updateInvocations')
 
-        return FunctionModel
-            .getOne('arn = :arn', {':arn': func.FunctionArn})
-            .then(funcDao => {
-                if(funcDao) {
-                    funcDao.name = func.FunctionName;
-                    funcDao.codeSize = func.CodeSize;
-                    funcDao.timeout = func.Timeout;
-                    funcDao.memSize = func.MemorySize;
-                } else {
-                    funcDao = {
-                        accountId: that.accountId,
-                        name: func.FunctionName,
-                        arn: func.FunctionArn,
-                        codeSize: func.CodeSize,
-                        timeout: func.Timeout,
-                        memSize: func.MemorySize
-                    }
-                }
-                const funcInstance = new FunctionModel(funcDao);
-                return funcInstance.save()
+    return Promise.each(invocations, invocation => {
+      return InvocationModel
+        .getById(invocation._id)
+        .then(invocationDao => {
+          if (!invocationDao) {
+            // invocation.functionId = funcInstance._id
+            invocation._function = funcInstance._id
+            // invocation.accountId = funcInstance.accountId
+            invocation._account = funcInstance.accountId
+            const invocationInstance = new InvocationModel(invocation)
+            return invocationInstance.save()
+          }
+        })
+    })
+  };
 
-            })
-            .then(funcInstance => {
-                return {
-                    functionInstance: funcInstance,
-                    invocations: func.invocations
-                }
-            })
-    }
-};
+  _updateFunction (func) {
+    const that = this
+
+    return FunctionModel
+      .getOne('arn = :arn', {':arn': func.FunctionArn})
+      .then(funcDao => {
+        if (funcDao) {
+          funcDao._account = that.accountId
+          funcDao.name = func.FunctionName
+          funcDao.description = func.Description
+          funcDao.runtime = func.Runtime
+          funcDao.codeSize = func.CodeSize
+          funcDao.timeout = func.Timeout
+          funcDao.memSize = func.MemorySize
+        } else {
+          funcDao = {
+            _account: that.accountId,
+            description: that.Description,
+            runtime: that.Runtime,
+            name: func.FunctionName,
+            arn: func.FunctionArn,
+            codeSize: func.CodeSize,
+            timeout: func.Timeout,
+            memSize: func.MemorySize
+          }
+        }
+        const funcInstance = new FunctionModel(funcDao)
+        return funcInstance.save()
+
+      })
+      .then(funcInstance => {
+        return {
+          functionInstance: funcInstance,
+          invocations: func.invocations
+        }
+      })
+  }
+}

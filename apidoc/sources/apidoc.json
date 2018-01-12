@@ -1,0 +1,17 @@
+{
+  "template" : {
+    "forceLanguage": "en"
+  },
+  "order": [
+    "CreateUser",
+    "GetUsers",
+    "GetUser",
+    "UpdateUser",
+    "DeleteUser",
+    "VerifyUser",
+    "CreateAccount",
+    "GetAccounts",
+    "GetAccount",
+    "UpdateAccount"
+  ]
+}

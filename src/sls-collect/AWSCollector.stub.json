@@ -1,0 +1,288 @@
+{
+  "Case1": {
+    "ListLambda": {
+      "NextMarker": "",
+      "Functions": [
+        {
+          "FunctionName": "Lambda1",
+          "FunctionArn": "arn-Lambda1",
+          "Runtime": "nodejs",
+          "CodeSize": 2000,
+          "Timeout": 120,
+          "MemorySize": 512
+        },
+        {
+          "FunctionName": "Lambda2-no-log-streams",
+          "FunctionArn": "arn-Lambda2",
+          "Runtime": "nodejs",
+          "CodeSize": 3000,
+          "Timeout": 180,
+          "MemorySize": 1024
+        }
+      ]
+    },
+    "describeLogStreams": {
+      "nextToken": "",
+      "logStreams": [
+        {
+          "logStreamName": "/aws/lambda/Lambda1",
+          "creationTime": "1510763333884",
+          "firstEventTimestamp": "1510763333884",
+          "lastEventTimestamp": "1510763333884",
+          "arn": "arn-stream-Lambda1"
+        }
+      ]
+    },
+    "filterLogEvents": {
+      "/aws/lambda/Lambda1": {
+        "nextToken": "",
+        "events": [
+          {
+            "logStreamName": "/aws/lambda/Lambda1",
+            "timestamp": "1510763588890",
+            "message": "START RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04db Version: $LATEST",
+            "eventId": "d603c526-3d63-4024-adc5-bcda099bd00b"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda1",
+            "timestamp": "1510763588899",
+            "message": "END RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04db",
+            "eventId": "7b21a37f-9508-4502-998d-4d4e02b478e1"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda1",
+            "timestamp": "1510763588999",
+            "message": "REPORT RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04db\tDuration: 207.39 ms\tBilled Duration: 300 ms\tMemory Size: 1024 MB\tMax Memory Used: 38 MB",
+            "eventId": "d68ba1b0-6423-4073-8763-0f09d2173612"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda1",
+            "timestamp": "1510763588890",
+            "message": "START RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04db Version: $LATEST",
+            "eventId": "d603c526-3d63-4024-adc5-bcda099bd00b"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda1",
+            "timestamp": "1510763588899",
+            "message": "some logs here ....",
+            "eventId": "7b21a37f-9508-4502-998d-4d4e02b478e1"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda1",
+            "timestamp": "1510763588899",
+            "message": "END RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04db",
+            "eventId": "7b21a37f-9508-4502-998d-4d4e02b478e1"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda1",
+            "timestamp": "1510763588999",
+            "message": "REPORT RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04db\tDuration: 204.49 ms\tBilled Duration: 230 ms\tMemory Size: 512 MB\tMax Memory Used: 0 MB",
+            "eventId": "d68ba1b0-6423-4073-8763-0f09d2173612"
+          }
+        ]
+      },
+      "/aws/lambda/Lambda2-no-log-streams": {
+        "nextToken": "",
+        "events": []
+      }
+    }
+  },
+  "Case2": {
+    "ListLambda": {
+      "NextMarker": "",
+      "Functions": [
+        {
+          "FunctionName": "Lambda1-errors",
+          "FunctionArn": "arn-Lambda1",
+          "Runtime": "nodejs",
+          "CodeSize": 2000,
+          "Timeout": 120,
+          "MemorySize": 512
+        },
+        {
+          "FunctionName": "Lambda2-errors",
+          "FunctionArn": "arn-Lambda2",
+          "Runtime": "nodejs",
+          "CodeSize": 3000,
+          "Timeout": 180,
+          "MemorySize": 1024
+        }
+      ]
+    },
+    "describeLogStreams": {
+      "nextToken": "",
+      "logStreams": [
+        {
+          "logStreamName": "/aws/lambda/Lambda1-errors",
+          "creationTime": "1510763333884",
+          "firstEventTimestamp": "1510763333884",
+          "lastEventTimestamp": "1510763333884",
+          "arn": "arn-stream-Lambda1"
+        },
+        {
+          "logStreamName": "/aws/lambda/Lambda2-errors",
+          "creationTime": "1510763333884",
+          "firstEventTimestamp": "1510763333884",
+          "lastEventTimestamp": "1510763333884",
+          "arn": "arn-stream-Lambda2"
+        }
+      ]
+    },
+    "filterLogEvents": {
+      "/aws/lambda/Lambda1-errors": {
+        "nextToken": "",
+        "events": [
+          {
+            "logStreamName": "/aws/lambda/Lambda1-errors",
+            "timestamp": "1510763588890",
+            "message": "START RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04db Version: $LATEST",
+            "eventId": "d603c526-3d63-4024-adc5-bcda099bd00b"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda1-errors",
+            "timestamp": "1510763588899",
+            "message": "module initialization error: Error\tat Object.<anonymous> (/var/task/src/test-error/handler.js:9:7)\tat Module._compile (module.js:570:32)\tat Object.Module._extensions..js (module.js:579:10)\tat Module.load (module.js:487:32)\tat tryModuleLoad (module.js:446:12)\tat Function.Module._load (module.js:438:3)\tat Module.require (module.js:497:17)\tat require (internal/module.js:20:19)",
+            "eventId": "7b21a37f-9508-4502-998d-4d4e02b478e1"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda1-errors",
+            "timestamp": "1510763588899",
+            "message": "END RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04db",
+            "eventId": "7b21a37f-9508-4502-998d-4d4e02b478e1"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda1-errors",
+            "timestamp": "1510763588999",
+            "message": "REPORT RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04d6\tDuration: 120.39 ms\tBilled Duration: 150 ms\tMemory Size: 1024 MB\tMax Memory Used: 38 MB",
+            "eventId": "d68ba1b0-6423-4073-8763-0f09d2173612"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda1-errors",
+            "timestamp": "1510763588890",
+            "message": "START RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04d6 Version: $LATEST",
+            "eventId": "d603c526-3d63-4024-adc5-bcda099bd00b"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda1-errors",
+            "timestamp": "1510763588899",
+            "message": "module initialization error",
+            "eventId": "7b21a37f-9508-4502-998d-4d4e02b478e1"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda1-errors",
+            "timestamp": "1510763588899",
+            "message": "END RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04d6",
+            "eventId": "7b21a37f-9508-4502-998d-4d4e02b478e1"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda1-errors",
+            "timestamp": "1510763588999",
+            "message": "REPORT RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04d6\tDuration: 207.39 ms\tBilled Duration: 300 ms\tMemory Size: 1024 MB\tMax Memory Used: 38 MB",
+            "eventId": "d68ba1b0-6423-4073-8763-0f09d2173612"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda1-errors",
+            "timestamp": "1510763588890",
+            "message": "START RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04d9 Version: $LATEST",
+            "eventId": "d603c526-3d63-4024-adc5-bcda099bd00b"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda1-errors",
+            "timestamp": "1510763588899",
+            "message": "2017-11-09T12:28:12.443Z 7347cfa4-c549-11e7-879c-1fcb5363d928 Unhandled rejection (<\t{\t\"some\": \"object\"\t}\t>, no stack trace)",
+            "eventId": "7b21a37f-9508-4502-998d-4d4e02b478e1"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda1-errors",
+            "timestamp": "1510763588899",
+            "message": "END RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04d9",
+            "eventId": "7b21a37f-9508-4502-998d-4d4e02b478e1"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda1-errors",
+            "timestamp": "1510763588999",
+            "message": "REPORT RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04d9\tDuration: 207.39 ms\tBilled Duration: 300 ms\tMemory Size: 1024 MB\tMax Memory Used: 38 MB",
+            "eventId": "d68ba1b0-6423-4073-8763-0f09d2173612"
+          }
+        ]
+      },
+      "/aws/lambda/Lambda2-errors": {
+        "nextToken": "",
+        "events": [
+          {
+            "logStreamName": "/aws/lambda/Lambda2-errors",
+            "timestamp": "1510763588890",
+            "message": "START RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04d9 Version: $LATEST",
+            "eventId": "d603c526-3d63-4024-adc5-bcda099bd00b"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda2-errors",
+            "timestamp": "1510763588899",
+            "message": "2017-11-09T12:20:38.874Z 652f86d1-c548-11e7-8b7f-1939461c3087 Error: [object Object]\tat module.exports.run (/var/task/src/test-error/handler.js:8:11)",
+            "eventId": "7b21a37f-9508-4502-998d-4d4e02b478e1"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda2-errors",
+            "timestamp": "1510763588899",
+            "message": "END RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04d9",
+            "eventId": "7b21a37f-9508-4502-998d-4d4e02b478e1"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda2-errors",
+            "timestamp": "1510763588999",
+            "message": "REPORT RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04d9\tDuration: 100 ms\tBilled Duration: 200 ms\tMemory Size: 1024 MB\tMax Memory Used: 38 MB",
+            "eventId": "d68ba1b0-6423-4073-8763-0f09d2173612"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda2-errors",
+            "timestamp": "1510763588890",
+            "message": "START RequestId: 4f9315b3-c2db-4d03-b31a-0322832c9dbe Version: $LATEST",
+            "eventId": "d603c526-3d63-4024-adc5-bcda099bd00b"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda2-errors",
+            "timestamp": "1510763588899",
+            "message": "END RequestId: 4f9315b3-c2db-4d03-b31a-0322832c9dbe",
+            "eventId": "7b21a37f-9508-4502-998d-4d4e02b478e1"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda2-errors",
+            "timestamp": "1510763588999",
+            "message": "REPORT RequestId: 4f9315b3-c2db-4d03-b31a-0322832c9dbe\tDuration: 207.39 ms\tBilled Duration: 300 ms\tMemory Size: 1024 MB\tMax Memory Used: 38 MB",
+            "eventId": "d68ba1b0-6423-4073-8763-0f09d2173612"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda2-errors",
+            "timestamp": "1510763588999",
+            "message": "RequestId: 4f9315b3-c2db-4d03-b31a-0322832c9dbe Process exited before completing request",
+            "eventId": "d68ba1b0-6423-4073-8763-0f09d2173612"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda2-errors",
+            "timestamp": "1510763588890",
+            "message": "START RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04d9 Version: $LATEST",
+            "eventId": "d603c526-3d63-4024-adc5-bcda099bd00b"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda2-errors",
+            "timestamp": "1510763588899",
+            "message": "{\"errorMessage\":\t \"some error\"\t}",
+            "eventId": "7b21a37f-9508-4502-998d-4d4e02b478e1"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda2-errors",
+            "timestamp": "1510763588899",
+            "message": "END RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04d9",
+            "eventId": "7b21a37f-9508-4502-998d-4d4e02b478e1"
+          },
+          {
+            "logStreamName": "/aws/lambda/Lambda2-errors",
+            "timestamp": "1510763588999",
+            "message": "REPORT RequestId: a16c1231-bbd2-11e7-833c-b1ec5fef04d9\tDuration: 207.39 ms\tBilled Duration: 300 ms\tMemory Size: 1024 MB\tMax Memory Used: 38 MB",
+            "eventId": "d68ba1b0-6423-4073-8763-0f09d2173612"
+          }
+        ]
+      }
+    }
+  }
+}

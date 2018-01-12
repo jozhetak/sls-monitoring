@@ -1,0 +1,25 @@
+functions:
+  getInvocation:
+    handler: src/api/invocations/invocations.get
+    package:
+      include:
+        - src/api/invocations/**
+        - src/api/passport/**
+    events:
+      - http:
+          path: /accounts/{id}/functions/{functionId}/invocations/{invocationId}
+          method: get
+          cors: true
+
+  listInvocations:
+    handler: src/api/invocations/invocations.list
+    package:
+      include:
+        - src/api/invocations/**
+        - src/api/passport/**
+    events:
+      - http:
+          path: /accounts/{id}/functions/{functionId}/invocations
+          method: get
+          cors: true
+

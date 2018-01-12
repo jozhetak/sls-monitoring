@@ -5,18 +5,19 @@ functions:
       include:
         - src/api/accounts/**
         - src/api/passport/**
-        - src/shared/model/**
+        - src/shared/**
     events:
       - http:
           path: accounts
           method: post
+          cors: true
   getAccount:
     handler: src/api/accounts/accounts.get
     package:
       include:
         - src/api/accounts/**
         - src/api/passport/**
-        - src/shared/model/**
+        - src/shared/**
     events:
       - http:
           path: accounts/{id}
@@ -24,37 +25,81 @@ functions:
           cors: true
 
   listAccounts:
-    handler: src/api/users/accounts.list
+    handler: src/api/accounts/accounts.list
     package:
       include:
         - src/api/accounts/**
         - src/api/passport/**
-        - src/shared/model/**
+        - src/shared/**
     events:
       - http:
           path: accounts
           method: get
   updateAccount:
-      handler: src/api/accouts/accouts.update
-      package:
-        include:
-        - src/api/accounts/**
-        - src/api/passport/**
-        - src/shared/model/**
-      events:
-        - http:
-            path: accounts/{id}
-            method: put
-            cors: true
-  deleteAccount:
-    handler: src/api/accouts/accouts.delete
+    handler: src/api/accounts/accounts.update
     package:
       include:
         - src/api/accounts/**
         - src/api/passport/**
-        - src/shared/model/**
-      events:
-        - http:
-            path: accounts/{id}
-            method: delete
-            cors: true
+        - src/shared/**
+    events:
+      - http:
+          path: accounts/{id}
+          method: put
+          cors: true
+  deleteAccount:
+    handler: src/api/accounts/accounts.delete
+    package:
+      include:
+        - src/api/accounts/**
+        - src/api/passport/**
+    events:
+      - http:
+          path: accounts/{id}
+          method: delete
+          cors: true
+  inviteUsers:
+    handler: src/api/accounts/accounts.inviteUsers
+    package:
+      include:
+        - src/api/accounts/**
+        - src/api/passport/**
+        - src/shared/**
+    events:
+      - http:
+          path: accounts/{id}/users
+          method: post
+          cors: true
+  getAccountUsers:
+    handler: src/api/accounts/accounts.getAccountUsers
+    package:
+      include:
+        - src/api/accounts/**
+        - src/api/passport/**
+    events:
+      - http:
+          path: accounts/{id}/users
+          method: get
+          cors: true
+  updateAccountUser:
+    handler: src/api/accounts/accounts.updateAccountUser
+    package:
+      include:
+        - src/api/accounts/**
+        - src/api/passport/**
+    events:
+      - http:
+          path: accounts/{id}/users/{userId}
+          method: put
+          cors: true
+  deleteAccountUser:
+    handler: src/api/accounts/accounts.deleteAccountUser
+    package:
+      include:
+        - src/api/accounts/**
+        - src/api/passport/**
+    events:
+      - http:
+          path: accounts/{id}/users/{userId}
+          method: delete
+          cors: true

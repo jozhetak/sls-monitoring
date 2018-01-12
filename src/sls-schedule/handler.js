@@ -1,45 +1,35 @@
-'use strict';
+'use strict'
 
-const AWS = require('aws-sdk');
-const Promise = require('bluebird');
+const AWS = require('aws-sdk')
+const Promise = require('bluebird')
+const AccountModel = require('./../shared/model/account')
 
-AWS.config.setPromisesDependency(Promise);
+AWS.config.setPromisesDependency(Promise)
 
 module.exports.run = (event, context) => {
-    console.log(process.env.SLS_RUN_ARN)
-    // read data from accounts
-    var sns = new AWS.SNS();
+  console.log(process.env.SLS_RUN_ARN)
+  // read data from accounts
+  const sns = new AWS.SNS()
 
-    const accounts =[];
-
-    // foreach send sns topic
-    accounts.push({
-        acoountId: '157000000',
-        accessKeyId: '',
-        secretAccessKey: ''
-    });
-
-    // foreach send sns topic
-    accounts.push({
-        acoountId: '157000001',
-        accessKeyId: '',
-        secretAccessKey: ''
-    });
-
-
-    return Promise.map(accounts, account => {
-
-        account = JSON.stringify(account);
-
-        console.log(account)
-        return sns.publish({
-            Message: account,
-            TargetArn: process.env.SLS_RUN_ARN
-        }).promise()
-    }).then(() => {
-        context.succeed();
-
-    }).catch(err => {
-        context.fail(err)
-    });
-};
+  return AccountModel.getAllScan({
+    FilterExpression: 'isActive = :isActive',
+    ExpressionAttributeValues: {
+      ':isActive': 1
+    }
+  }).then((accounts) => {
+    // console.log(accounts)
+    const promises = []
+    accounts.Items.forEach((account) => {
+      account = JSON.stringify(account)
+      promises.push(sns.publish({
+        Message: account,
+        TargetArn: process.env.SLS_RUN_ARN
+      }).promise())
+    })
+    return Promise.all(promises)
+  }).then(() => {
+    context.succeed()
+  }).catch(err => {
+    context.fail(err)
+  })
+}

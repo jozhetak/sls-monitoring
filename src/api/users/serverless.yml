@@ -4,7 +4,7 @@ functions:
     package:
       include:
         - src/api/users/**
-        - src/shared/model/**
+        - src/api/passport/**
     events:
       - http:
           path: users
@@ -15,60 +15,124 @@ functions:
     package:
       include:
         - src/api/users/**
-        - src/shared/model/**
+        - src/api/passport/**
     events:
       - http:
           path: users
           method: get
-          authorizer:
-            name: authorize
-            identitySource: method.request.header.Authorization
-            type: token
-
+    request:
+      template:
+        application/json: >
+          {
+            "LastEvaluatedKey" : "$input.params('LastEvaluatedKey')"
+          }
+#          authorizer:
+#            name: authorize
+#            identitySource: method.request.header.Authorization
+#            type: token
   getUser:
     handler: src/api/users/users.get
     package:
       include:
         - src/api/users/**
-        - src/shared/model/**
+        - src/api/passport/**
+        - src/shared/**
     events:
       - http:
           path: users/{id}
           method: get
           cors: true
-          authorizer:
-            name: authorize
-            identitySource: method.request.header.Authorization
-            type: token
-
+#          authorizer:
+#            name: authorize
+#            identitySource: method.request.header.Authorization
+#            type: token
   updateUser:
     handler: src/api/users/users.update
     package:
       include:
         - src/api/users/**
-        - src/shared/model/**
+        - src/api/passport/**
     events:
       - http:
           path: users/{id}
           method: put
           cors: true,
-          authorizer:
-            name: authorize
-            identitySource: method.request.header.Authorization
-            type: token
-
+#          authorizer:
+#            name: authorize
+#            identitySource: method.request.header.Authorization
+#            type: token
   deleteUser:
     handler: src/api/users/users.delete
     package:
-          include:
-            - src/api/users/**
-            - src/shared/model/**
+      include:
+        - src/api/users/**
+        - src/api/passport/**
     events:
       - http:
           path: users/{id}
           method: delete
           cors: true
-          authorizer:
-            name: authorize
-            identitySource: method.request.header.Authorization
-            type: token
+#          authorizer:
+#            name: authorize
+#            identitySource: method.request.header.Authorization
+#            type: token
+  changePassword:
+    handler: src/api/users/users.changePassword
+    package:
+      include:
+        - src/api/users/**
+        - src/api/passport/**
+        - src/shared/**
+    events:
+      - http:
+          path: users/{id}/password
+          method: put
+          cors: true
+  verifyUser:
+    handler: src/api/users/users.verify
+    package:
+      include:
+        - src/api/users/**
+        - src/api/passport/**
+        - src/shared/**
+    events:
+      - http:
+          path: users/{id}/verification/{token}
+          method: get
+          cors: true
+  sendResetPasswordEmail:
+    handler: src/api/users/users.sendResetPasswordEmail
+    package:
+      include:
+        - src/api/users/**
+        - src/api/passport/**
+        - src/shared/**
+    events:
+      - http:
+          path: users/email/password
+          method: post
+          cors: true
+  sendVerificationEmail:
+    handler: src/api/users/users.sendVerificationEmail
+    package:
+      include:
+        - src/api/users/**
+        - src/api/passport/**
+        - src/shared/**
+    events:
+      - http:
+          path: users/{id}/email/verification
+          method: post
+          cors: true
+  resetPassword:
+    handler: src/api/users/users.resetPassword
+    package:
+      include:
+        - src/api/users/**
+        - src/api/passport/**
+        - src/shared/**
+    events:
+      - http:
+          path: users/{id}/resetPassword/{token}
+          method: post
+          cors: true

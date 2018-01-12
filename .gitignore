@@ -1,5 +1,10 @@
 .idea
 .tmp
+.webpack
 .serverless
+.nyc_output
 node_modules
 package-lock.json
+.DS_Store
+my-artifacts
+apidoc/build

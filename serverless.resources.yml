@@ -6,14 +6,14 @@ resources:
       #DeletionPolicy: Retain
       Properties:
         AttributeDefinitions:
-          - AttributeName: "id"
+          - AttributeName: "_id"
             AttributeType: "S"
           - AttributeName: "arn"
             AttributeType: "S"
-          - AttributeName: "accountId"
+          - AttributeName: "_account"
             AttributeType: "S"
         KeySchema:
-          - AttributeName: "id"
+          - AttributeName: "_id"
             KeyType: "HASH"
         ProvisionedThroughput:
           ReadCapacityUnits: 1
@@ -21,7 +21,7 @@ resources:
         GlobalSecondaryIndexes:
           - IndexName: AccountIdIndex
             KeySchema:
-              - AttributeName: accountId
+              - AttributeName: _account
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
@@ -46,12 +46,16 @@ resources:
       #DeletionPolicy: Retain
       Properties:
         AttributeDefinitions:
-          - AttributeName: "id"
+          - AttributeName: "_id"
             AttributeType: "S"
-          - AttributeName: "accountId"
+          - AttributeName: "_account"
             AttributeType: "S"
+          - AttributeName: "_function"
+            AttributeType: "S"
+          - AttributeName: "startTime"
+            AttributeType: "N"
         KeySchema:
-          - AttributeName: "id"
+          - AttributeName: "_id"
             KeyType: "HASH"
         ProvisionedThroughput:
           ReadCapacityUnits: 1
@@ -59,7 +63,18 @@ resources:
         GlobalSecondaryIndexes:
           - IndexName: AccountIdIndex
             KeySchema:
-              - AttributeName: accountId
+              - AttributeName: _account
+                KeyType: HASH
+              - AttributeName: startTime
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+          - IndexName: FunctionIdIndex
+            KeySchema:
+              - AttributeName: _function
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
@@ -76,24 +91,12 @@ resources:
         AttributeDefinitions:
           - AttributeName: "_id"
             AttributeType: "S"
-          - AttributeName: "isActive"
-            AttributeType: "N"
         KeySchema:
           - AttributeName: "_id"
             KeyType: "HASH"
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        GlobalSecondaryIndexes:
-          - IndexName: isActiveIndex
-            KeySchema:
-              - AttributeName: isActive
-                KeyType: HASH
-            Projection:
-              ProjectionType: ALL
-            ProvisionedThroughput:
-              ReadCapacityUnits: 1
-              WriteCapacityUnits: 1
         TableName: ${self:provider.environment.ACCOUNTS_TABLE}
     UsersDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
@@ -103,20 +106,12 @@ resources:
         AttributeDefinitions:
           - AttributeName: "_id"
             AttributeType: "S"
-#          - AttributeName: "firstName"
-#            AttributeType: "S"
-#          - AttributeName: "lastName"
-#            AttributeType: "S"
           - AttributeName: "email"
             AttributeType: "S"
           - AttributeName: "password"
             AttributeType: "S"
-#          - AttributeName: "createdAt"
-#            AttributeType: "S"
-#          - AttributeName: "updatedAt"
-#            AttributeType: "S"
-#          - AttributeName: "accounts"
-#            AttributeType: "L"
+          - AttributeName: "isActive"
+            AttributeType: "N"
         KeySchema:
           - AttributeName: "_id"
             KeyType: "HASH"
@@ -135,4 +130,73 @@ resources:
             ProvisionedThroughput:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1
+          - IndexName: isActive
+            KeySchema:
+              - AttributeName: _id
+                KeyType: HASH
+              - AttributeName: isActive
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+          - IndexName: emailIndex
+            KeySchema:
+              - AttributeName: email
+                KeyType: HASH
+              - AttributeName: isActive
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
         TableName: ${self:provider.environment.USERS_TABLE}
+    UsersAccountsDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Delete
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: "_user"
+            AttributeType: "S"
+          - AttributeName: "_account"
+            AttributeType: "S"
+        KeySchema:
+          - AttributeName: "_user"
+            KeyType: "HASH"
+          - AttributeName: "_account"
+            KeyType: "RANGE"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+          - IndexName: AccountUsers
+            KeySchema:
+              - AttributeName: _account
+                KeyType: HASH
+              - AttributeName: _user
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.USER_ACCOUNTS_TABLE}
+    S3BucketStuffBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: sls-bucket-apidoc-${opt:stage}
+        AccessControl: 'PublicRead'
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: index.html
+        CorsConfiguration:
+          CorsRules:
+            - AllowedMethods:
+              - GET
+              - HEAD
+              AllowedOrigins:
+              - "*"
+              AllowedHeaders:
+              - "*"

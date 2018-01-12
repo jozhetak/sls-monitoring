@@ -11,8 +11,28 @@
 #
 # Happy Coding!
 
+
 service: sls-tm-collect
 
+custom:
+  dynamodb:
+    start:
+      inMemory: false
+      migrate: true
+      seed: true
+    seed:
+      domain:
+        sources:
+          - table: users-dev
+            sources: [./seeds/users.json]
+          - table: accounts-dev
+            sources: [./seeds/accounts.json]
+          - table: users-accounts-dev
+            sources: [./seeds/users-accounts.json]
+          - table: functions-dev
+            sources: [./seeds/functions.json]
+          - table: invocations-dev
+            sources: [./seeds/invocations.json]
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
 # frameworkVersion: "=X.X.X"
@@ -31,8 +51,21 @@ provider:
         - dynamodb:GetItem
         - dynamodb:PutItem
         - dynamodb:UpdateItem
+        - dynamodb:BatchGetItem
+        - dynamodb:DeleteItem
         - SNS:Publish
+        - lambda:ListFunctions
+        - logs:DescribeLogStreams
+        - logs:filterLogEvents
+        - ses:SendEmail
+        - ses:SendRawEmail
       Resource: "*"
+
+plugins:
+ - serverless-webpack
+ - serverless-dynamodb-local
+ - serverless-offline
+
 
 resources:
   Resources: ${file(./serverless.resources.yml):resources.Resources}
@@ -64,8 +97,18 @@ resources:
 # you can add packaging information here
 package:
   individually: true
+  excludeDevDependencies: false
   exclude:
+    - .git/**
+    - .idea/**
+    - .tmp/**
+    - .webpack/**
+    - .nyc_output/**
+    - package-lock.json
+    - .DS_Store/**
     - src/**
+  include:
+    - src/shared/**
 
 functions:
   schedule:
@@ -91,39 +134,60 @@ functions:
       include:
         - src/sls-collect/**
         - src/shared/**
-  test:
-    handler: src/test-error/handler.run
-    package:
-      include:
-        - src/test-error/**
-  authorize:
-      handler: src/api/passport/passport.handler
-      package:
-        include:
-          - src/api/passport/**
-          - src/shared/model/**
+#  test:
+#    handler: src/test-error/handler.run
+#    package:
+#      include:
+#        - src/test-error/**
+#  authorize:
+#    handler: src/api/passport/passport.handler
+#    package:
+#      include:
+#        - src/api/passport/**
+#        - src/shared/model/**
   userSignIn:
     handler: src/api/auth/auth.signIn
     package:
-          include:
-            - src/api/auth/**
-            - src/shared/model/**
+      include:
+        - src/api/auth/**
+        - src/api/passport/**
+        - src/shared/**
     events:
       - http:
           path: signIn
           method: post
           cors: true
+  # USERS
   createUser: ${file(./src/api/users/serverless.yml):functions.createUser}
   listUsers: ${file(./src/api/users/serverless.yml):functions.listUsers}
   getUser: ${file(./src/api/users/serverless.yml):functions.getUser}
   updateUser: ${file(./src/api/users/serverless.yml):functions.updateUser}
   deleteUser: ${file(./src/api/users/serverless.yml):functions.deleteUser}
+  changePassword: ${file(./src/api/users/serverless.yml):functions.changePassword}
+  verifyUser: ${file(./src/api/users/serverless.yml):functions.verifyUser}
+  sendResetPasswordEmail: ${file(./src/api/users/serverless.yml):functions.sendResetPasswordEmail}
+  sendVerificationEmail: ${file(./src/api/users/serverless.yml):functions.sendVerificationEmail}
+  resetPassword: ${file(./src/api/users/serverless.yml):functions.resetPassword}
   # ACCOUNTS
   createAccount: ${file(./src/api/accounts/serverless.yml):functions.createAccount}
   listAccounts: ${file(./src/api/accounts/serverless.yml):functions.listAccounts}
   getAccount: ${file(./src/api/accounts/serverless.yml):functions.getAccount}
   updateAccount: ${file(./src/api/accounts/serverless.yml):functions.updateAccount}
   deleteAccount: ${file(./src/api/accounts/serverless.yml):functions.deleteAccount}
+  # ACCOUNT_USERS
+  inviteUsers: ${file(./src/api/accounts/serverless.yml):functions.inviteUsers}
+  getAccountUsers: ${file(./src/api/accounts/serverless.yml):functions.getAccountUsers}
+  updateAccountUser: ${file(./src/api/accounts/serverless.yml):functions.updateAccountUser}
+  deleteAccountUser: ${file(./src/api/accounts/serverless.yml):functions.deleteAccountUser}
+  # FUNCTIONS
+  listFunctions: ${file(./src/api/functions/serverless.yml):functions.listFunctions}
+  getFunction: ${file(./src/api/functions/serverless.yml):functions.getFunction}
+  populateFunction: ${file(./src/api/functions/serverless.yml):functions.populateFunction}
+  clean: ${file(./src/api/functions/serverless.yml):functions.clear}
+
+  # INVOCATIONS
+  listInvocations: ${file(./src/api/invocations/serverless.yml):functions.listInvocations}
+  getInvocation: ${file(./src/api/invocations/serverless.yml):functions.getInvocation}
 #    events:
 #      - schedule: rate(1 minute)
 
