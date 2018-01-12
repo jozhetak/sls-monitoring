@@ -3,6 +3,8 @@ const AWS = require('aws-sdk')
 const Promise = require('bluebird')
 const Collector = require('./Collector')
 const _ = require('lodash')
+const collectLogStreams = require('./collectLogStreams').collect
+const collectLogEvents = require('./collectLogEvents').collect
 
 const LOG_STREAM_LIMIT = 50
 const LOG_EVENT_TIMEOUT = 15 * 60 * 1000
@@ -64,9 +66,8 @@ module.exports = class AWSCollector extends Collector {
     }
 
     const that = this
-
-    return cloudwatchlogs.describeLogStreams(params)
-      .promise()
+    //return cloudwatchlogs.describeLogStreams(params).promise()
+    return collectLogStreams(cloudwatchlogs, params)
       .then((data) => {
         const streamNames = []
         data.logStreams.forEach((logStream) => {
@@ -78,13 +79,15 @@ module.exports = class AWSCollector extends Collector {
         }
 
         const params = {
+          limit: 10000,
           logGroupName: logGroupName,
           startTime: new Date().getTime() - LOG_EVENT_TIMEOUT,
           endTime: new Date().getTime(),
           interleaved: false,
           logStreamNames: streamNames
         }
-        return cloudwatchlogs.filterLogEvents(params).promise()
+        // return cloudwatchlogs.filterLogEvents(params).promise()
+        return collectLogEvents(cloudwatchlogs, params)
       })
       .then((data) => {
         if (!data) {
