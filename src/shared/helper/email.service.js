@@ -29,7 +29,7 @@ module.exports.sendVerificationEmail = (user) => {
   const options = {
     recipient: user.email,
     subject: 'Verification email',
-    body: `Hello ${user.firstName + ' ' + user.lastName}! Please open the <a href="http://localhost:3000/users/${user._id}/verification/${user.verificationToken}">link</a> to verify your account `
+    body: `Hello ${user.firstName + ' ' + user.lastName}! Please open the <a href="${process.env.API_URL}/users/${user._id}/verification/${user.verificationToken}">link</a> to verify your account `
   }
   return _sendEmail(options)
 }

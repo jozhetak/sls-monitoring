@@ -4,7 +4,7 @@
   "description": "Service for monitoring your Lambda functions",
   "apidoc": {
     "title": "Serverless Monitoring API documentation",
-    "url": "https://qi0qd13kf1.execute-api.eu-central-1.amazonaws.com/staging/",
+    "url": "https://qi0qd13kf1.execute-api.eu-central-1.amazonaws.com/staging",
     "template": {
       "forceLanguage": "en",
       "withCompare": false,
