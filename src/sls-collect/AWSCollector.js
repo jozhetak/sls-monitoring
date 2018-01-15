@@ -66,7 +66,7 @@ module.exports = class AWSCollector extends Collector {
     }
 
     const that = this
-    //return cloudwatchlogs.describeLogStreams(params).promise()
+
     return collectLogStreams(cloudwatchlogs, params)
       .then((data) => {
         const streamNames = []
@@ -86,7 +86,6 @@ module.exports = class AWSCollector extends Collector {
           interleaved: false,
           logStreamNames: streamNames
         }
-        // return cloudwatchlogs.filterLogEvents(params).promise()
         return collectLogEvents(cloudwatchlogs, params)
       })
       .then((data) => {
