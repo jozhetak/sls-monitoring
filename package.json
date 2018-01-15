@@ -4,7 +4,7 @@
   "description": "Service for monitoring your Lambda functions",
   "apidoc": {
     "title": "Serverless Monitoring API documentation",
-    "url": "http://sls-bucket-apidoc-dev.s3-website.eu-central-1.amazonaws.com",
+    "url": "https://qi0qd13kf1.execute-api.eu-central-1.amazonaws.com/staging/",
     "template": {
       "forceLanguage": "en",
       "withCompare": false,
@@ -27,7 +27,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "babel-runtime": "6.11.6",
     "async": "^2.6.0",
     "aws-sdk": "^2.141.0",
     "big-integer": "^1.6.26",
@@ -36,7 +35,6 @@
     "joi": "^13.0.2",
     "jsonwebtoken": "^8.1.0",
     "lodash": "^4.17.4",
-    "transform-runtime": "0.0.0",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
