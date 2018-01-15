@@ -47,12 +47,12 @@ const asyncFunc = gensync(function * (instance ,param) {
   const logs = getStreams(instance, param)
   let result = []
   let partResult = yield logs.next().value // returns promise
-  result = result.concat(partResult.events)
+  result = result.concat(partResult.logStreams)
   while (partResult && partResult.nextToken) {
     partResult = yield logs.next().value
-    if (partResult && partResult.events) result = result.concat(partResult.events)
+    if (partResult && partResult.logStreams) result = result.concat(partResult.logStreams)
   }
-  yield {events: result}
+  yield {logStreams: result}
 })
 
 module.exports.collect = asyncFunc
