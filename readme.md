@@ -1,3 +1,5 @@
+APIDOC: http://sls-bucket-apidoc-staging.s3-website.eu-central-1.amazonaws.com
+
 Deploy (region is ignored from ~/.aws/config)
 
         `sls deploy --aws-profile serverless-deploy --stage dev --region eu-central-1`
