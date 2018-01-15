@@ -252,7 +252,7 @@
 //                    UPDATE ACCOUNT USERS
 // -----------------------------------------------------------------
 /**
- * @api {get} /accounts/:accountId/users/:id Update account users
+ * @api {put} /accounts/:accountId/users/:id Update account users
  * @apiName UpdateAccountUsers
  * @apiVersion 1.0.0
  * @apiDescription Update user of account
