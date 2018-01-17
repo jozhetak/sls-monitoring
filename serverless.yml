@@ -189,6 +189,7 @@ functions:
   # INVOCATIONS
   listInvocations: ${file(./src/api/invocations/serverless.yml):functions.listInvocations}
   getInvocation: ${file(./src/api/invocations/serverless.yml):functions.getInvocation}
+  chartFunctionInvocation: ${file(./src/api/invocations/serverless.yml):functions.chartFunctionInvocations}
 #    events:
 #      - schedule: rate(1 minute)
 

@@ -4,5 +4,10 @@
     "isAdmin": true,
     "_id": "6beaa4e1-e663-11e7-a4b1-53f92960e92c",
     "_account": "6beaa4e0-e663-11e7-a4b1-53f92960e92c"
+  }, {
+    "_user": "86ccfa00-d3ae-11e7-8dc5-1f75d4a71f68",
+    "isAdmin": true,
+    "_id": "6beaa4e1-e663-11e7-a4b1-53f92960e92c",
+    "_account": "6beaa4e0-e663-11e7-a4b1-53f92960e92c"
   }
 ]

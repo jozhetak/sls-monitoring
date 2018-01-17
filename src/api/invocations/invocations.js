@@ -55,7 +55,7 @@ module.exports.list = (event, context, callback) => {
 module.exports.get = (event, context, callback) => {
   const token = event.headers.Authorization
   const accountId = event.pathParameters.id
-  const functionId = event.pathparameters.functionId
+  const functionId = event.pathParameters.functionId
   const invocationId = event.pathParameters.invocationId
 
   return Promise.all([
@@ -78,6 +78,53 @@ module.exports.get = (event, context, callback) => {
         throw errors.forbidden()
       }
       return invocation
+    })
+    .then(responses.ok)
+    .catch(responses.error)
+    .then(response => callback(null, response))
+}
+// TODO: support endTime
+module.exports.chartFunctionInvocations = (event, context, callback) => {
+  const query = event.queryStringParameters
+  const token = event.headers.Authorization
+  const accountId = event.pathParameters.id
+  const functionId = event.pathParameters.functionId
+  const limit = query && query.limit ? query.limit : 100
+  const key = query && query.key ? {_function: functionId, _id: query.key} : undefined
+  const startTime = query && query.startTime ? query.startTime : (new Date()).getTime() - 60 * 60 * 60 * 1000
+  const endTime =  query && query.endTime ? query.endTime : (new Date()).getTime()
+  return Promise.all([
+      passport.checkAuth(token).then(decoded => UserModel.isActiveOrThrow(decoded)),
+      AccountModel.getActiveByIdrOrThrow(accountId),
+      UserAccountModel.getUsersByAccount(accountId),
+      FunctionModel.getById(functionId)
+    ]
+  )
+    .then(([id, account, accountUsers, func]) => {
+      let accountUsersIds = accountUsers.map(user => user._user)
+      if (!(accountUsersIds.includes(id))) {
+        throw errors.forbidden()
+      }
+      if (func._account !== accountId) {
+        throw errors.forbidden()
+      }
+
+      return InvocationModel.getAll({
+        IndexName: 'FunctionIdIndex',
+        KeyConditionExpression: '#function = :function AND #startTime >= :startTime',
+        FilterExpression: '',
+        ExpressionAttributeNames: {
+          '#function': '_function',
+          '#startTime': 'startTime'
+        },
+        ExpressionAttributeValues: {
+          ':function': functionId,
+          ':startTime': startTime
+        },
+        ExclusiveStartKey: key,
+        Limit: limit,
+        ScanIndexForward: false
+      })
     })
     .then(responses.ok)
     .catch(responses.error)

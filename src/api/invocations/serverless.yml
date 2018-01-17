@@ -23,3 +23,50 @@ functions:
           method: get
           cors: true
 
+  chartFunctionInvocations:
+    handler: src/api/invocations/invocations.chartFunctionInvocations
+    package:
+      include:
+        - src/api/invocations/**
+        - src/api/passport/**
+    events:
+      - http:
+          path: /accounts/{id}/chart/functions/{functionId}/invocations
+          method: get
+          cors: true
+
+#  chartAccountInvocations:
+#    handler: src/api/invocations/invocations.chartAccountInvocations
+#    package:
+#      include:
+#        - src/api/invocations/**
+#        - src/api/passport/**
+#    events:
+#      - http:
+#          path: /accounts/{id}/chart/functions/{functionId}/invocations
+#          method: get
+#          cors: true
+#
+#  chartAccountDuration:
+#    handler: src/api/invocations/invocations.chartAccountDuration
+#    package:
+#      include:
+#        - src/api/invocations/**
+#        - src/api/passport/**
+#    events:
+#      - http:
+#          path: /accounts/{id}/chart/functions/{functionId}/duration
+#          method: get
+#          cors: true
+#
+#  chartAccountErrors:
+#    handler: src/api/invocations/invocations.chartAccountErrors
+#    package:
+#      include:
+#        - src/api/invocations/**
+#        - src/api/passport/**
+#    events:
+#      - http:
+#          path: /accounts/{id}/chart/functions/{functionId}/errors
+#          method: get
+#          cors: true
