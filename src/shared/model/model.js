@@ -4,6 +4,8 @@
 const uuid = require('uuid')
 const _ = require('lodash')
 const dynamodb = require('../helper/dynamodb')
+const RateLimiter = require('limiter').RateLimiter
+const limiter = new RateLimiter(1, 'second')
 
 module.exports = class Model {
   // TEST FOR SEVERLESS 1.25.0
@@ -88,6 +90,9 @@ module.exports = class Model {
       .then(() => {
         return this.data
       })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
   static getById (id) {
@@ -112,6 +117,7 @@ module.exports = class Model {
         return data
       })
   }
+
   static _recursiveScan (query) {
     const results = {
       Items: []
@@ -241,9 +247,11 @@ module.exports = class Model {
     while (params.Keys.length > 25) {
       let keys = params.Keys.splice(0, 25)
       dbparams.RequestItems[this.TABLE] = keys.map(key => {
-        return {DeleteRequest: {
-          Key: key
-        }}
+        return {
+          DeleteRequest: {
+            Key: key
+          }
+        }
       })
       dynamodb.batchWrite(dbparams)
         .promise()
@@ -252,9 +260,11 @@ module.exports = class Model {
         })
     }
     dbparams.RequestItems[this.TABLE] = params.Keys.map(key => {
-      return {DeleteRequest: {
-        Key: key
-      }}
+      return {
+        DeleteRequest: {
+          Key: key
+        }
+      }
     })
 
     return dynamodb.batchWrite(dbparams)
@@ -268,30 +278,21 @@ module.exports = class Model {
     const dbparams = {
       RequestItems: {}
     }
-
-    while (items.length > 25) {
+    let promises = []
+    while (items.length !== 0) {
       let requestItems = items.splice(0, 25)
-      dbparams.RequestItems[this.TABLE] = requestItems.map(item => {
-        return {PutRequest: {
-          Item: item
-        }}
-      })
-      dynamodb.batchWrite(dbparams)
-        .promise()
-        .then(result => {
-          return result
-        })
-    }
-    dbparams.RequestItems[this.TABLE] = items.map(item => {
-      return {PutRequest: {
-        Item: item
-      }}
-    })
+      console.log(requestItems)
 
-    return dynamodb.batchWrite(dbparams)
-      .promise()
-      .then(result => {
-        return result
+      dbparams.RequestItems[this.TABLE] = requestItems.map(item => {
+        return {
+          PutRequest: {
+            Item: item
+          }
+        }
       })
+
+      promises.push(dynamodb.batchWrite(dbparams).promise())
+    }
+    return Promise.all(promises)
   }
 }
