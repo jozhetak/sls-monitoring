@@ -61,7 +61,7 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 5
         GlobalSecondaryIndexes:
-          - IndexName: AccountIndex
+          - IndexName: AccountIdIndex
             KeySchema:
               - AttributeName: _account
                 KeyType: HASH

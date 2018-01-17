@@ -29,7 +29,6 @@
   "dependencies": {
     "async": "^2.6.0",
     "aws-sdk": "^2.141.0",
-    "babel-runtime": "6.11.6",
     "big-integer": "^1.6.26",
     "bluebird": "^3.5.1",
     "faker": "^4.1.0",
