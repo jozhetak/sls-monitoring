@@ -17,7 +17,7 @@ resources:
             KeyType: "HASH"
         ProvisionedThroughput:
           ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+          WriteCapacityUnits: 2
         GlobalSecondaryIndexes:
           - IndexName: AccountIdIndex
             KeySchema:
@@ -27,7 +27,7 @@ resources:
               ProjectionType: ALL
             ProvisionedThroughput:
               ReadCapacityUnits: 1
-              WriteCapacityUnits: 1
+              WriteCapacityUnits: 2
           - IndexName: FunctionArnIndex
             KeySchema:
               - AttributeName: arn
@@ -36,7 +36,7 @@ resources:
               ProjectionType: ALL
             ProvisionedThroughput:
               ReadCapacityUnits: 1
-              WriteCapacityUnits: 1
+              WriteCapacityUnits: 2
 
         TableName: ${self:provider.environment.FUNCTIONS_TABLE}
 
@@ -59,7 +59,7 @@ resources:
             KeyType: "HASH"
         ProvisionedThroughput:
           ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+          WriteCapacityUnits: 5
         GlobalSecondaryIndexes:
           - IndexName: AccountIdIndex
             KeySchema:
@@ -71,7 +71,7 @@ resources:
               ProjectionType: ALL
             ProvisionedThroughput:
               ReadCapacityUnits: 1
-              WriteCapacityUnits: 1
+              WriteCapacityUnits: 5
           - IndexName: FunctionIdIndex
             KeySchema:
               - AttributeName: _function
@@ -79,8 +79,8 @@ resources:
             Projection:
               ProjectionType: ALL
             ProvisionedThroughput:
-              ReadCapacityUnits: 1
-              WriteCapacityUnits: 1
+              ReadCapacityUnits: 5
+              WriteCapacityUnits: 5
 
         TableName: ${self:provider.environment.INVOCATIONS_TABLE}
     AccountsDynamoDbTable:
@@ -186,7 +186,7 @@ resources:
     S3BucketStuffBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: sls-bucket-apidoc-${opt:stage}
+        BucketName: sls-bucket-apidoc-${opt:stage}-test
         AccessControl: 'PublicRead'
         WebsiteConfiguration:
           IndexDocument: index.html

@@ -5,11 +5,6 @@
  * @apiVersion 1.0.0
  * @apiDescription Populate test data in database.
  * @apiGroup Populate
- * @apiHeader {String} Authorization Users access token.
- * @apiHeaderExample {json} Header Example:
- {
-   "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6Ijg2Y2NmYTAwLWQzYWUtMTFlNy04ZGM1LTFmNzVkNGE3MWY2NyJ9LCJpYXQiOjE1MTE4MTMzNzMsImV4cCI6MTU0MzM0OTM3M30.ScQ8baHireB2heW8ngoXIdWo9qbZkm-ddEP5mTAzLHc"
- }
  * @apiParam {Number} id Account unique GUID.
  * @apiParamExample {json} Request Params Example:
  *     {
@@ -34,11 +29,6 @@
  * @apiVersion 1.0.0
  * @apiDescription Cleanup data in database.
  * @apiGroup Populate
- * @apiHeader {String} Authorization Users access token.
- * @apiHeaderExample {json} Header Example:
- {
-   "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6Ijg2Y2NmYTAwLWQzYWUtMTFlNy04ZGM1LTFmNzVkNGE3MWY2NyJ9LCJpYXQiOjE1MTE4MTMzNzMsImV4cCI6MTU0MzM0OTM3M30.ScQ8baHireB2heW8ngoXIdWo9qbZkm-ddEP5mTAzLHc"
- }
  * @apiParam {Number} id Account unique GUID.
  * @apiParamExample {json} Request Params Example:
  *     {
@@ -46,7 +36,6 @@
  *     }
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 Ok
- {
  [
     {
         "UnprocessedItems": {}
@@ -55,5 +44,4 @@
         "UnprocessedItems": {}
     }
 ]
- }
  */

@@ -52,6 +52,7 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:BatchGetItem
+        - dynamodb:BatchWriteItem
         - dynamodb:DeleteItem
         - SNS:Publish
         - lambda:ListFunctions
