@@ -1,6 +1,6 @@
 
 /**
- * @api {post} accounts/:id/functions?days=:days&errors=:errors&invocations_min=:invocations_min&invocations_max=:invocations_max&functions_count=:functions_count Populate functions & invocations
+ * @api {post} /accounts/:id/functions?days=:days&errors=:errors&invocations_min=:invocations_min&invocations_max=:invocations_max&functions_count=:functions_count Populate functions & invocations
  * @apiName Populate
  * @apiVersion 1.0.0
  * @apiDescription Populate test data in database.
@@ -29,7 +29,7 @@
 */
 
 /**
- * @api {delete} accounts/:id/functions Clean up functions and invocations
+ * @api {delete} /accounts/:id/functions Clean up functions and invocations
  * @apiName CleanUp
  * @apiVersion 1.0.0
  * @apiDescription Cleanup data in database.
