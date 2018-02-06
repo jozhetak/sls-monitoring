@@ -209,7 +209,8 @@
    "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6Ijg2Y2NmYTAwLWQzYWUtMTFlNy04ZGM1LTFmNzVkNGE3MWY2NyJ9LCJpYXQiOjE1MTE4MTMzNzMsImV4cCI6MTU0MzM0OTM3M30.ScQ8baHireB2heW8ngoXIdWo9qbZkm-ddEP5mTAzLHc"
  }
  * @apiParam {Number} id Users unique GUID.
- * @apiParam {String} password New password of user.
+ * @apiParam {String} newPassword New password of user.
+ * @apiParam {String} oldPassword Old password of user.
  * @apiParamExample {json} Request Params Example:
  *     {
  *       "id": "86ccfa00-d3ae-11e7-8dc5-1f75d4a71f67"
