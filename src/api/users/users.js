@@ -108,11 +108,14 @@ module.exports.changePassword = (event, context, callback) => {
   const body = JSON.parse(event.body)
 
   passport.checkSelf(token, id)
-    .then((decoded) => UserModel.isActiveOrThrow(decoded))
     .then(() => helper.validateUpdatePassword(body))
-    .then((password) => {
+    .then(() => UserModel.getActiveByIdrOrThrow(id))
+    .then(user => {
+      if (user.password !== passport.encryptPassword(body.oldPassword)) {
+        throw errors.forbidden()
+      }
       return UserModel.update(id, {
-        password: passport.encryptPassword(password)
+        password: passport.encryptPassword(body.newPassword)
       })
     })
     .then(dtoUser.public)
