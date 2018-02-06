@@ -62,6 +62,11 @@ module.exports.checkAuth = (authToken) => {
     if (!decoded || !decoded.user || !decoded.user._id) throw errors.unauthorized()
     return decoded
   })
+    .catch(err => {
+      if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
+        throw errors.unauthorized()
+      }
+    })
 }
 
 module.exports.checkSelf = (authToken, id) => {
