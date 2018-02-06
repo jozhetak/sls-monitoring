@@ -79,7 +79,7 @@ module.exports.update = (event, context, callback) => {
 
   Promise.all([
     passport.checkSelf(token, id),
-    helper.validate(body)
+    helper.validateUpdate(body)
   ])
     .then(([decoded]) => UserModel.isActiveOrThrow(decoded))
     .then(() => UserModel.update(id, body))
@@ -109,7 +109,7 @@ module.exports.changePassword = (event, context, callback) => {
 
   passport.checkSelf(token, id)
     .then((decoded) => UserModel.isActiveOrThrow(decoded))
-    .then(() => helper.validatePassword(body.password))
+    .then(() => helper.validateUpdatePassword(body))
     .then((password) => {
       return UserModel.update(id, {
         password: passport.encryptPassword(password)
@@ -126,7 +126,7 @@ module.exports.resetPassword = (event, context, callback) => {
   const body = JSON.parse(event.body)
 
   Promise.all([
-    helper.validatePassword(body.password),
+    helper.validateResetPassword(body.password),
     UserModel.getActiveByIdrOrThrow(id)
   ])
     .then(([password, user]) => {
