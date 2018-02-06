@@ -39,7 +39,7 @@ module.exports.validateUpdate = (user) => {
 }
 
 module.exports.validateUpdatePassword = (data) => {
-  return joi.validate(data, updatePasswordSchema)
+  return joi.validate(data, updatePasswordSchema, {abortEarly: false, allowUnknown: false})
     .catch(err => {
       throw errors.invalidJoi(err)
     })

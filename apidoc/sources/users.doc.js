@@ -216,7 +216,8 @@
  *     }
  * @apiParamExample {json} Request Body Example:
  *     {
- *       "password": "HelloTrainingCenter"
+ *       "newPassword": "HelloTrainingCenter",
+ *       "oldPassword":"HelloTechmagic"
  *     }
  * @apiUse UserResponseParams
  * @apiSuccessExample {json} Success-Response:
