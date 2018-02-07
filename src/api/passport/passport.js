@@ -50,7 +50,7 @@ module.exports.handler = (event, context, callback) => {
 module.exports.checkAuth = (authToken) => {
   return new Promise((resolve, reject) => {
     if (!authToken) {
-      reject(errors.unauthorized())
+      return reject(errors.unauthorized())
     }
     jwt.verify(authToken, tokenSecret, (err, decoded) => {
       if (err || !decoded) {
@@ -66,6 +66,7 @@ module.exports.checkAuth = (authToken) => {
       if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
         throw errors.unauthorized()
       }
+      throw err
     })
 }
 
