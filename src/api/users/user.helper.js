@@ -7,15 +7,15 @@ const regex = require('../../shared/regex')
 const passwordSchema = joi.string().min(8).regex(regex.password)
 
 const createSchema = joi.object().keys({
-  firstName: joi.string().trim().regex(regex.firstName).min(1).max(32).required(),
-  lastName: joi.string().trim().regex(regex.lastName).min(1).max(32).required(),
+  firstName: joi.string().trim().regex(regex.firstName).min(2).max(32).required(),
+  lastName: joi.string().trim().regex(regex.lastName).min(2).max(32).required(),
   email: joi.string().trim().regex(regex.email).required(),
   password: passwordSchema.required()
 })
 
 const updateSchema = joi.object().keys({
-  firstName: joi.string().trim().regex(regex.firstName).min(1).max(32).required(),
-  lastName: joi.string().trim().regex(regex.lastName).min(1).max(32).required(),
+  firstName: joi.string().trim().regex(regex.firstName).min(2).max(32).required(),
+  lastName: joi.string().trim().regex(regex.lastName).min(2).max(32).required(),
   email: joi.string().trim().regex(regex.email).required()
 })
 

@@ -10,7 +10,12 @@ const emailService = require('../../shared/helper/email.service')
 const hour = 360000
 
 module.exports.create = (event, context, callback) => {
-  const body = JSON.parse(event.body)
+  let body
+  try {
+    body = JSON.parse(event.body)
+  } catch (err) {
+    callback(null, responses.error(errors.badRequest()))
+  }
   const now = helper.timestamp()
   helper.validateCreate(body)
     .then(data => UserModel.getByEmail(data.email))
@@ -75,7 +80,12 @@ module.exports.get = (event, context, callback) => {
 module.exports.update = (event, context, callback) => {
   const id = event.pathParameters.id
   const token = event.headers.Authorization
-  const body = JSON.parse(event.body)
+  let body
+  try {
+    body = JSON.parse(event.body)
+  } catch (err) {
+    callback(null, responses.error(errors.badRequest()))
+  }
 
   Promise.all([
     passport.checkSelf(token, id),
@@ -105,7 +115,12 @@ module.exports.delete = (event, context, callback) => {
 module.exports.changePassword = (event, context, callback) => {
   const id = event.pathParameters.id
   const token = event.headers.Authorization
-  const body = JSON.parse(event.body)
+  let body
+  try {
+    body = JSON.parse(event.body)
+  } catch (err) {
+    callback(null, responses.error(errors.badRequest()))
+  }
 
   passport.checkSelf(token, id)
     .then(() => helper.validateUpdatePassword(body))
@@ -126,7 +141,12 @@ module.exports.changePassword = (event, context, callback) => {
 
 module.exports.resetPassword = (event, context, callback) => {
   const {id, token} = event.pathParameters
-  const body = JSON.parse(event.body)
+  let body
+  try {
+    body = JSON.parse(event.body)
+  } catch (err) {
+    callback(null, responses.error(errors.badRequest()))
+  }
 
   Promise.all([
     helper.validateResetPassword(body.password),
@@ -187,7 +207,12 @@ module.exports.sendVerificationEmail = (event, contex, callback) => {
 }
 
 module.exports.sendResetPasswordEmail = (event, contex, callback) => {
-  const body = JSON.parse(event.body)
+  let body
+  try {
+    body = JSON.parse(event.body)
+  } catch (err) {
+    callback(null, responses.error(errors.badRequest()))
+  }
 
   UserModel.getByEmail(body.email)
     .then(user => {
