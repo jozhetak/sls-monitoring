@@ -10,7 +10,12 @@ const dtoUser = require('../../shared/user.dto')
 const responses = require('../../shared/helper/responses')
 
 module.exports.signIn = (event, content, callback) => {
-  const body = JSON.parse(event.body)
+  let body
+  try {
+    body = JSON.parse(event.body)
+  } catch (err) {
+    callback(null, responses.error(errors.badRequest()))
+  }
 
   helper.validate(body)
     .then((data) => {
