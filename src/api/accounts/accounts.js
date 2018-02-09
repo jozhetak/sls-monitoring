@@ -203,10 +203,16 @@ module.exports.getAccountUsers = (event, context, callback) => {
 }
 
 module.exports.updateAccountUser = (event, context, callback) => {
-  return Promise.all([
-    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
-    UserAccountModel.getUsersByAccount(event.pathParameters.id)
-  ])
+  return passport.checkAuth(event.headers.Authorization)
+    .then(decoded => {
+      if (decoded.user._id === event.pathParameters.id) {
+        throw errors.forbidden()
+      }
+      return Promise.all([
+        UserModel.isActiveOrThrow(decoded),
+        UserAccountModel.getUsersByAccount(event.pathParameters.id)
+      ])
+    })
     .then(([id, accountUsers]) => {
       let accountUsersIds = accountUsers.map(user => user._user)
       if (!(accountUsersIds.includes(id) && accountUsers.find(user => user._user === id).isAdmin)) {
