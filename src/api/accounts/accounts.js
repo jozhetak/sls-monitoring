@@ -54,11 +54,15 @@ module.exports.list = (event, context, callback) => {
     .then(id => UserAccountModel.getAccountsByUser(id))
     .then(accounts => {
       if (!accounts) throw errors.notFound()
-      return accounts.map(account => {
+      const keysList = accounts.map(account => {
         return { _id: account._account }
       })
+      if (!accounts.length) {
+        return []
+      }
+      return AccountModel.getByKeys({Keys: keysList})
     })
-    .then(keysList => AccountModel.getByKeys({Keys: keysList}))
+    .then((accounts) => accounts.filter(account => account.isActive))
     .then((accounts) => accounts.map(dtoAccount.public))
     .then(responses.ok)
     .catch(responses.error)
