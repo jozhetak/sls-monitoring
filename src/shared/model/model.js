@@ -150,7 +150,7 @@ module.exports = class Model {
   }
 
   static getByKeys (params) {
-    var dbparams = {
+    const dbparams = {
       RequestItems: {}
     }
     dbparams.RequestItems[this.TABLE] = {

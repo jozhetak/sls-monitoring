@@ -16,41 +16,28 @@ module.exports = class Function extends Model {
   }
 
   static batchWrite (items) {
-    return new Promise(resolve => {
-      const dbparams = {
-        RequestItems: {}
-      }
-      const batchSize = 25
-      let promises = []
-      let requestItems = items.splice(0, batchSize)
+    const batchWriteQueue = this._formBatchWriteQueue(items)
+    return Promise.all(batchWriteQueue)
+  }
 
-      dbparams.RequestItems[this.TABLE] = requestItems.map(item => {
+  static _formBatchWriteQueue (items) {
+    const batchLimit = 25
+    const requestsCount = Math.floor(items.length / batchLimit) + 1
+    const batchWriteQueue = []
+    for (let i = 0; i < requestsCount; i++) {
+      batchWriteQueue[i] = items.splice(0, batchLimit).map(item => {
         return {
           PutRequest: {
             Item: item
           }
         }
       })
-
-      promises.push(dynamodb.batchWrite(dbparams).promise())
-      const timer = setInterval(() => {
-        let requestItems = items.splice(0, batchSize)
-
-        dbparams.RequestItems[this.TABLE] = requestItems.map(item => {
-          return {
-            PutRequest: {
-              Item: item
-            }
-          }
-        })
-
-        promises.push(dynamodb.batchWrite(dbparams).promise())
-        if (items.length === 0) {
-          clearInterval(timer)
-          resolve(Promise.all(promises))
-          console.log(items)
-        }
-      }, 600)
-    })
+    }
+    const dbparams = {
+      RequestItems: {
+        [this.TABLE]: batchWriteQueue
+      }
+    }
+    return dynamodb.batchWrite(dbparams).promise()
   }
 }
