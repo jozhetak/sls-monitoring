@@ -16,28 +16,29 @@ module.exports = class Function extends Model {
   }
 
   static batchWrite (items) {
-    const batchWriteQueue = this._formBatchWriteQueue(items)
+    const batchWriteQueue = this._formBatchWriteQueue(items.slice())
     return Promise.all(batchWriteQueue)
   }
 
   static _formBatchWriteQueue (items) {
     const batchLimit = 25
-    const requestsCount = Math.floor(items.length / batchLimit) + 1
+    const requestsCount = Math.ceil(items.length / batchLimit)
     const batchWriteQueue = []
     for (let i = 0; i < requestsCount; i++) {
-      batchWriteQueue[i] = items.splice(0, batchLimit).map(item => {
+      const putRequestItems = items.splice(0, batchLimit).map(item => {
         return {
           PutRequest: {
             Item: item
           }
         }
       })
-    }
-    const dbparams = {
-      RequestItems: {
-        [this.TABLE]: batchWriteQueue
+      const dbparams = {
+        RequestItems: {
+          [this.TABLE]: putRequestItems
+        }
       }
+      batchWriteQueue.push(dynamodb.batchWrite(dbparams).promise())
     }
-    return dynamodb.batchWrite(dbparams).promise()
+    return batchWriteQueue
   }
 }
