@@ -1,6 +1,6 @@
 
 /**
- * @api {post} accounts/:id/functions Populate functions & invocations
+ * @api {post} /accounts/:id/functions Populate functions & invocations
  * @apiName Populate
  * @apiVersion 1.0.0
  * @apiDescription Populate test data in database.
