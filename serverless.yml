@@ -20,6 +20,7 @@ custom:
       inMemory: false
       migrate: true
       seed: true
+      noStart: true
     seed:
       domain:
         sources:

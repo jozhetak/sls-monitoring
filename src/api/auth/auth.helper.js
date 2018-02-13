@@ -7,7 +7,7 @@ const schema = joi.object().keys({
 })
 
 module.exports.validate = (user) => {
-  return joi.validate(user, schema)
+  return joi.validate(user, schema, {abortEarly: false, allowUnknown: false})
     .catch(err => {
       throw errors.invalidJoi(err)
     })

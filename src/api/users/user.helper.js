@@ -46,7 +46,7 @@ module.exports.validateUpdatePassword = (data) => {
 }
 
 module.exports.validateResetPassword = (password) => {
-  return joi.validate(password, passwordSchema)
+  return joi.validate(password, passwordSchema, {abortEarly: false, allowUnknown: false})
     .catch(err => {
       throw errors.invalidJoi(err)
     })
