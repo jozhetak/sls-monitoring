@@ -201,6 +201,45 @@
  * @apiUse Forbidden
  * @apiUse AccountNotFound
  */
+// -----------------------------------------------------------------
+//                    INVITE USER INTO ACCOUNT BY EMAIL
+// -----------------------------------------------------------------
+/**
+ * @api {post} /accounts/:id/user Invite users
+ * @apiName InviteUsers
+ * @apiVersion 1.0.0
+ * @apiDescription Invite users into account
+ * @apiGroup Account
+ * @apiHeader {String} Authorization Users access token.
+ * @apiHeaderExample {json} Header Example:
+ {
+   "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6Ijg2Y2NmYTAwLWQzYWUtMTFlNy04ZGM1LTFmNzVkNGE3MWY2NyJ9LCJpYXQiOjE1MTE4MTMzNzMsImV4cCI6MTU0MzM0OTM3M30.ScQ8baHireB2heW8ngoXIdWo9qbZkm-ddEP5mTAzLHc"
+ }
+ * @apiParam {Number} id Account unique GUID.
+ * @apiParamExample {json} Request Params Example:
+ *     {
+   *       "id": "6beaa4e0-e663-11e7-a4b1-53f92960e92c"
+   *     }
+ * @apiParam  {String} email user email.
+ * @apiParamExample {json} Request Body Example:
+ {
+  "email": "dmytro.kucheryavenko@techmagic.co",
+ }
+ // * @apiUse AccountResponseParams
+ * @apiSuccessExample {json} Success-Response:
+ * HTTP/1.1 200 OK
+ {
+    "_account": "42a3fb70-10b8-11e8-9f6b-679b5b428256",
+    "_user": "58c541f0-10ce-11e8-a161-edf22960cb51",
+    "firstName": "DmytroK",
+    "lastName": "Kucheryavenko",
+    "email": "dmytro.kucheryavenko+6@techmagic.co",
+    "isAdmin": false
+  }
+ * @apiUse Unauthorized
+ * @apiUse Forbidden
+ * @apiUse AccountNotFound
+ */
 
 // -----------------------------------------------------------------
 //                    GET ACCOUNT USERS
@@ -224,25 +263,25 @@
  // * @apiUse AccountResponseParams
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
- [
  {
-     "_user": {
-         "firstName": "Taras",
-         "lastName": "Buchko",
-         "createdAt": 1512991422,
-         "password": "70ccd9007338d6d81dd3b6271621b9cf9a97ea00",
-         "verificationToken": "61d763885d3f54a41061f54992f80040",
-         "verificationTokenExpires": 1612991422,
-         "_id": "86ccfa00-d3ae-11e7-8dc5-1f75d4a71f68",
-         "isActive": 1,
-         "email": "adminl@techmagic.co",
-         "updatedAt": 1512991422
-     },
-     "isAdmin": false,
-     "_id": "82e45390-e685-11e7-9adb-8b6d5ba9a9e6",
-     "_account": "6beaa4e0-e663-11e7-a4b1-53f92960e92c"
- }
- ]
+    "isAdmin": true,
+    "users": [
+        {
+            "_id": "40afbbb0-0feb-11e8-b7a7-6be3c9910864",
+            "firstName": "DmytroK",
+            "lastName": "Kucheryavenko",
+            "email": "dmytro.kucheryavenko+1@techmagic.co",
+            "isAdmin": false
+        },
+        {
+            "_id": "cba72ae0-10dc-11e8-bdc6-5f7981690b63",
+            "firstName": "Taras",
+            "lastName": "Buchko",
+            "email": "adminl@techmagic.co",
+            "isAdmin": true
+        }
+    ]
+}
  * @apiUse Unauthorized
  * @apiUse Forbidden
  * @apiUse AccountNotFound

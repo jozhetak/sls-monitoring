@@ -16,6 +16,7 @@ module.exports = class User extends Model {
     return process.env.USERS_TABLE
   }
 
+  // Currently is not used
   static getUsersOfAccount (params) {
     const dbparams = {
       RequestItems: {}
