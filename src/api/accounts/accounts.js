@@ -1,4 +1,7 @@
 'use strict'
+
+global.Promise = require('bluebird')
+
 const AccountModel = require('../../shared/model/account')
 const UserModel = require('../../shared/model/user')
 const UserAccountModel = require('../../shared/model/userAccount')
@@ -182,15 +185,15 @@ module.exports.inviteUsers = (event, context, callback) => {
 module.exports.inviteUserByEmail = (event, context, callback) => {
   return passport.checkAuth(event.headers.Authorization)
     .then(decoded => {
-      return Promise.all([
+      return [
         UserModel.isActiveOrThrow(decoded),
         AccountModel.getActiveByIdrOrThrow(event.pathParameters.id),
         UserAccountModel.getUsersByAccount(event.pathParameters.id),
         helper.validateInviteByEmail(JSON.parse(event.body))
           .then(data => UserModel.getByEmail(data.email))
-      ])
+      ]
     })
-    .then(([id, account, accountUsers, userToInvite]) => {
+    .spread((id, account, accountUsers, userToInvite) => {
       if (!userToInvite) {
         throw errors.badRequest()
       }
@@ -207,8 +210,9 @@ module.exports.inviteUserByEmail = (event, context, callback) => {
         _account: event.pathParameters.id,
         isAdmin: false
       })
-      return newAccountUser.save()
+      return [userToInvite, newAccountUser.save()]
     })
+    .spread(dtoUser.invited)
     .then(responses.ok)
     .catch(responses.error)
     .then(response => callback(null, response))
@@ -292,7 +296,7 @@ module.exports.deleteAccountUser = (event, context, callback) => {
     .then(([id, account, accountUsers]) => {
       let accountUsersIds = accountUsers.map(user => user._user)
       if (userId === id && accountUsers.filter(
-        user => user._user !== id && user.isAdmin).length === 0) {
+          user => user._user !== id && user.isAdmin).length === 0) {
         throw errors.forbidden()
       }
       if (!(accountUsersIds.includes(id) &&

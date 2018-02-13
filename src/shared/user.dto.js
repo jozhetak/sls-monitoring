@@ -1,3 +1,5 @@
+'use strict'
+
 module.exports.public = (user) => {
   return {
     _id: user._id ? user._id : null,
@@ -20,4 +22,12 @@ module.exports.withToken = (user) => {
   let dto = this.public(user)
   dto.accessToken = user.accessToken
   return dto
+}
+
+module.exports.invited = (user) => {
+  return {
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email
+  }
 }

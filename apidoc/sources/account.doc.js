@@ -201,6 +201,42 @@
  * @apiUse Forbidden
  * @apiUse AccountNotFound
  */
+// -----------------------------------------------------------------
+//                    INVITE USER INTO ACCOUNT BY EMAIL
+// -----------------------------------------------------------------
+/**
+ * @api {post} /accounts/:id/user Invite users
+ * @apiName InviteUsers
+ * @apiVersion 1.0.0
+ * @apiDescription Invite users into account
+ * @apiGroup Account
+ * @apiHeader {String} Authorization Users access token.
+ * @apiHeaderExample {json} Header Example:
+ {
+   "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6Ijg2Y2NmYTAwLWQzYWUtMTFlNy04ZGM1LTFmNzVkNGE3MWY2NyJ9LCJpYXQiOjE1MTE4MTMzNzMsImV4cCI6MTU0MzM0OTM3M30.ScQ8baHireB2heW8ngoXIdWo9qbZkm-ddEP5mTAzLHc"
+ }
+ * @apiParam {Number} id Account unique GUID.
+ * @apiParamExample {json} Request Params Example:
+ *     {
+   *       "id": "6beaa4e0-e663-11e7-a4b1-53f92960e92c"
+   *     }
+ * @apiParam  {String} email user email.
+ * @apiParamExample {json} Request Body Example:
+ {
+  "email": "dmytro.kucheryavenko@techmagic.co",
+ }
+ // * @apiUse AccountResponseParams
+ * @apiSuccessExample {json} Success-Response:
+ * HTTP/1.1 200 OK
+ {
+    "firstName": "DmytroK",
+    "lastName": "Kucheryavenko",
+    "email": "dmytro.kucheryavenko@techmagic.co"
+}
+ * @apiUse Unauthorized
+ * @apiUse Forbidden
+ * @apiUse AccountNotFound
+ */
 
 // -----------------------------------------------------------------
 //                    GET ACCOUNT USERS

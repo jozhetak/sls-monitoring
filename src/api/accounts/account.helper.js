@@ -28,28 +28,31 @@ const userUpdateSchema = joi.object().keys({
 })
 
 module.exports.validate = (user) => {
-  return joi.validate(user, schema)
+  return joi.validate(user, schema, {abortEarly: false, allowUnknown: false})
     .catch(err => {
       throw errors.invalidJoi(err)
     })
 }
 
 module.exports.validateInvite = (data) => {
-  return joi.validate(data, inviteSchema)
+  return joi.validate(data, inviteSchema,
+    {abortEarly: false, allowUnknown: false})
     .catch(err => {
       throw errors.invalidJoi(err)
     })
 }
 
 module.exports.validateInviteByEmail = (data) => {
-  return joi.validate(data, inviteByEmailSchema)
+  return joi.validate(data, inviteByEmailSchema,
+    {abortEarly: false, allowUnknown: false})
     .catch(err => {
       throw errors.invalidJoi(err)
     })
 }
 
 module.exports.validateAccountUserUpdate = (data) => {
-  return joi.validate(data, userUpdateSchema)
+  return joi.validate(data, userUpdateSchema,
+    {abortEarly: false, allowUnknown: false})
     .catch(err => {
       throw errors.invalidJoi(err)
     })
