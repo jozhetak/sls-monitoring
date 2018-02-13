@@ -1,5 +1,7 @@
 'use strict'
 
+global.Promise = require('bluebird')
+
 const UserModel = require('../../shared/model/user')
 const jwt = require('jsonwebtoken')
 const passport = require('../passport/passport')

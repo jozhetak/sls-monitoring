@@ -1,4 +1,7 @@
 'use strict'
+
+global.Promise = require('bluebird')
+
 const UserModel = require('../../shared/model/user')
 const helper = require('./user.helper')
 const uuid = require('uuid')
