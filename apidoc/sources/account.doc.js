@@ -263,25 +263,25 @@
  // * @apiUse AccountResponseParams
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
- [
  {
-     "_user": {
-         "firstName": "Taras",
-         "lastName": "Buchko",
-         "createdAt": 1512991422,
-         "password": "70ccd9007338d6d81dd3b6271621b9cf9a97ea00",
-         "verificationToken": "61d763885d3f54a41061f54992f80040",
-         "verificationTokenExpires": 1612991422,
-         "_id": "86ccfa00-d3ae-11e7-8dc5-1f75d4a71f68",
-         "isActive": 1,
-         "email": "adminl@techmagic.co",
-         "updatedAt": 1512991422
-     },
-     "isAdmin": false,
-     "_id": "82e45390-e685-11e7-9adb-8b6d5ba9a9e6",
-     "_account": "6beaa4e0-e663-11e7-a4b1-53f92960e92c"
- }
- ]
+    "isAdmin": true,
+    "users": [
+        {
+            "_id": "40afbbb0-0feb-11e8-b7a7-6be3c9910864",
+            "firstName": "DmytroK",
+            "lastName": "Kucheryavenko",
+            "email": "dmytro.kucheryavenko+1@techmagic.co",
+            "isAdmin": false
+        },
+        {
+            "_id": "cba72ae0-10dc-11e8-bdc6-5f7981690b63",
+            "firstName": "Taras",
+            "lastName": "Buchko",
+            "email": "adminl@techmagic.co",
+            "isAdmin": true
+        }
+    ]
+}
  * @apiUse Unauthorized
  * @apiUse Forbidden
  * @apiUse AccountNotFound

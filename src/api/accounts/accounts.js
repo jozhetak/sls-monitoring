@@ -228,25 +228,44 @@ module.exports.getAccountUsers = (event, context, callback) => {
   ])
     .then(([id, accountUsers]) => {
       if (!accountUsers || accountUsers.length === 0) throw errors.notFound()
-      let accountUsersIds = accountUsers.map(user => user._user)
-      if (!accountUsersIds.includes(id)) {
+
+      let currentAccountUser
+      const usersList = []
+      const rolesMap = new Map()
+
+      accountUsers.forEach((user) => {
+        const userId = user._user
+        usersList.push({
+          _id: userId
+        })
+
+        rolesMap.set(user._user, user.isAdmin)
+
+        if (userId === id) {
+          currentAccountUser = user
+        }
+      })
+
+      if (!currentAccountUser) {
         throw errors.forbidden()
       }
-      const usersList = []
-      accountUsers.forEach((user) => {
-        usersList.push({
-          _id: user._user
-        })
-      })
-      return UserModel.getUsersOfAccount({
-        _account: event.pathParameters.id,
-        Keys: usersList
-      })
+
+      return [
+        currentAccountUser,
+        rolesMap,
+        UserModel.getByKeys({
+          Keys: usersList
+        })]
     })
-    .then((users) => users.map(user => {
-      user._user = dtoUser.public(user._user)
-      return user
-    }))
+    .spread((currentAccountUser, rolesMap, users) => {
+      return {
+        isAdmin: currentAccountUser.isAdmin,
+        users: users.map(user => {
+          user.isAdmin = rolesMap.get(user._id)
+          return dtoUser.accountAssignee(user)
+        })
+      }
+    })
     .then(responses.ok)
     .catch(responses.error)
     .then(response => callback(null, response))

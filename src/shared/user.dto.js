@@ -34,3 +34,13 @@ module.exports.invited = (user, accountUser) => {
     isAdmin: accountUser.isAdmin
   }
 }
+
+module.exports.accountAssignee = (user) => {
+  return {
+    _id: user._id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    isAdmin: user.isAdmin
+  }
+}
