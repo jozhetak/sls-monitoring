@@ -1,3 +1,5 @@
+'use strict'
+
 const joi = require('joi')
 const errors = require('../../shared/helper/errors')
 const regex = require('../../shared/regex')

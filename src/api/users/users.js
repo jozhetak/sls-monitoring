@@ -17,7 +17,7 @@ module.exports.create = (event, context, callback) => {
   try {
     body = JSON.parse(event.body)
   } catch (err) {
-    callback(null, responses.error(errors.badRequest()))
+    return callback(null, responses.error(errors.badRequest()))
   }
   const now = helper.timestamp()
   helper.validateCreate(body)
@@ -87,7 +87,7 @@ module.exports.update = (event, context, callback) => {
   try {
     body = JSON.parse(event.body)
   } catch (err) {
-    callback(null, responses.error(errors.badRequest()))
+    return callback(null, responses.error(errors.badRequest()))
   }
 
   Promise.all([
@@ -122,7 +122,7 @@ module.exports.changePassword = (event, context, callback) => {
   try {
     body = JSON.parse(event.body)
   } catch (err) {
-    callback(null, responses.error(errors.badRequest()))
+    return callback(null, responses.error(errors.badRequest()))
   }
 
   passport.checkSelf(token, id)
@@ -148,7 +148,7 @@ module.exports.resetPassword = (event, context, callback) => {
   try {
     body = JSON.parse(event.body)
   } catch (err) {
-    callback(null, responses.error(errors.badRequest()))
+    return callback(null, responses.error(errors.badRequest()))
   }
 
   Promise.all([
@@ -214,7 +214,7 @@ module.exports.sendResetPasswordEmail = (event, contex, callback) => {
   try {
     body = JSON.parse(event.body)
   } catch (err) {
-    callback(null, responses.error(errors.badRequest()))
+    return callback(null, responses.error(errors.badRequest()))
   }
 
   UserModel.getByEmail(body.email)
