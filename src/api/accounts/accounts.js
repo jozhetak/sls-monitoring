@@ -12,7 +12,8 @@ const dtoUser = require('../../shared/user.dto')
 
 module.exports.create = (event, context, callback) => {
   Promise.all([
-    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    passport.checkAuth(event.headers.Authorization)
+      .then(decoded => UserModel.isActiveOrThrow(decoded)),
     helper.validate(event.body)
   ])
     .then(([userId, data]) => {
@@ -55,7 +56,7 @@ module.exports.list = (event, context, callback) => {
     .then(accounts => {
       if (!accounts) throw errors.notFound()
       const keysList = accounts.map(account => {
-        return { _id: account._account }
+        return {_id: account._account}
       })
       if (!accounts.length) {
         return []
@@ -71,7 +72,8 @@ module.exports.list = (event, context, callback) => {
 
 module.exports.get = (event, context, callback) => {
   return Promise.all([
-    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    passport.checkAuth(event.headers.Authorization)
+      .then(decoded => UserModel.isActiveOrThrow(decoded)),
     AccountModel.getActiveByIdrOrThrow(event.pathParameters.id),
     UserAccountModel.getUsersByAccount(event.pathParameters.id)]
   )
@@ -91,14 +93,16 @@ module.exports.get = (event, context, callback) => {
 
 module.exports.update = (event, context, callback) => {
   return Promise.all([
-    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    passport.checkAuth(event.headers.Authorization)
+      .then(decoded => UserModel.isActiveOrThrow(decoded)),
     AccountModel.getActiveByIdrOrThrow(event.pathParameters.id),
     helper.validate(event.body),
     UserAccountModel.getUsersByAccount(event.pathParameters.id)
   ])
     .then(([id, account, body, accountUsers]) => {
       let accountUsersIds = accountUsers.map(user => user._user)
-      if (!(accountUsersIds.includes(id) && accountUsers.find(user => user._user === id).isAdmin)) {
+      if (!(accountUsersIds.includes(id) &&
+          accountUsers.find(user => user._user === id).isAdmin)) {
         throw errors.forbidden()
       }
 
@@ -112,14 +116,16 @@ module.exports.update = (event, context, callback) => {
 
 module.exports.delete = (event, context, callback) => {
   return Promise.all([
-    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    passport.checkAuth(event.headers.Authorization)
+      .then(decoded => UserModel.isActiveOrThrow(decoded)),
     AccountModel.getActiveByIdrOrThrow(event.pathParameters.id),
     UserAccountModel.getUsersByAccount(event.pathParameters.id)]
   )
     .then(([id, account, accountUsers]) => {
       if (!accountUsers) throw errors.notFound()
       let accountUsersIds = accountUsers.map(user => user._user)
-      if (!(accountUsersIds.includes(id) && accountUsers.find(user => user._user === id).isAdmin)) {
+      if (!(accountUsersIds.includes(id) &&
+          accountUsers.find(user => user._user === id).isAdmin)) {
         throw errors.forbidden()
       }
 
@@ -132,7 +138,8 @@ module.exports.delete = (event, context, callback) => {
 
 module.exports.inviteUsers = (event, context, callback) => {
   return Promise.all([
-    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    passport.checkAuth(event.headers.Authorization)
+      .then(decoded => UserModel.isActiveOrThrow(decoded)),
     AccountModel.getActiveByIdrOrThrow(event.pathParameters.id),
     helper.validateInvite(event.body),
     UserAccountModel.getUsersByAccount(event.pathParameters.id)
@@ -140,7 +147,8 @@ module.exports.inviteUsers = (event, context, callback) => {
     .then(([id, account, body, accountUsers]) => {
       let users = []
       let accountUsersIds = accountUsers.map(user => user._user)
-      if (!(accountUsersIds.includes(id) && accountUsers.find(user => user._user === id).isAdmin)) {
+      if (!(accountUsersIds.includes(id) &&
+          accountUsers.find(user => user._user === id).isAdmin)) {
         throw errors.forbidden()
       }
 
@@ -171,9 +179,45 @@ module.exports.inviteUsers = (event, context, callback) => {
     .then(response => callback(null, response))
 }
 
+module.exports.inviteUserByEmail = (event, context, callback) => {
+  return passport.checkAuth(event.headers.Authorization)
+    .then(decoded => {
+      return Promise.all([
+        UserModel.isActiveOrThrow(decoded),
+        AccountModel.getActiveByIdrOrThrow(event.pathParameters.id),
+        UserAccountModel.getUsersByAccount(event.pathParameters.id),
+        helper.validateInviteByEmail(JSON.parse(event.body))
+          .then(data => UserModel.getByEmail(data.email))
+      ])
+    })
+    .then(([id, account, accountUsers, userToInvite]) => {
+      if (!userToInvite) {
+        throw errors.badRequest()
+      }
+      const accountUsersIds = accountUsers.map(user => user._user)
+      if (!(accountUsersIds.includes(id) &&
+          accountUsers.find(user => user._user === id).isAdmin)) {
+        throw errors.forbidden()
+      }
+      if (accountUsersIds.includes(userToInvite._id)) {
+        throw errors.forbidden()
+      }
+      let newAccountUser = new UserAccountModel({
+        _user: userToInvite._id,
+        _account: event.pathParameters.id,
+        isAdmin: false
+      })
+      return newAccountUser.save()
+    })
+    .then(responses.ok)
+    .catch(responses.error)
+    .then(response => callback(null, response))
+}
+
 module.exports.getAccountUsers = (event, context, callback) => {
   return Promise.all([
-    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    passport.checkAuth(event.headers.Authorization)
+      .then(decoded => UserModel.isActiveOrThrow(decoded)),
     UserAccountModel.getUsersByAccount(event.pathParameters.id)
   ])
     .then(([id, accountUsers]) => {
@@ -215,7 +259,8 @@ module.exports.updateAccountUser = (event, context, callback) => {
     })
     .then(([id, accountUsers]) => {
       let accountUsersIds = accountUsers.map(user => user._user)
-      if (!(accountUsersIds.includes(id) && accountUsers.find(user => user._user === id).isAdmin)) {
+      if (!(accountUsersIds.includes(id) &&
+          accountUsers.find(user => user._user === id).isAdmin)) {
         throw errors.forbidden()
       }
     })
@@ -239,16 +284,19 @@ module.exports.deleteAccountUser = (event, context, callback) => {
   const token = event.headers.Authorization
 
   return Promise.all([
-    passport.checkAuth(token).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    passport.checkAuth(token)
+      .then(decoded => UserModel.isActiveOrThrow(decoded)),
     AccountModel.getActiveByIdrOrThrow(accountId),
     UserAccountModel.getUsersByAccount(accountId)]
   )
     .then(([id, account, accountUsers]) => {
       let accountUsersIds = accountUsers.map(user => user._user)
-      if (userId === id && accountUsers.filter(user => user._user !== id && user.isAdmin).length === 0) {
+      if (userId === id && accountUsers.filter(
+        user => user._user !== id && user.isAdmin).length === 0) {
         throw errors.forbidden()
       }
-      if (!(accountUsersIds.includes(id) && accountUsers.find(user => user._user === id).isAdmin)) {
+      if (!(accountUsersIds.includes(id) &&
+          accountUsers.find(user => user._user === id).isAdmin)) {
         throw errors.forbidden()
       }
 

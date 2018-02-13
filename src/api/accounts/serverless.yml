@@ -70,6 +70,18 @@ functions:
           path: accounts/{id}/users
           method: post
           cors: true
+  inviteUserByEmail:
+      handler: src/api/accounts/accounts.inviteUserByEmail
+      package:
+        include:
+          - src/api/accounts/**
+          - src/api/passport/**
+          - src/shared/**
+      events:
+        - http:
+            path: accounts/{id}/user
+            method: post
+            cors: true
   getAccountUsers:
     handler: src/api/accounts/accounts.getAccountUsers
     package:
