@@ -177,6 +177,7 @@ functions:
   deleteAccount: ${file(./src/api/accounts/serverless.yml):functions.deleteAccount}
   # ACCOUNT_USERS
   inviteUsers: ${file(./src/api/accounts/serverless.yml):functions.inviteUsers}
+  inviteUserByEmail: ${file(./src/api/accounts/serverless.yml):functions.inviteUserByEmail}
   getAccountUsers: ${file(./src/api/accounts/serverless.yml):functions.getAccountUsers}
   updateAccountUser: ${file(./src/api/accounts/serverless.yml):functions.updateAccountUser}
   deleteAccountUser: ${file(./src/api/accounts/serverless.yml):functions.deleteAccountUser}

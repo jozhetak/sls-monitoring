@@ -22,7 +22,7 @@
     "remove": "sls remove --aws-profile serverless-admin --stage dev --region eu-central-1",
     "func": "sls deploy function --stage dev --region eu-central-1 --function",
     "apidoc": "apidoc -i apidoc/sources -o apidoc/build",
-    "debug": "node --inspect `which serverless` offline start"
+    "debug": "node $NODE_DEBUG_OPTION `which serverless` offline start --stage=dev"
   },
   "author": "",
   "license": "ISC",

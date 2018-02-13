@@ -1,5 +1,6 @@
 const joi = require('joi')
 const errors = require('../../shared/helper/errors')
+const regex = require('../../shared/regex')
 
 const schema = joi.object().keys({
   _id: joi.string().guid(),
@@ -13,9 +14,13 @@ const schema = joi.object().keys({
   _user: joi.string().guid().forbidden()
 })
 
-const inviteScema = joi.object().keys({
+const inviteSchema = joi.object().keys({
   _user: joi.string().guid(),
   _users: joi.array().items(joi.string().guid())
+})
+
+const inviteByEmailSchema = joi.object().keys({
+  email: joi.string().trim().regex(regex.email).required()
 })
 
 const userUpdateSchema = joi.object().keys({
@@ -30,7 +35,14 @@ module.exports.validate = (user) => {
 }
 
 module.exports.validateInvite = (data) => {
-  return joi.validate(data, inviteScema)
+  return joi.validate(data, inviteSchema)
+    .catch(err => {
+      throw errors.invalidJoi(err)
+    })
+}
+
+module.exports.validateInviteByEmail = (data) => {
+  return joi.validate(data, inviteByEmailSchema)
     .catch(err => {
       throw errors.invalidJoi(err)
     })
