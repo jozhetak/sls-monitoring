@@ -24,10 +24,13 @@ module.exports.withToken = (user) => {
   return dto
 }
 
-module.exports.invited = (user) => {
+module.exports.invited = (user, accountUser) => {
   return {
+    _account: accountUser._account,
+    _user: user._id,
     firstName: user.firstName,
     lastName: user.lastName,
-    email: user.email
+    email: user.email,
+    isAdmin: accountUser.isAdmin
   }
 }

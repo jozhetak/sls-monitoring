@@ -212,7 +212,9 @@ module.exports.inviteUserByEmail = (event, context, callback) => {
       })
       return [userToInvite, newAccountUser.save()]
     })
-    .spread(dtoUser.invited)
+    .spread((userToInvite, newAccountUser) => {
+      return dtoUser.invited(userToInvite, newAccountUser)
+    })
     .then(responses.ok)
     .catch(responses.error)
     .then(response => callback(null, response))
