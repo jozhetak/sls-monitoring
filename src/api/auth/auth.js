@@ -14,7 +14,7 @@ module.exports.signIn = (event, content, callback) => {
   try {
     body = JSON.parse(event.body)
   } catch (err) {
-    callback(null, responses.error(errors.badRequest()))
+    return callback(null, responses.error(errors.badRequest()))
   }
 
   helper.validate(body)
