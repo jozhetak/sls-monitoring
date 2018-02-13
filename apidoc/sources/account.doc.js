@@ -229,10 +229,13 @@
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  {
+    "_account": "42a3fb70-10b8-11e8-9f6b-679b5b428256",
+    "_user": "58c541f0-10ce-11e8-a161-edf22960cb51",
     "firstName": "DmytroK",
     "lastName": "Kucheryavenko",
-    "email": "dmytro.kucheryavenko@techmagic.co"
-}
+    "email": "dmytro.kucheryavenko+6@techmagic.co",
+    "isAdmin": false
+  }
  * @apiUse Unauthorized
  * @apiUse Forbidden
  * @apiUse AccountNotFound
