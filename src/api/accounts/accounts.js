@@ -67,6 +67,7 @@ module.exports.list = (event, context, callback) => {
       return AccountModel.getByKeys({Keys: keysList})
     })
     .then((accounts) => accounts.filter(account => account.isActive))
+    .then((accounts) => accounts.sort((a, b) => b.createdAt - a.createdAt))
     .then((accounts) => accounts.map(dtoAccount.public))
     .then(responses.ok)
     .catch(responses.error)
