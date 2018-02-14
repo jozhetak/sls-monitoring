@@ -1,6 +1,6 @@
 
 /**
- * @api {get} /accounts/:accountId/functions/:functionId/invocations Get invocations list
+ * @api {get} /accounts/:accountId/functions/:functionId/invocations?limit=:limit&key=:invocationId Get invocations list
  * @apiName GetInvocations
  * @apiVersion 1.0.0
  * @apiDescription Get function invocations list
@@ -11,15 +11,9 @@
    "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6Ijg2Y2NmYTAwLWQzYWUtMTFlNy04ZGM1LTFmNzVkNGE3MWY2NyJ9LCJpYXQiOjE1MTE4MTMzNzMsImV4cCI6MTU0MzM0OTM3M30.ScQ8baHireB2heW8ngoXIdWo9qbZkm-ddEP5mTAzLHc"
  }
  * @apiParam {String} accountId Account unique GUID.
- * @apiParamExample {json} Request Params Example:
- *     {
- *       "accountId": "4beaa4e0-e663-11e7-a4b1-53f92960e92c",
- *     }
  * @apiParam {String} functionId Function unique GUID.
- * @apiParamExample {json} Request Params Example:
- *     {
- *       "functionId": "5beaa4e0-e663-11e7-a4b1-53f92960e92c"
- *     }
+ * @apiParam (Query String) {Number} limit Limit (optional)
+ * @apiParam (Query String) {Number} key Last recieved invocation id (optional)
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  * {
@@ -59,20 +53,8 @@
    "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6Ijg2Y2NmYTAwLWQzYWUtMTFlNy04ZGM1LTFmNzVkNGE3MWY2NyJ9LCJpYXQiOjE1MTE4MTMzNzMsImV4cCI6MTU0MzM0OTM3M30.ScQ8baHireB2heW8ngoXIdWo9qbZkm-ddEP5mTAzLHc"
  }
  * @apiParam {String} accountId Account unique GUID.
- * @apiParamExample {json} Request Params Example:
- *     {
- *       "accountId": "4beaa4e0-e663-11e7-a4b1-53f92960e92c",
- *     }
  * @apiParam {String} functionId Function unique GUID.
- * @apiParamExample {json} Request Params Example:
- *     {
- *       "functionId": "5beaa4e0-e663-11e7-a4b1-53f92960e92c"
- *     }
  * @apiParam {String} id Invocation unique GUID.
- * @apiParamExample {json} Request Params Example:
- *     {
- *       "id": "6beaa4e0-e663-11e7-a4b1-53f92960e92c"
- *     }
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 Ok
  {
