@@ -1,19 +1,24 @@
 
 /**
- * @api {get} /accounts/:id/functions Get list of functions
- * @apiName GetFunctions
+ * @api {get} /accounts/:accountId/functions/:functionId/invocations Get invocations list
+ * @apiName GetInvocations
  * @apiVersion 1.0.0
- * @apiDescription Get list of functions from current account
- * @apiGroup Function
+ * @apiDescription Get function invocations list
+ * @apiGroup Invocation
  * @apiHeader {String} Authorization Users access token.
  * @apiHeaderExample {json} Header Example:
  {
    "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6Ijg2Y2NmYTAwLWQzYWUtMTFlNy04ZGM1LTFmNzVkNGE3MWY2NyJ9LCJpYXQiOjE1MTE4MTMzNzMsImV4cCI6MTU0MzM0OTM3M30.ScQ8baHireB2heW8ngoXIdWo9qbZkm-ddEP5mTAzLHc"
  }
- * @apiParam {Number} id Account unique GUID.
+ * @apiParam {String} accountId Account unique GUID.
  * @apiParamExample {json} Request Params Example:
  *     {
- *       "id": "6beaa4e0-e663-11e7-a4b1-53f92960e92c"
+ *       "accountId": "4beaa4e0-e663-11e7-a4b1-53f92960e92c",
+ *     }
+ * @apiParam {String} functionId Function unique GUID.
+ * @apiParamExample {json} Request Params Example:
+ *     {
+ *       "functionId": "5beaa4e0-e663-11e7-a4b1-53f92960e92c"
  *     }
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
@@ -44,24 +49,29 @@
  */
 
 /**
- * @api {get}  /accounts/:accountId/functions/:id Get one function
- * @apiName GetFunction
+ * @api {get}  /accounts/:accountId/functions/:functionId/invocations/:id Get one invocation
+ * @apiName GetInvocation
  * @apiVersion 1.0.0
- * @apiDescription Get one function from account.
- * @apiGroup Function
+ * @apiDescription Get one function invocation.
+ * @apiGroup Invocation
  * @apiHeaderExample {json} Header Example:
  {
    "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6Ijg2Y2NmYTAwLWQzYWUtMTFlNy04ZGM1LTFmNzVkNGE3MWY2NyJ9LCJpYXQiOjE1MTE4MTMzNzMsImV4cCI6MTU0MzM0OTM3M30.ScQ8baHireB2heW8ngoXIdWo9qbZkm-ddEP5mTAzLHc"
  }
- * @apiParam {Number} accountId Account unique GUID.
+ * @apiParam {String} accountId Account unique GUID.
+ * @apiParamExample {json} Request Params Example:
+ *     {
+ *       "accountId": "4beaa4e0-e663-11e7-a4b1-53f92960e92c",
+ *     }
+ * @apiParam {String} functionId Function unique GUID.
+ * @apiParamExample {json} Request Params Example:
+ *     {
+ *       "functionId": "5beaa4e0-e663-11e7-a4b1-53f92960e92c"
+ *     }
+ * @apiParam {String} id Invocation unique GUID.
  * @apiParamExample {json} Request Params Example:
  *     {
  *       "id": "6beaa4e0-e663-11e7-a4b1-53f92960e92c"
- *     }
- * @apiParam {Number} id Function unique GUID.
- * @apiParamExample {json} Request Params Example:
- *     {
- *       "id": "509d9f4c-a3bc-4eb7-8326-807aa01e81dc"
  *     }
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 Ok
