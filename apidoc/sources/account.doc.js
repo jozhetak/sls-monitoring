@@ -268,9 +268,9 @@
     "users": [
         {
             "_id": "40afbbb0-0feb-11e8-b7a7-6be3c9910864",
-            "firstName": "DmytroK",
+            "firstName": "Dmytro",
             "lastName": "Kucheryavenko",
-            "email": "dmytro.kucheryavenko+1@techmagic.co",
+            "email": "dmytro.kucheryavenko@techmagic.co",
             "isAdmin": false
         },
         {
