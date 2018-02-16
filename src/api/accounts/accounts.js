@@ -259,9 +259,10 @@ module.exports.getAccountUsers = (event, context, callback) => {
         })]
     })
     .spread((currentAccountUser, rolesMap, users) => {
+      const sortedUsers = users.sort((a, b) => b.createdAt - a.createdAt)
       return {
         isAdmin: currentAccountUser.isAdmin,
-        users: users.map(user => {
+        users: sortedUsers.map(user => {
           user.isAdmin = rolesMap.get(user._id)
           return dtoUser.accountAssignee(user)
         })
