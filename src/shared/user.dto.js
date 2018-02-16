@@ -13,7 +13,7 @@ module.exports.public = (user) => {
 
 module.exports.publicList = (data) => {
   return {
-    users: data.Items.map(this.public),
+    users: data.Items.sort((a, b) => b.createdAt - a.createdAt).map(this.public),
     lastEvaluatedKey: data.LastEvaluatedKey ? data.LastEvaluatedKey._id : null
   }
 }
