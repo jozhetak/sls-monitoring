@@ -190,6 +190,7 @@ functions:
 
   # INVOCATIONS
   listInvocations: ${file(./src/api/invocations/serverless.yml):functions.listInvocations}
+  getAccountInvocation: ${file(./src/api/invocations/serverless.yml):functions.getAccountInvocation}
   getInvocation: ${file(./src/api/invocations/serverless.yml):functions.getInvocation}
 #    events:
 #      - schedule: rate(1 minute)

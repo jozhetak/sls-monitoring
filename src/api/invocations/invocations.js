@@ -55,6 +55,44 @@ module.exports.list = (event, context, callback) => {
     .then(response => callback(null, response))
 }
 
+module.exports.listOfAccount = (event, context, callback) => {
+  const query = event.queryStringParameters
+  const token = event.headers.Authorization
+  const accountId = event.pathParameters.id
+  const limit = query && query.limit ? query.limit : 50
+  const key = query && query.key ? {_account: accountId, _id: query.key} : undefined
+
+  return Promise.all([
+      passport.checkAuth(token).then(decoded => UserModel.isActiveOrThrow(decoded)),
+      AccountModel.getActiveByIdrOrThrow(accountId),
+      UserAccountModel.getUsersByAccount(accountId)
+    ]
+  )
+    .then(([id, account, accountUsers]) => {
+      let accountUsersIds = accountUsers.map(user => user._user)
+      if (!(accountUsersIds.includes(id))) {
+        throw errors.forbidden()
+      }
+
+      return InvocationModel.getAll({
+        IndexName: 'AccountIdIndex',
+        KeyConditionExpression: '#account = :account',
+        ExpressionAttributeNames: {
+          '#account': '_account'
+        },
+        ExpressionAttributeValues: {
+          ':account': accountId
+        },
+        ExclusiveStartKey: key,
+        Limit: limit,
+        ScanIndexForward: false
+      })
+    })
+    .then(responses.ok)
+    .catch(responses.error)
+    .then(response => callback(null, response))
+}
+
 module.exports.get = (event, context, callback) => {
   const token = event.headers.Authorization
   const accountId = event.pathParameters.id
