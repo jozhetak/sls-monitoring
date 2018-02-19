@@ -1,5 +1,5 @@
 /**
-* @api {post} /users/signIn Sign in into the system
+* @api {post} /signIn Sign in into the system
 * @apiName Signin
 * @apiVersion 1.0.0
 * @apiDescription Get authorization token to perform requests.

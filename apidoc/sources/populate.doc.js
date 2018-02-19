@@ -1,6 +1,6 @@
 
 /**
- * @api {post} accounts/:id/functions Populate functions & invocations
+ * @api {post} /accounts/:id/functions Populate functions & invocations
  * @apiName Populate
  * @apiVersion 1.0.0
  * @apiDescription Populate test data in database.
@@ -28,7 +28,7 @@
 */
 
 /**
- * @api {delete} accounts/:id/functions Clean up functions and invocations
+ * @api {delete} /accounts/:id/functions Clean up functions and invocations
  * @apiName CleanUp
  * @apiVersion 1.0.0
  * @apiDescription Cleanup data in database.
