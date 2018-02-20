@@ -96,7 +96,7 @@ module.exports.listOfAccount = (event, context, callback) => {
 module.exports.get = (event, context, callback) => {
   const token = event.headers.Authorization
   const accountId = event.pathParameters.id
-  const functionId = event.pathparameters.functionId
+  const functionId = event.pathParameters.functionId
   const invocationId = event.pathParameters.invocationId
 
   return Promise.all([
