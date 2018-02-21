@@ -65,12 +65,12 @@ resources:
             KeySchema:
               - AttributeName: _account
                 KeyType: HASH
-              - AttributeName: startTime
-                KeyType: RANGE
+#              - AttributeName: startTime
+#                KeyType: RANGE
             Projection:
               ProjectionType: ALL
             ProvisionedThroughput:
-              ReadCapacityUnits: 1
+              ReadCapacityUnits: 5
               WriteCapacityUnits: 5
           - IndexName: FunctionIdIndex
             KeySchema:
