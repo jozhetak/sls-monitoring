@@ -52,6 +52,8 @@ resources:
             AttributeType: "S"
           - AttributeName: "_function"
             AttributeType: "S"
+          - AttributeName: "startTime"
+            AttributeType: "N"
         KeySchema:
           - AttributeName: "_id"
             KeyType: "HASH"
@@ -63,6 +65,8 @@ resources:
             KeySchema:
               - AttributeName: _account
                 KeyType: HASH
+              - AttributeName: startTime
+                KeyType: RANGE
             Projection:
               ProjectionType: ALL
             ProvisionedThroughput:
