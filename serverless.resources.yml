@@ -95,7 +95,7 @@ resources:
           - AttributeName: "_id"
             KeyType: "HASH"
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
+          ReadCapacityUnits: 5
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.ACCOUNTS_TABLE}
     UsersDynamoDbTable:
