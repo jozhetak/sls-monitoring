@@ -52,6 +52,7 @@ module.exports.create = (event, context, callback) => {
 }
 
 module.exports.list = (event, context, callback) => {
+  const accountIdIsAdminMap = new Map()
   return passport
     .checkAuth(event.headers.Authorization)
     .then(decoded => UserModel.isActiveOrThrow(decoded))
@@ -59,6 +60,7 @@ module.exports.list = (event, context, callback) => {
     .then(accounts => {
       if (!accounts) throw errors.notFound()
       const keysList = accounts.map(account => {
+        accountIdIsAdminMap.set(account._account, account.isAdmin)
         return {_id: account._account}
       })
       if (!accounts.length) {
@@ -68,7 +70,11 @@ module.exports.list = (event, context, callback) => {
     })
     .then((accounts) => accounts.filter(account => account.isActive))
     .then((accounts) => accounts.sort((a, b) => b.createdAt - a.createdAt))
-    .then((accounts) => accounts.map(dtoAccount.public))
+    .then((accounts) => {
+      return accounts.map(account => {
+        return dtoAccount.public(account, accountIdIsAdminMap.get(account._id))
+      })
+    })
     .then(responses.ok)
     .catch(responses.error)
     .then(response => callback(null, response))
