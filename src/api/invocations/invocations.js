@@ -18,6 +18,7 @@ module.exports.list = (event, context, callback) => {
   const accountId = event.pathParameters.id
   const functionId = event.pathParameters.functionId
   const limit = query && query.limit ? query.limit : 50
+  const startTime = query && query.startTime ? parseInt(query.startTime) : (new Date()).getTime() - 24 * 60 * 60 * 1000
   const key = query && query.key
     ? {
       _function: functionId,
@@ -44,12 +45,14 @@ module.exports.list = (event, context, callback) => {
 
       return InvocationModel.getAll({
         IndexName: 'FunctionIdIndex',
-        KeyConditionExpression: '#function = :function',
+        KeyConditionExpression: '#function = :function AND #startTime >= :startTime',
         ExpressionAttributeNames: {
-          '#function': '_function'
+          '#function': '_function',
+          '#startTime': 'startTime'
         },
         ExpressionAttributeValues: {
-          ':function': functionId
+          ':function': functionId,
+          ':startTime': startTime
         },
         ExclusiveStartKey: key,
         Limit: limit,
@@ -66,6 +69,7 @@ module.exports.listOfAccount = (event, context, callback) => {
   const token = event.headers.Authorization
   const accountId = event.pathParameters.id
   const limit = query && query.limit ? query.limit : 50
+  const startTime = query && query.startTime ? parseInt(query.startTime) : (new Date()).getTime() - 24 * 60 * 60 * 1000
 
   const promises = [
     passport.checkAuth(token)
@@ -91,12 +95,14 @@ module.exports.listOfAccount = (event, context, callback) => {
 
       return InvocationModel.getAll({
         IndexName: 'AccountIdIndex',
-        KeyConditionExpression: '#account = :account',
+        KeyConditionExpression: '#account = :account AND #startTime >= :startTime',
         ExpressionAttributeNames: {
-          '#account': '_account'
+          '#account': '_account',
+          '#startTime': 'startTime'
         },
         ExpressionAttributeValues: {
-          ':account': accountId
+          ':account': accountId,
+          ':startTime': startTime
         },
         ExclusiveStartKey: exclusiveStartKey,
         Limit: limit,
@@ -140,3 +146,84 @@ module.exports.get = (event, context, callback) => {
     .catch(responses.error)
     .then(response => callback(null, response))
 }
+// TODO: support endTime
+module.exports.chartFunctionInvocations = (event, context, callback) => {
+  const query = event.queryStringParameters
+  const token = event.headers.Authorization
+  const accountId = event.pathParameters.id
+  const functionId = event.pathParameters.functionId
+  const startTime = query && query.startTime ? query.startTime : (new Date()).getTime() - 30 * 24 * 60 * 60 * 1000
+  return Promise.all([
+      passport.checkAuth(token).then(decoded => UserModel.isActiveOrThrow(decoded)),
+      AccountModel.getActiveByIdrOrThrow(accountId),
+      UserAccountModel.getUsersByAccount(accountId),
+      FunctionModel.getById(functionId)
+    ]
+  )
+    .then(([id, account, accountUsers, func]) => {
+      let accountUsersIds = accountUsers.map(user => user._user)
+      if (!(accountUsersIds.includes(id))) {
+        throw errors.forbidden()
+      }
+      if (func._account !== accountId) {
+        throw errors.forbidden()
+      }
+
+      return InvocationModel.getAll({
+        IndexName: 'FunctionIdIndex',
+        KeyConditionExpression: '#function = :function AND #startTime >= :startTime',
+        FilterExpression: '',
+        ExpressionAttributeNames: {
+          '#function': '_function',
+          '#startTime': 'startTime'
+        },
+        ExpressionAttributeValues: {
+          ':function': functionId,
+          ':startTime': startTime
+        },
+        ScanIndexForward: false
+      })
+    })
+    .then((result) => {
+      const byday={};
+      const data = result.Items;
+      data.forEach((value) => {
+        let d = new Date(value['startTime']);
+        d = Math.floor(d.getTime()/(1000*60*60*24));
+        byday[d]=byday[d]||[];
+        byday[d].push(value);
+      })
+      return (Object.keys(byday)).map((value) => {
+        return {
+          title: (new Date(value * 1000*60*60*24)).toDateString(),
+          val: (byday[value]).length
+        };
+      })
+    })
+    .then(responses.ok)
+    .catch(responses.error)
+    .then(response => callback(null, response))
+}
+
+// eventsArray = [ {id: 1, date: 1387271989749 }, {id:2, date: 1387271989760} ];
+// byday={};
+// byweek={};
+// bymonth={};
+
+// function groupweek(value, index, array)
+// {
+//   d = new Date(value['date']);
+//   d = Math.floor(d.getTime()/(1000*60*60*24*7));
+//   byweek[d]=byweek[d]||[];
+//   byweek[d].push(value);
+// }
+// function groupmonth(value, index, array)
+// {
+//   d = new Date(value['date']);
+//   d = (d.getFullYear()-1970)*12 + d.getMonth();
+//   bymonth[d]=bymonth[d]||[];
+//   bymonth[d].push(value);
+// }
+// eventsArray.map(groupday);
+// eventsArray.map(groupweek);
+// eventsArray.map(groupmonth);

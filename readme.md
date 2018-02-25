@@ -129,3 +129,7 @@ Functions Model Schema
     ]
     memory: MB// 1024
     memoryUsed: MB// 94
+    
+Local:
+sls dynamodb start --migrate true --stage dev
+sls offline --stage dev

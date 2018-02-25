@@ -76,6 +76,8 @@ resources:
             KeySchema:
               - AttributeName: _function
                 KeyType: HASH
+              - AttributeName: startTime
+                KeyType: RANGE
             Projection:
               ProjectionType: ALL
             ProvisionedThroughput:

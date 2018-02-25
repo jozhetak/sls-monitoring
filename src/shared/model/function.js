@@ -14,7 +14,7 @@ module.exports = class Function extends Model {
   static get TABLE () {
     return process.env.FUNCTIONS_TABLE
   }
-
+  // TODO: fix batchSize, batchWrite cannot be empty
   static batchWrite (items) {
     const batchWriteQueue = this._formBatchWriteQueue(items.slice())
     return Promise.all(batchWriteQueue)
