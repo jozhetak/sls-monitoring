@@ -70,7 +70,7 @@ resources:
             Projection:
               ProjectionType: ALL
             ProvisionedThroughput:
-              ReadCapacityUnits: 1
+              ReadCapacityUnits: 5
               WriteCapacityUnits: 5
           - IndexName: FunctionIdIndex
             KeySchema:
