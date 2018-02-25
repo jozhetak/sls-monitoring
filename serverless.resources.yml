@@ -97,7 +97,7 @@ resources:
           - AttributeName: "_id"
             KeyType: "HASH"
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
+          ReadCapacityUnits: 5
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.ACCOUNTS_TABLE}
     UsersDynamoDbTable:
@@ -188,7 +188,7 @@ resources:
     S3BucketStuffBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: sls-bucket-apidoc-${opt:stage}-test
+        BucketName: sls-bucket-apidoc-${opt:stage}
         AccessControl: 'PublicRead'
         WebsiteConfiguration:
           IndexDocument: index.html

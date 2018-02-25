@@ -1,3 +1,5 @@
+'use strict'
+
 module.exports.public = (user) => {
   return {
     _id: user._id ? user._id : null,
@@ -11,7 +13,7 @@ module.exports.public = (user) => {
 
 module.exports.publicList = (data) => {
   return {
-    users: data.Items.map(this.public),
+    users: data.Items.sort((a, b) => b.createdAt - a.createdAt).map(this.public),
     lastEvaluatedKey: data.LastEvaluatedKey ? data.LastEvaluatedKey._id : null
   }
 }
@@ -20,4 +22,25 @@ module.exports.withToken = (user) => {
   let dto = this.public(user)
   dto.accessToken = user.accessToken
   return dto
+}
+
+module.exports.invited = (user, accountUser) => {
+  return {
+    _account: accountUser._account,
+    _user: user._id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    isAdmin: accountUser.isAdmin
+  }
+}
+
+module.exports.accountAssignee = (user) => {
+  return {
+    _id: user._id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    isAdmin: user.isAdmin
+  }
 }

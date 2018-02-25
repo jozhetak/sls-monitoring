@@ -1,7 +1,11 @@
 'use strict'
+
+global.Promise = require('bluebird')
+
 const AccountModel = require('../../shared/model/account')
 const UserModel = require('../../shared/model/user')
 const UserAccountModel = require('../../shared/model/userAccount')
+const helper = require('./function.helper')
 const passport = require('./../passport/passport')
 const errors = require('../../shared/helper/errors')
 const FunctionModel = require('../../shared/model/function')
@@ -70,18 +74,25 @@ module.exports.get = (event, context, callback) => {
 }
 
 module.exports.populate = (event, context, callback) => {
-  let functionsCount = event.queryStringParameters.functions_count ? event.queryStringParameters.functions_count : 5
-  let invocationsMin = event.queryStringParameters.invocations_min ? event.queryStringParameters.invocations_min : 5
-  let invocationsMax = event.queryStringParameters.invocations_max ? event.queryStringParameters.invocations_max : 10
-  let daysInThePast = event.queryStringParameters.days ? event.queryStringParameters.days : 365
-  let errorsCoef = event.queryStringParameters.errors ? event.queryStringParameters.errors : 0.5
-  const accountId = event.pathParameters.id
-  const max = new Date()
-  const min = new Date()
-  min.setDate(max.getDate() - daysInThePast)
-
-  Promise.resolve()
-    .then(() => {
+  let body
+  try {
+    body = JSON.parse(event.body)
+  } catch (err) {
+    return callback(null, responses.error(errors.badRequest()))
+  }
+  helper.validateCreatePopulation(body)
+    .then((body) => {
+      let {
+        functionsCount,
+        invocationsMin,
+        invocationsMax,
+        daysInPast,
+        errorsCoefficient
+      } = body
+      const accountId = event.pathParameters.id
+      const max = new Date()
+      const min = new Date()
+      min.setDate(max.getDate() - daysInPast)
       const regions = [
         'us-east-2',
         'us-east-1',
@@ -98,36 +109,41 @@ module.exports.populate = (event, context, callback) => {
         'eu-west-1',
         'eu-west-2',
         'eu-west-3',
-        'sa-east-1' ]
-
+        'sa-east-1']
       let functions = []
       for (let i = 0; i < functionsCount; i++) {
         let func = {}
         let name = faker.hacker.verb() + ' ' + faker.hacker.noun()
         func._id = faker.random.uuid()
         func._account = accountId
-        func.arn = `arn:aws:lambda:${faker.helpers.randomize(regions)}:${faker.random.number({min: 100000000000, max: 999999999999})}:function:${name}`
+        func.arn = `arn:aws:lambda:${faker.helpers.randomize(
+          regions)}:${faker.random.number(
+          {min: 100000000000, max: 999999999999})}:function:${name}`
         func.codeSize = faker.random.number(({min: 100, max: 999999999}))
-        func.memSize = Math.round(faker.random.number(({min: 128, max: 3008})) / 64) * 64
+        func.memSize = Math.round(faker.random.number(({min: 128, max: 3008})) /
+          64) * 64
         func.name = name
         func.timeout = faker.random.number({min: 0, max: 300})
         let funcModel = new FunctionModel(func)
         functions.push(funcModel.data)
       }
-      return functions
-    })
-    .then(functions => {
-      let eventCounter = new BigInteger('33773592922032033623252972461104249685054501853208182784').plus(faker.random.number({min: 1000, max: 5000}))
+      let eventCounter = new BigInteger(
+        '33773592922032033623252972461104249685054501853208182784').plus(
+        faker.random.number({min: 1000, max: 5000}))
       let invocations = []
       for (let func of functions) {
-        let invocationsCount = faker.random.number({min: Math.min(invocationsMin, invocationsMax), max: Math.max(invocationsMax, invocationsMin)})
-        let errorsCount = Math.round(errorsCoef * invocationsCount)
+        let invocationsCount = faker.random.number({
+          min: Math.min(invocationsMin, invocationsMax),
+          max: Math.max(invocationsMax, invocationsMin)
+        })
+        let errorsCount = Math.round(errorsCoefficient * invocationsCount)
         for (let i = 0; i < invocationsCount; i++) {
           let duration = faker.finance.amount(0, func.timeout * 100)
           let randomDate = faker.date.between(min, max)
           let randomDateMillis = randomDate.getTime()
           let _id = faker.random.uuid()
-          let logStreamName = `${randomDate.getFullYear()}/${randomDate.getMonth() + 1}/${randomDate.getDate()}[$LATEST]${faker.random.uuid()}`
+          let logStreamName = `${randomDate.getFullYear()}/${randomDate.getMonth() +
+          1}/${randomDate.getDate()}[$LATEST]${faker.random.uuid()}`
           let billedDuration = Math.round(duration / 100) * 100
           let memoryUsed = faker.random.number({min: 10, max: func.memSize})
           let invocation = {
@@ -139,31 +155,38 @@ module.exports.populate = (event, context, callback) => {
             'startTime': randomDateMillis,
             'logs': [
               {
-                'eventId': (eventCounter = eventCounter.plus(faker.random.number({min: 1, max: 1000}))).toString(),
+                'eventId': (eventCounter = eventCounter.plus(
+                  faker.random.number({min: 1, max: 1000}))).toString(),
                 'ingestionTime': randomDateMillis,
                 'logStreamName': logStreamName,
                 'message': `START RequestId: ${_id}  Version: $LATEST\n`,
-                'timestamp': randomDateMillis - faker.random.number({min: 5, max: 15})
+                'timestamp': randomDateMillis -
+                faker.random.number({min: 5, max: 15})
               },
               {
-                'eventId': (eventCounter = eventCounter.plus(faker.random.number({min: 1, max: 1000}))).toString(),
-                'ingestionTime': randomDateMillis += faker.random.number({min: 0, max: duration / 3}),
+                'eventId': (eventCounter = eventCounter.plus(
+                  faker.random.number({min: 1, max: 1000}))).toString(),
+                'ingestionTime': randomDateMillis += faker.random.number(
+                  {min: 0, max: duration / 3}),
                 'logStreamName': logStreamName,
                 'message': `END RequestId: ${_id}\n`,
-                'timestamp': randomDateMillis += faker.random.number({min: 0, max: duration / 3})
+                'timestamp': randomDateMillis += faker.random.number(
+                  {min: 0, max: duration / 3})
               },
               {
-                'eventId': (eventCounter = eventCounter.plus(faker.random.number({min: 1, max: 1000}))).toString(),
-                'ingestionTime': randomDateMillis += faker.random.number({min: 0, max: duration / 3}),
+                'eventId': (eventCounter = eventCounter.plus(
+                  faker.random.number({min: 1, max: 1000}))).toString(),
+                'ingestionTime': randomDateMillis += faker.random.number(
+                  {min: 0, max: duration / 3}),
                 'logStreamName': logStreamName,
                 'message': `REPORT RequestId: ${_id}\tDuration: ${duration} ms\tBilled Duration: ${billedDuration} ms \tMemory Size: ${func.memSize} MB\tMax Memory Used: ${memoryUsed} MB\t\n`,
-                'timestamp': randomDateMillis += faker.random.number({min: 0, max: duration / 3})
+                'timestamp': randomDateMillis += faker.random.number(
+                  {min: 0, max: duration / 3})
               }
             ],
             'logStreamName': logStreamName,
             'memory': func.memSize,
             'memoryUsed': memoryUsed
-
           }
           if (errorsCount > 0) {
             invocation.error = 1
@@ -172,50 +195,53 @@ module.exports.populate = (event, context, callback) => {
               'error',
               'config'
             ])
-
             if (invocation.errorType === 'error') {
               invocation.logs.splice(2, 0, {
-                'eventId': (eventCounter = eventCounter.plus(faker.random.number({min: 1, max: 1000}))).toString(),
-                'ingestionTime': randomDateMillis += faker.random.number({min: 0, max: duration / 3}),
+                'eventId': (eventCounter = eventCounter.plus(
+                  faker.random.number({min: 1, max: 1000}))).toString(),
+                'ingestionTime': randomDateMillis += faker.random.number(
+                  {min: 0, max: duration / 3}),
                 'logStreamName': invocation.logStreamName,
                 'message': '{"errorMessage":\t "some error"\t}',
-                'timestamp': randomDateMillis += faker.random.number({min: 0, max: duration / 3})
+                'timestamp': randomDateMillis += faker.random.number(
+                  {min: 0, max: duration / 3})
               })
             }
             if (invocation.errorType === 'crash') {
               invocation.logs.splice(2, 0, {
-                'eventId': (eventCounter = eventCounter.plus(faker.random.number({min: 1, max: 1000}))).toString(),
-                'ingestionTime': randomDateMillis += faker.random.number({min: 0, max: duration / 3}),
+                'eventId': (eventCounter = eventCounter.plus(
+                  faker.random.number({min: 1, max: 1000}))).toString(),
+                'ingestionTime': randomDateMillis += faker.random.number(
+                  {min: 0, max: duration / 3}),
                 'logStreamName': invocation.logStreamName,
                 'message': `RequestId: ${_id} Process exited before completing request`,
-                'timestamp': randomDateMillis += faker.random.number({min: 0, max: duration / 3})
+                'timestamp': randomDateMillis += faker.random.number(
+                  {min: 0, max: duration / 3})
               })
             }
             if (invocation.errorType === 'config') {
               invocation.logs.splice(2, 0, {
-                'eventId': (eventCounter = eventCounter.plus(faker.random.number({min: 1, max: 1000}))).toString(),
-                'ingestionTime': randomDateMillis += faker.random.number({min: 0, max: duration / 3}),
+                'eventId': (eventCounter = eventCounter.plus(
+                  faker.random.number({min: 1, max: 1000}))).toString(),
+                'ingestionTime': randomDateMillis += faker.random.number(
+                  {min: 0, max: duration / 3}),
                 'logStreamName': invocation.logStreamName,
-                'message': `${new Date(randomDateMillis).toISOString()} ${_id} Error: [object Object]\tat module.exports.run (/var/task/src/test-error/handler.js:8:11)`,
-                'timestamp': randomDateMillis += faker.random.number({min: 0, max: duration / 3})
+                'message': `${new Date(
+                  randomDateMillis).toISOString()} ${_id} Error: [object Object]\tat module.exports.run (/var/task/src/test-error/handler.js:8:11)`,
+                'timestamp': randomDateMillis += faker.random.number(
+                  {min: 0, max: duration / 3})
               })
             }
-
             errorsCount--
           }
           let invocationModel = new InvocationModel(invocation)
           invocations.push(invocationModel.data)
         }
       }
-      return {
-        functions: functions,
-        invocations: invocations
-      }
+      return Promise.all([
+        FunctionModel.batchWrite(functions),
+        InvocationModel.batchWrite(invocations)])
     })
-    .then(({functions, invocations}) => {
-      return Promise.all([FunctionModel.batchWrite(functions), InvocationModel.batchWrite(invocations)])
-    })
-    .then(() => console.log(new Date() - max))
     .then(responses.created)
     .catch(responses.error)
     .then(response => callback(null, response))

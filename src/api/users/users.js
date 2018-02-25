@@ -1,4 +1,7 @@
 'use strict'
+
+global.Promise = require('bluebird')
+
 const UserModel = require('../../shared/model/user')
 const helper = require('./user.helper')
 const uuid = require('uuid')
@@ -10,7 +13,12 @@ const emailService = require('../../shared/helper/email.service')
 const hour = 360000
 
 module.exports.create = (event, context, callback) => {
-  const body = JSON.parse(event.body)
+  let body
+  try {
+    body = JSON.parse(event.body)
+  } catch (err) {
+    return callback(null, responses.error(errors.badRequest()))
+  }
   const now = helper.timestamp()
   helper.validateCreate(body)
     .then(data => UserModel.getByEmail(data.email))
@@ -75,11 +83,16 @@ module.exports.get = (event, context, callback) => {
 module.exports.update = (event, context, callback) => {
   const id = event.pathParameters.id
   const token = event.headers.Authorization
-  const body = JSON.parse(event.body)
+  let body
+  try {
+    body = JSON.parse(event.body)
+  } catch (err) {
+    return callback(null, responses.error(errors.badRequest()))
+  }
 
   Promise.all([
     passport.checkSelf(token, id),
-    helper.validate(body)
+    helper.validateUpdate(body)
   ])
     .then(([decoded]) => UserModel.isActiveOrThrow(decoded))
     .then(() => UserModel.update(id, body))
@@ -105,14 +118,22 @@ module.exports.delete = (event, context, callback) => {
 module.exports.changePassword = (event, context, callback) => {
   const id = event.pathParameters.id
   const token = event.headers.Authorization
-  const body = JSON.parse(event.body)
+  let body
+  try {
+    body = JSON.parse(event.body)
+  } catch (err) {
+    return callback(null, responses.error(errors.badRequest()))
+  }
 
   passport.checkSelf(token, id)
-    .then((decoded) => UserModel.isActiveOrThrow(decoded))
-    .then(() => helper.validatePassword(body.password))
-    .then((password) => {
+    .then(() => helper.validateUpdatePassword(body))
+    .then(() => UserModel.getActiveByIdrOrThrow(id))
+    .then(user => {
+      if (user.password !== passport.encryptPassword(body.oldPassword)) {
+        throw errors.forbidden()
+      }
       return UserModel.update(id, {
-        password: passport.encryptPassword(password)
+        password: passport.encryptPassword(body.newPassword)
       })
     })
     .then(dtoUser.public)
@@ -123,10 +144,15 @@ module.exports.changePassword = (event, context, callback) => {
 
 module.exports.resetPassword = (event, context, callback) => {
   const {id, token} = event.pathParameters
-  const body = JSON.parse(event.body)
+  let body
+  try {
+    body = JSON.parse(event.body)
+  } catch (err) {
+    return callback(null, responses.error(errors.badRequest()))
+  }
 
   Promise.all([
-    helper.validatePassword(body.password),
+    helper.validateResetPassword(body.password),
     UserModel.getActiveByIdrOrThrow(id)
   ])
     .then(([password, user]) => {
@@ -184,7 +210,12 @@ module.exports.sendVerificationEmail = (event, contex, callback) => {
 }
 
 module.exports.sendResetPasswordEmail = (event, contex, callback) => {
-  const body = JSON.parse(event.body)
+  let body
+  try {
+    body = JSON.parse(event.body)
+  } catch (err) {
+    return callback(null, responses.error(errors.badRequest()))
+  }
 
   UserModel.getByEmail(body.email)
     .then(user => {

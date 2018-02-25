@@ -1,5 +1,8 @@
+'use strict'
+
 const joi = require('joi')
 const errors = require('../../shared/helper/errors')
+const regex = require('../../shared/regex')
 
 const schema = joi.object().keys({
   _id: joi.string().guid(),
@@ -13,9 +16,13 @@ const schema = joi.object().keys({
   _user: joi.string().guid().forbidden()
 })
 
-const inviteScema = joi.object().keys({
+const inviteSchema = joi.object().keys({
   _user: joi.string().guid(),
   _users: joi.array().items(joi.string().guid())
+})
+
+const inviteByEmailSchema = joi.object().keys({
+  email: joi.string().trim().regex(regex.email).required()
 })
 
 const userUpdateSchema = joi.object().keys({
@@ -23,21 +30,31 @@ const userUpdateSchema = joi.object().keys({
 })
 
 module.exports.validate = (user) => {
-  return joi.validate(user, schema)
+  return joi.validate(user, schema, {abortEarly: false, allowUnknown: false})
     .catch(err => {
       throw errors.invalidJoi(err)
     })
 }
 
 module.exports.validateInvite = (data) => {
-  return joi.validate(data, inviteScema)
+  return joi.validate(data, inviteSchema,
+    {abortEarly: false, allowUnknown: false})
+    .catch(err => {
+      throw errors.invalidJoi(err)
+    })
+}
+
+module.exports.validateInviteByEmail = (data) => {
+  return joi.validate(data, inviteByEmailSchema,
+    {abortEarly: false, allowUnknown: false})
     .catch(err => {
       throw errors.invalidJoi(err)
     })
 }
 
 module.exports.validateAccountUserUpdate = (data) => {
-  return joi.validate(data, userUpdateSchema)
+  return joi.validate(data, userUpdateSchema,
+    {abortEarly: false, allowUnknown: false})
     .catch(err => {
       throw errors.invalidJoi(err)
     })

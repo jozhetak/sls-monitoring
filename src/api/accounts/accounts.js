@@ -1,4 +1,7 @@
 'use strict'
+
+global.Promise = require('bluebird')
+
 const AccountModel = require('../../shared/model/account')
 const UserModel = require('../../shared/model/user')
 const UserAccountModel = require('../../shared/model/userAccount')
@@ -12,7 +15,8 @@ const dtoUser = require('../../shared/user.dto')
 
 module.exports.create = (event, context, callback) => {
   Promise.all([
-    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    passport.checkAuth(event.headers.Authorization)
+      .then(decoded => UserModel.isActiveOrThrow(decoded)),
     helper.validate(event.body)
   ])
     .then(([userId, data]) => {
@@ -48,18 +52,29 @@ module.exports.create = (event, context, callback) => {
 }
 
 module.exports.list = (event, context, callback) => {
+  const accountIdIsAdminMap = new Map()
   return passport
     .checkAuth(event.headers.Authorization)
     .then(decoded => UserModel.isActiveOrThrow(decoded))
     .then(id => UserAccountModel.getAccountsByUser(id))
     .then(accounts => {
       if (!accounts) throw errors.notFound()
+      const keysList = accounts.map(account => {
+        accountIdIsAdminMap.set(account._account, account.isAdmin)
+        return {_id: account._account}
+      })
+      if (!accounts.length) {
+        return []
+      }
+      return AccountModel.getByKeys({Keys: keysList})
+    })
+    .then((accounts) => accounts.filter(account => account.isActive))
+    .then((accounts) => accounts.sort((a, b) => b.createdAt - a.createdAt))
+    .then((accounts) => {
       return accounts.map(account => {
-        return { _id: account._account }
+        return dtoAccount.public(account, accountIdIsAdminMap.get(account._id))
       })
     })
-    .then(keysList => AccountModel.getByKeys({Keys: keysList}))
-    .then((accounts) => accounts.map(dtoAccount.public))
     .then(responses.ok)
     .catch(responses.error)
     .then(response => callback(null, response))
@@ -67,7 +82,8 @@ module.exports.list = (event, context, callback) => {
 
 module.exports.get = (event, context, callback) => {
   return Promise.all([
-    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    passport.checkAuth(event.headers.Authorization)
+      .then(decoded => UserModel.isActiveOrThrow(decoded)),
     AccountModel.getActiveByIdrOrThrow(event.pathParameters.id),
     UserAccountModel.getUsersByAccount(event.pathParameters.id)]
   )
@@ -87,14 +103,16 @@ module.exports.get = (event, context, callback) => {
 
 module.exports.update = (event, context, callback) => {
   return Promise.all([
-    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    passport.checkAuth(event.headers.Authorization)
+      .then(decoded => UserModel.isActiveOrThrow(decoded)),
     AccountModel.getActiveByIdrOrThrow(event.pathParameters.id),
     helper.validate(event.body),
     UserAccountModel.getUsersByAccount(event.pathParameters.id)
   ])
     .then(([id, account, body, accountUsers]) => {
       let accountUsersIds = accountUsers.map(user => user._user)
-      if (!(accountUsersIds.includes(id) && accountUsers.find(user => user._user === id).isAdmin)) {
+      if (!(accountUsersIds.includes(id) &&
+          accountUsers.find(user => user._user === id).isAdmin)) {
         throw errors.forbidden()
       }
 
@@ -108,14 +126,16 @@ module.exports.update = (event, context, callback) => {
 
 module.exports.delete = (event, context, callback) => {
   return Promise.all([
-    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    passport.checkAuth(event.headers.Authorization)
+      .then(decoded => UserModel.isActiveOrThrow(decoded)),
     AccountModel.getActiveByIdrOrThrow(event.pathParameters.id),
     UserAccountModel.getUsersByAccount(event.pathParameters.id)]
   )
     .then(([id, account, accountUsers]) => {
       if (!accountUsers) throw errors.notFound()
       let accountUsersIds = accountUsers.map(user => user._user)
-      if (!(accountUsersIds.includes(id) && accountUsers.find(user => user._user === id).isAdmin)) {
+      if (!(accountUsersIds.includes(id) &&
+          accountUsers.find(user => user._user === id).isAdmin)) {
         throw errors.forbidden()
       }
 
@@ -128,7 +148,8 @@ module.exports.delete = (event, context, callback) => {
 
 module.exports.inviteUsers = (event, context, callback) => {
   return Promise.all([
-    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    passport.checkAuth(event.headers.Authorization)
+      .then(decoded => UserModel.isActiveOrThrow(decoded)),
     AccountModel.getActiveByIdrOrThrow(event.pathParameters.id),
     helper.validateInvite(event.body),
     UserAccountModel.getUsersByAccount(event.pathParameters.id)
@@ -136,7 +157,8 @@ module.exports.inviteUsers = (event, context, callback) => {
     .then(([id, account, body, accountUsers]) => {
       let users = []
       let accountUsersIds = accountUsers.map(user => user._user)
-      if (!(accountUsersIds.includes(id) && accountUsers.find(user => user._user === id).isAdmin)) {
+      if (!(accountUsersIds.includes(id) &&
+          accountUsers.find(user => user._user === id).isAdmin)) {
         throw errors.forbidden()
       }
 
@@ -167,45 +189,111 @@ module.exports.inviteUsers = (event, context, callback) => {
     .then(response => callback(null, response))
 }
 
+module.exports.inviteUserByEmail = (event, context, callback) => {
+  return passport.checkAuth(event.headers.Authorization)
+    .then(decoded => {
+      return [
+        UserModel.isActiveOrThrow(decoded),
+        AccountModel.getActiveByIdrOrThrow(event.pathParameters.id),
+        UserAccountModel.getUsersByAccount(event.pathParameters.id),
+        helper.validateInviteByEmail(JSON.parse(event.body))
+          .then(data => UserModel.getByEmail(data.email))
+      ]
+    })
+    .spread((id, account, accountUsers, userToInvite) => {
+      if (!userToInvite) {
+        throw errors.badRequest()
+      }
+      const accountUsersIds = accountUsers.map(user => user._user)
+      if (!(accountUsersIds.includes(id) &&
+          accountUsers.find(user => user._user === id).isAdmin)) {
+        throw errors.forbidden()
+      }
+      if (accountUsersIds.includes(userToInvite._id)) {
+        throw errors.forbidden()
+      }
+      let newAccountUser = new UserAccountModel({
+        _user: userToInvite._id,
+        _account: event.pathParameters.id,
+        isAdmin: false
+      })
+      return [userToInvite, newAccountUser.save()]
+    })
+    .spread((userToInvite, newAccountUser) => {
+      return dtoUser.invited(userToInvite, newAccountUser)
+    })
+    .then(responses.ok)
+    .catch(responses.error)
+    .then(response => callback(null, response))
+}
+
 module.exports.getAccountUsers = (event, context, callback) => {
   return Promise.all([
-    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    passport.checkAuth(event.headers.Authorization)
+      .then(decoded => UserModel.isActiveOrThrow(decoded)),
     UserAccountModel.getUsersByAccount(event.pathParameters.id)
   ])
     .then(([id, accountUsers]) => {
       if (!accountUsers || accountUsers.length === 0) throw errors.notFound()
-      let accountUsersIds = accountUsers.map(user => user._user)
-      if (!accountUsersIds.includes(id)) {
+
+      let currentAccountUser
+      const usersList = []
+      const rolesMap = new Map()
+
+      accountUsers.forEach((user) => {
+        const userId = user._user
+        usersList.push({
+          _id: userId
+        })
+
+        rolesMap.set(user._user, user.isAdmin)
+
+        if (userId === id) {
+          currentAccountUser = user
+        }
+      })
+
+      if (!currentAccountUser) {
         throw errors.forbidden()
       }
-      const usersList = []
-      accountUsers.forEach((user) => {
-        usersList.push({
-          _id: user._user
-        })
-      })
-      return UserModel.getUsersOfAccount({
-        _account: event.pathParameters.id,
-        Keys: usersList
-      })
+
+      return [
+        currentAccountUser,
+        rolesMap,
+        UserModel.getByKeys({
+          Keys: usersList
+        })]
     })
-    .then((users) => users.map(user => {
-      user._user = dtoUser.public(user._user)
-      return user
-    }))
+    .spread((currentAccountUser, rolesMap, users) => {
+      const sortedUsers = users.sort((a, b) => b.createdAt - a.createdAt)
+      return {
+        isAdmin: currentAccountUser.isAdmin,
+        users: sortedUsers.map(user => {
+          user.isAdmin = rolesMap.get(user._id)
+          return dtoUser.accountAssignee(user)
+        })
+      }
+    })
     .then(responses.ok)
     .catch(responses.error)
     .then(response => callback(null, response))
 }
 
 module.exports.updateAccountUser = (event, context, callback) => {
-  return Promise.all([
-    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
-    UserAccountModel.getUsersByAccount(event.pathParameters.id)
-  ])
+  return passport.checkAuth(event.headers.Authorization)
+    .then(decoded => {
+      if (decoded.user._id === event.pathParameters.userId) {
+        throw errors.forbidden()
+      }
+      return Promise.all([
+        UserModel.isActiveOrThrow(decoded),
+        UserAccountModel.getUsersByAccount(event.pathParameters.id)
+      ])
+    })
     .then(([id, accountUsers]) => {
       let accountUsersIds = accountUsers.map(user => user._user)
-      if (!(accountUsersIds.includes(id) && accountUsers.find(user => user._user === id).isAdmin)) {
+      if (!(accountUsersIds.includes(id) &&
+          accountUsers.find(user => user._user === id).isAdmin)) {
         throw errors.forbidden()
       }
     })
@@ -229,16 +317,19 @@ module.exports.deleteAccountUser = (event, context, callback) => {
   const token = event.headers.Authorization
 
   return Promise.all([
-    passport.checkAuth(token).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    passport.checkAuth(token)
+      .then(decoded => UserModel.isActiveOrThrow(decoded)),
     AccountModel.getActiveByIdrOrThrow(accountId),
     UserAccountModel.getUsersByAccount(accountId)]
   )
     .then(([id, account, accountUsers]) => {
       let accountUsersIds = accountUsers.map(user => user._user)
-      if (userId === id && accountUsers.filter(user => user._user !== id && user.isAdmin).length === 0) {
+      if (userId === id && accountUsers.filter(
+          user => user._user !== id && user.isAdmin).length === 0) {
         throw errors.forbidden()
       }
-      if (!(accountUsersIds.includes(id) && accountUsers.find(user => user._user === id).isAdmin)) {
+      if (!(accountUsersIds.includes(id) &&
+          accountUsers.find(user => user._user === id).isAdmin)) {
         throw errors.forbidden()
       }
 

@@ -1,5 +1,7 @@
 'use strict'
 
+global.Promise = require('bluebird')
+
 const _ = require('lodash')
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
@@ -50,7 +52,7 @@ module.exports.handler = (event, context, callback) => {
 module.exports.checkAuth = (authToken) => {
   return new Promise((resolve, reject) => {
     if (!authToken) {
-      reject(errors.unauthorized())
+      return reject(errors.unauthorized())
     }
     jwt.verify(authToken, tokenSecret, (err, decoded) => {
       if (err || !decoded) {
@@ -62,6 +64,12 @@ module.exports.checkAuth = (authToken) => {
     if (!decoded || !decoded.user || !decoded.user._id) throw errors.unauthorized()
     return decoded
   })
+    .catch(err => {
+      if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
+        throw errors.unauthorized()
+      }
+      throw err
+    })
 }
 
 module.exports.checkSelf = (authToken, id) => {

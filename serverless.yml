@@ -14,25 +14,25 @@
 
 service: sls-tm-collect
 
-custom:
-  dynamodb:
-    start:
-      inMemory: false
-      migrate: true
-      seed: true
-    seed:
-      domain:
-        sources:
-          - table: users-dev
-            sources: [./seeds/users.json]
-          - table: accounts-dev
-            sources: [./seeds/accounts.json]
-          - table: users-accounts-dev
-            sources: [./seeds/users-accounts.json]
-          - table: functions-dev
-            sources: [./seeds/functions.json]
-          - table: invocations-dev
-            sources: [./seeds/invocations.json]
+#custom:
+#  dynamodb:
+#    start:
+#      inMemory: false
+#      migrate: true
+#      seed: true
+#    seed:
+#      domain:
+#        sources:
+#          - table: users-dev
+#            sources: [./seeds/users.json]
+#          - table: accounts-dev
+#            sources: [./seeds/accounts.json]
+#          - table: users-accounts-dev
+#            sources: [./seeds/users-accounts.json]
+#          - table: functions-dev
+#            sources: [./seeds/functions.json]
+#          - table: invocations-dev
+#            sources: [./seeds/invocations.json]
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
 # frameworkVersion: "=X.X.X"
@@ -64,8 +64,8 @@ provider:
 
 plugins:
  - serverless-webpack
- - serverless-dynamodb-local
- - serverless-offline
+# - serverless-dynamodb-local
+# - serverless-offline
 
 
 resources:
@@ -177,6 +177,7 @@ functions:
   deleteAccount: ${file(./src/api/accounts/serverless.yml):functions.deleteAccount}
   # ACCOUNT_USERS
   inviteUsers: ${file(./src/api/accounts/serverless.yml):functions.inviteUsers}
+  inviteUserByEmail: ${file(./src/api/accounts/serverless.yml):functions.inviteUserByEmail}
   getAccountUsers: ${file(./src/api/accounts/serverless.yml):functions.getAccountUsers}
   updateAccountUser: ${file(./src/api/accounts/serverless.yml):functions.updateAccountUser}
   deleteAccountUser: ${file(./src/api/accounts/serverless.yml):functions.deleteAccountUser}
@@ -188,6 +189,7 @@ functions:
 
   # INVOCATIONS
   listInvocations: ${file(./src/api/invocations/serverless.yml):functions.listInvocations}
+  getAccountInvocation: ${file(./src/api/invocations/serverless.yml):functions.getAccountInvocation}
   getInvocation: ${file(./src/api/invocations/serverless.yml):functions.getInvocation}
   chartFunctionInvocation: ${file(./src/api/invocations/serverless.yml):functions.chartFunctionInvocations}
 #    events:

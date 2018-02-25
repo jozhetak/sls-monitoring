@@ -11,6 +11,18 @@ functions:
           method: get
           cors: true
 
+  getAccountInvocation:
+      handler: src/api/invocations/invocations.listOfAccount
+      package:
+        include:
+          - src/api/invocations/**
+          - src/api/passport/**
+      events:
+        - http:
+            path: /accounts/{id}/invocations
+            method: get
+            cors: true
+
   listInvocations:
     handler: src/api/invocations/invocations.list
     package:

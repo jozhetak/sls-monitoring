@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    STAGE: 'dev'
+    STAGE: 'staging'
 
 phases:
   install:
@@ -19,7 +19,7 @@ phases:
     commands:
       - echo Entered the build phase...
       - echo Build started on `date`
-      - SLS_DEBUG=* serverless deploy --stage dev --region eu-central-1 --verbose
+      - SLS_DEBUG=* serverless deploy --stage staging --region eu-central-1 --verbose
       - echo Generate api documantation
       - npm run apidoc
   post_build:

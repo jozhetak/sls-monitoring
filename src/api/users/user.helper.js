@@ -1,44 +1,52 @@
+'use strict'
+
 const joi = require('joi')
 const errors = require('../../shared/helper/errors')
+const regex = require('../../shared/regex')
 
-const passwordSchema = joi.string().min(8).regex(/.*/)
-
-const schema = joi.object().keys({
-  _id: joi.string().guid(),
-  firstName: joi.string(),
-  lastName: joi.string(),
-  email: joi.string().email(),
-  password: passwordSchema.forbidden(),
-  createdAt: joi.date().forbidden(),
-  updatedAt: joi.date().forbidden()
-})
-
-module.exports.validate = (user) => {
-  return joi.validate(user, schema)
-    .catch(err => {
-      throw errors.invalidJoi(err)
-    })
-}
+const passwordSchema = joi.string().min(8).regex(regex.password)
 
 const createSchema = joi.object().keys({
-  _id: joi.string().guid().forbidden(),
-  firstName: joi.string(),
-  lastName: joi.string(),
-  email: joi.string().email(),
-  password: passwordSchema,
-  createdAt: joi.date().forbidden(),
-  updatedAt: joi.date().forbidden()
+  firstName: joi.string().trim().regex(regex.firstName).min(2).max(32).required(),
+  lastName: joi.string().trim().regex(regex.lastName).min(2).max(32).required(),
+  email: joi.string().trim().regex(regex.email).required(),
+  password: passwordSchema.required()
+})
+
+const updateSchema = joi.object().keys({
+  firstName: joi.string().trim().regex(regex.firstName).min(2).max(32).required(),
+  lastName: joi.string().trim().regex(regex.lastName).min(2).max(32).required(),
+  email: joi.string().trim().regex(regex.email).required()
+})
+
+const updatePasswordSchema = joi.object().keys({
+  oldPassword: passwordSchema.required(),
+  newPassword: passwordSchema.required()
 })
 
 module.exports.validateCreate = (user) => {
-  return joi.validate(user, createSchema)
+  return joi.validate(user, createSchema, {abortEarly: false, allowUnknown: false})
     .catch(err => {
       throw errors.invalidJoi(err)
     })
 }
 
-module.exports.validatePassword = (password) => {
-  return joi.validate(password, passwordSchema)
+module.exports.validateUpdate = (user) => {
+  return joi.validate(user, updateSchema, {abortEarly: false, allowUnknown: false})
+    .catch(err => {
+      throw errors.invalidJoi(err)
+    })
+}
+
+module.exports.validateUpdatePassword = (data) => {
+  return joi.validate(data, updatePasswordSchema, {abortEarly: false, allowUnknown: false})
+    .catch(err => {
+      throw errors.invalidJoi(err)
+    })
+}
+
+module.exports.validateResetPassword = (password) => {
+  return joi.validate(password, passwordSchema, {abortEarly: false, allowUnknown: false})
     .catch(err => {
       throw errors.invalidJoi(err)
     })
