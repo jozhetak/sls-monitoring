@@ -91,7 +91,6 @@ resources:
             ProvisionedThroughput:
               ReadCapacityUnits: 5
               WriteCapacityUnits: 5
-
         TableName: ${self:provider.environment.INVOCATIONS_TABLE}
     AccountsDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
