@@ -94,7 +94,7 @@ module.exports.listOfAccount = (event, context, callback) => {
       }
 
       return InvocationModel.getAll({
-        IndexName: 'AccountIdIndex',
+        IndexName: 'AccountIdTime',
         KeyConditionExpression: '#account = :account AND #startTime >= :startTime',
         ExpressionAttributeNames: {
           '#account': '_account',
