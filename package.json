@@ -1,6 +1,6 @@
 {
   "name": "sls-monitoring",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Service for monitoring your Lambda functions",
   "apidoc": {
     "title": "Serverless Monitoring API documentation",
