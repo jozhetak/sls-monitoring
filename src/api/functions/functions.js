@@ -31,7 +31,7 @@ module.exports.list = (event, context, callback) => {
       }
 
       return FunctionModel.getAll({
-        IndexName: 'AccountIdTime',
+        IndexName: 'AccountIdIndex',
         KeyConditionExpression: '#account = :account',
         ExpressionAttributeNames: {
           '#account': '_account'
