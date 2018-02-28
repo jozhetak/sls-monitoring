@@ -47,6 +47,18 @@ functions:
           method: get
           cors: true
 
+  chartFunctionErrors:
+      handler: src/api/invocations/invocations.chartFunctionErrors
+      package:
+        include:
+          - src/api/invocations/**
+          - src/api/passport/**
+      events:
+        - http:
+            path: /accounts/{id}/chart/functions/{functionId}/errors
+            method: get
+            cors: true
+
   chartAccountInvocations:
     handler: src/api/invocations/invocations.chartAccountInvocations
     package:
@@ -71,14 +83,14 @@ functions:
 #          method: get
 #          cors: true
 #
-#  chartAccountErrors:
-#    handler: src/api/invocations/invocations.chartAccountErrors
-#    package:
-#      include:
-#        - src/api/invocations/**
-#        - src/api/passport/**
-#    events:
-#      - http:
-#          path: /accounts/{id}/chart/functions/{functionId}/errors
-#          method: get
-#          cors: true
+  chartAccountErrors:
+    handler: src/api/invocations/invocations.chartAccountErrors
+    package:
+      include:
+        - src/api/invocations/**
+        - src/api/passport/**
+    events:
+      - http:
+          path: /accounts/{id}/chart/errors
+          method: get
+          cors: true
