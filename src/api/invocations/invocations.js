@@ -19,22 +19,23 @@ module.exports.list = (event, context, callback) => {
   const functionId = event.pathParameters.functionId
   const limit = query && query.limit ? query.limit : 50
   const startTime = query && query.startTime ? parseInt(query.startTime) : (new Date()).getTime() - 24 * 60 * 60 * 1000
-  const key = query && query.key
-    ? {
-      _function: functionId,
-      _id: query.key
-    }
-    : undefined
+  const promises = [
+    passport.checkAuth(token).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    AccountModel.getActiveByIdrOrThrow(accountId),
+    UserAccountModel.getUsersByAccount(accountId),
+    FunctionModel.getById(functionId)
+  ]
+  if (query && query.key) {
+    promises.push(InvocationModel.getById(query.key))
+  }
 
-  return Promise.all([
-      passport.checkAuth(token)
-        .then(decoded => UserModel.isActiveOrThrow(decoded)),
-      AccountModel.getActiveByIdrOrThrow(accountId),
-      UserAccountModel.getUsersByAccount(accountId),
-      FunctionModel.getById(functionId)
-    ]
-  )
-    .then(([id, account, accountUsers, func]) => {
+  return Promise.all(promises)
+    .then(([id, account, accountUsers, func, lastReturnedInvocation]) => {
+      const exclusiveStartKey = lastReturnedInvocation ? {
+        _function: lastReturnedInvocation._function,
+        _id: lastReturnedInvocation._id,
+        startTime: lastReturnedInvocation.startTime
+      } : undefined
       let accountUsersIds = accountUsers.map(user => user._user)
       if (!(accountUsersIds.includes(id))) {
         throw errors.forbidden()
@@ -54,7 +55,7 @@ module.exports.list = (event, context, callback) => {
           ':function': functionId,
           ':startTime': startTime
         },
-        ExclusiveStartKey: key,
+        ExclusiveStartKey: exclusiveStartKey,
         Limit: limit,
         ScanIndexForward: false
       })
