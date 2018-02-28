@@ -8,7 +8,6 @@ const UserModel = require('../../shared/model/user')
 const UserAccountModel = require('../../shared/model/userAccount')
 const FunctionModel = require('../../shared/model/function')
 const errors = require('../../shared/helper/errors')
-const _ = require('lodash')
 const passport = require('./../passport/passport')
 const responses = require('../../shared/helper/responses')
 
@@ -18,9 +17,12 @@ module.exports.list = (event, context, callback) => {
   const accountId = event.pathParameters.id
   const functionId = event.pathParameters.functionId
   const limit = query && query.limit ? query.limit : 50
-  const startTime = query && query.startTime ? parseInt(query.startTime) : (new Date()).getTime() - 24 * 60 * 60 * 1000
+  const startTime = query && query.startTime
+    ? parseInt(query.startTime)
+    : (new Date()).getTime() - 24 * 60 * 60 * 1000
   const promises = [
-    passport.checkAuth(token).then(decoded => UserModel.isActiveOrThrow(decoded)),
+    passport.checkAuth(token)
+      .then(decoded => UserModel.isActiveOrThrow(decoded)),
     AccountModel.getActiveByIdrOrThrow(accountId),
     UserAccountModel.getUsersByAccount(accountId),
     FunctionModel.getById(functionId)
@@ -70,7 +72,9 @@ module.exports.listOfAccount = (event, context, callback) => {
   const token = event.headers.Authorization
   const accountId = event.pathParameters.id
   const limit = query && query.limit ? query.limit : 50
-  const startTime = query && query.startTime ? parseInt(query.startTime) : (new Date()).getTime() - 24 * 60 * 60 * 1000
+  const startTime = query && query.startTime
+    ? parseInt(query.startTime)
+    : (new Date()).getTime() - 24 * 60 * 60 * 1000
 
   const promises = [
     passport.checkAuth(token)
@@ -153,9 +157,13 @@ module.exports.chartFunctionInvocations = (event, context, callback) => {
   const token = event.headers.Authorization
   const accountId = event.pathParameters.id
   const functionId = event.pathParameters.functionId
-  const startTime = query && query.startTime ? query.startTime : (new Date()).getTime() - 30 * 24 * 60 * 60 * 1000
-  return Promise.all([
-      passport.checkAuth(token).then(decoded => UserModel.isActiveOrThrow(decoded)),
+  const startTime = query && query.startTime
+    ? query.startTime
+    : (new Date()).getTime() - 30 * 24 * 60 * 60 * 1000
+  return Promise.all(
+    [
+      passport.checkAuth(token)
+        .then(decoded => UserModel.isActiveOrThrow(decoded)),
       AccountModel.getActiveByIdrOrThrow(accountId),
       UserAccountModel.getUsersByAccount(accountId),
       FunctionModel.getById(functionId)
@@ -186,19 +194,74 @@ module.exports.chartFunctionInvocations = (event, context, callback) => {
       })
     })
     .then((result) => {
-      const byday={};
-      const data = result.Items;
+      const byday = {}
+      const data = result.Items
       data.forEach((value) => {
-        let d = new Date(value['startTime']);
-        d = Math.floor(d.getTime()/(1000*60*60*24));
-        byday[d]=byday[d]||[];
-        byday[d].push(value);
+        let d = new Date(value['startTime'])
+        d = Math.floor(d.getTime() / (1000 * 60 * 60 * 24))
+        byday[d] = byday[d] || []
+        byday[d].push(value)
       })
       return (Object.keys(byday)).map((value) => {
         return {
-          title: (new Date(value * 1000*60*60*24)).toDateString(),
+          title: (new Date(value * 1000 * 60 * 60 * 24)).toDateString(),
           val: (byday[value]).length
-        };
+        }
+      })
+    })
+    .then(responses.ok)
+    .catch(responses.error)
+    .then(response => callback(null, response))
+}
+// TODO: support endTime
+module.exports.chartAccountInvocations = (event, context, callback) => {
+  const query = event.queryStringParameters
+  const token = event.headers.Authorization
+  const accountId = event.pathParameters.id
+  const startTime = query && query.startTime
+    ? query.startTime
+    : (new Date()).getTime() - 30 * 24 * 60 * 60 * 1000
+  return Promise.all([
+    passport.checkAuth(token)
+      .then(decoded => UserModel.isActiveOrThrow(decoded)),
+    AccountModel.getActiveByIdrOrThrow(accountId),
+    UserAccountModel.getUsersByAccount(accountId)
+  ])
+    .then(([id, account, accountUsers]) => {
+      let accountUsersIds = accountUsers.map(user => user._user)
+      if (!(accountUsersIds.includes(id))) {
+        throw errors.forbidden()
+      }
+
+      return InvocationModel.getAll({
+        IndexName: 'AccountIdTime',
+        KeyConditionExpression: '#account = :account AND #startTime >= :startTime',
+        FilterExpression: '',
+        ExpressionAttributeNames: {
+          '#account': '_account',
+          '#startTime': 'startTime'
+        },
+        ExpressionAttributeValues: {
+          ':account': accountId,
+          ':startTime': startTime
+        },
+        ScanIndexForward: false
+      })
+    })
+    .then((result) => {
+      const byday = {}
+      const data = result.Items
+      data.forEach((value) => {
+        let d = new Date(value['startTime'])
+        d = Math.floor(d.getTime() / (1000 * 60 * 60 * 24))
+        byday[d] = byday[d] || []
+        byday[d].push(value)
+      })
+      return (Object.keys(byday)).map((value) => {
+        return {
+          title: (new Date(value * 1000 * 60 * 60 * 24)).toDateString(),
+          val: (byday[value]).length
+        }
       })
     })
     .then(responses.ok)

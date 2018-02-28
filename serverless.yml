@@ -193,6 +193,7 @@ functions:
   getAccountInvocation: ${file(./src/api/invocations/serverless.yml):functions.getAccountInvocation}
   getInvocation: ${file(./src/api/invocations/serverless.yml):functions.getInvocation}
   chartFunctionInvocation: ${file(./src/api/invocations/serverless.yml):functions.chartFunctionInvocations}
+  chartAccountInvocations: ${file(./src/api/invocations/serverless.yml):functions.chartAccountInvocations}
 #    events:
 #      - schedule: rate(1 minute)
 
