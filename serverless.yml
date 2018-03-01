@@ -194,8 +194,10 @@ functions:
   getInvocation: ${file(./src/api/invocations/serverless.yml):functions.getInvocation}
   chartFunctionInvocation: ${file(./src/api/invocations/serverless.yml):functions.chartFunctionInvocations}
   chartFunctionErrors: ${file(./src/api/invocations/serverless.yml):functions.chartFunctionErrors}
+  chartFunctionDuration: ${file(./src/api/invocations/serverless.yml):functions.chartFunctionDuration}
   chartAccountInvocations: ${file(./src/api/invocations/serverless.yml):functions.chartAccountInvocations}
   chartAccountErrors: ${file(./src/api/invocations/serverless.yml):functions.chartAccountErrors}
+  chartAccountDuration: ${file(./src/api/invocations/serverless.yml):functions.chartAccountDuration}
 #    events:
 #      - schedule: rate(1 minute)
 
