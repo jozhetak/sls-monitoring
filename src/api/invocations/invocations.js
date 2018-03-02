@@ -158,7 +158,7 @@ module.exports.chartFunctionInvocations = (event, context, callback) => {
   const accountId = event.pathParameters.id
   const functionId = event.pathParameters.functionId
   const startTime = query && query.startTime
-    ? query.startTime
+    ? Number(query.startTime)
     : (new Date()).getTime() - 30 * 24 * 60 * 60 * 1000
   return Promise.all(
     [
@@ -220,7 +220,7 @@ module.exports.chartFunctionErrors = (event, context, callback) => {
   const accountId = event.pathParameters.id
   const functionId = event.pathParameters.functionId
   const startTime = query && query.startTime
-    ? query.startTime
+    ? Number(query.startTime)
     : (new Date()).getTime() - 30 * 24 * 60 * 60 * 1000
   return Promise.all(
     [
@@ -285,7 +285,7 @@ module.exports.chartFunctionDuration = (event, context, callback) => {
   const accountId = event.pathParameters.id
   const functionId = event.pathParameters.functionId
   const startTime = query && query.startTime
-    ? query.startTime
+    ? Number(query.startTime)
     : (new Date()).getTime() - 30 * 24 * 60 * 60 * 1000
   return Promise.all(
     [
@@ -354,7 +354,7 @@ module.exports.chartAccountInvocations = (event, context, callback) => {
   const token = event.headers.Authorization
   const accountId = event.pathParameters.id
   const startTime = query && query.startTime
-    ? query.startTime
+    ? Number(query.startTime)
     : (new Date()).getTime() - 30 * 24 * 60 * 60 * 1000
   return Promise.all([
     passport.checkAuth(token)
@@ -409,7 +409,7 @@ module.exports.chartAccountErrors = (event, context, callback) => {
   const token = event.headers.Authorization
   const accountId = event.pathParameters.id
   const startTime = query && query.startTime
-    ? query.startTime
+    ? Number(query.startTime)
     : (new Date()).getTime() - 30 * 24 * 60 * 60 * 1000
   return Promise.all([
     passport.checkAuth(token)
@@ -466,7 +466,7 @@ module.exports.chartAccountDuration = (event, context, callback) => {
   const token = event.headers.Authorization
   const accountId = event.pathParameters.id
   const startTime = query && query.startTime
-    ? query.startTime
+    ? Number(query.startTime)
     : (new Date()).getTime() - 30 * 24 * 60 * 60 * 1000
   return Promise.all([
     passport.checkAuth(token)
