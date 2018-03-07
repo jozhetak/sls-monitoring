@@ -50,6 +50,7 @@ module.exports = class Collector {
 
   _updateFunction (func) {
     const that = this
+    console.log('func', func)
 
     return FunctionModel
       .getOne('arn = :arn', {':arn': func.FunctionArn})
@@ -75,10 +76,12 @@ module.exports = class Collector {
           }
         }
         const funcInstance = new FunctionModel(funcDao)
+        console.log('funcInstance2', funcInstance)
         return funcInstance.save()
 
       })
       .then(funcInstance => {
+        console.log('funcInstance1', funcInstance)
         return {
           functionInstance: funcInstance,
           invocations: func.invocations
