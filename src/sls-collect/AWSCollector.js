@@ -43,6 +43,7 @@ module.exports = class AWSCollector extends Collector {
         return Promise.map(data.Functions, func => {
           return that._getInvocations(func)
             .then((invocations) => {
+              console.log('invocations!', invocations)
               func.invocations = invocations
               return func
             })
