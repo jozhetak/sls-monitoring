@@ -29,6 +29,7 @@ module.exports = class Collector {
   _updateInvocations (funcInstance, invocations) {
     console.log('account: ', this.accountId)
     console.log('_updateInvocations')
+    console.log('function instance: ', funcInstance)
 
     return Promise.each(invocations, invocation => {
       return InvocationModel
@@ -38,7 +39,7 @@ module.exports = class Collector {
             // invocation.functionId = funcInstance._id
             invocation._function = funcInstance._id
             // invocation.accountId = funcInstance.accountId
-            invocation._account = funcInstance.accountId
+            invocation._account = funcInstance._account
             const invocationInstance = new InvocationModel(invocation)
             return invocationInstance.save()
           }
