@@ -20,6 +20,7 @@ module.exports = class Collector {
     return Promise.each(functions, func => {
       return that._updateFunction(func)
         .then((result) => {
+          console.log('result: ', result)
           return that._updateInvocations(result.functionInstance,
             result.invocations)
         })
