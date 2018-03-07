@@ -75,6 +75,9 @@ module.exports = class Collector {
             memSize: func.MemorySize
           }
         }
+        if (!funcDao.description) {
+          funcDao.description = funcDao.arn
+        }
         const funcInstance = new FunctionModel(funcDao)
         console.log('funcInstance2', funcInstance)
         return funcInstance.save()
