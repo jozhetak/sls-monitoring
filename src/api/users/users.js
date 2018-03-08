@@ -186,7 +186,7 @@ module.exports.verify = (event, context, callback) => {
         verificationTokenExpires: null
       })
     })
-    .then(() => responses.redirect('test'))
+    .then(() => responses.redirect('login'))
     .catch(responses.error)
     .then((response) => callback(null, response))
 }
