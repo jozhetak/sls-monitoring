@@ -29,131 +29,38 @@ module.exports.sendVerificationEmail = (user) => {
   const generateHTMLEmail = () => `
     <!DOCTYPE html>
     <html lang="en">
-        <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Confirm</title>
-        <style>
-            @import url("https://fonts.googleapis.com/css?family=Raleway:400,600,800");
-            body {
-                width: 800px;
-                height: 362px;
-                margin: 0;
-                background-color: #ffffff;
-                color: #373a36;
-                position: relative;
-                z-index: 1;
-                -webkit-text-size-adjust: 100%;
-                font-variant-ligatures: none;
-                -webkit-font-variant-ligatures: none;
-                text-rendering: optimizeLegibility;
-                -moz-osx-font-smoothing: grayscale;
-                font-smoothing: antialiased;
-                -webkit-font-smoothing: antialiased;
-                text-shadow: rgba(0, 0, 0, 0.01) 0 0 1px;
-            }
-  
-            p {
-                margin: 0;
-            }
-  
-            .header {
-                height: 94px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                border-bottom: 1px solid rgba(197, 197, 197, 0.5);
-            }
-  
-            .header p {
-                font-family: "Raleway", sans-serif;
-                font-size: 24px;
-            }
-  
-            .main {
-                font-family: "OpenSans", sans-serif;
-                font-size: 16px;
-                line-height: 1.5;
-                height: 214px;
-                padding-left: 40px;
-                padding-top: 30px;
-                box-sizing: border-box;
-                border-bottom: 1px solid rgba(197, 197, 197, 0.5);
-            }
-  
-            .main p+p {
-                margin-top: 25px;
-            }
-    
-            .bold {
-                font-weight: bold;
-            }
-    
-            .button-wrapper {
-                margin-top: 20px;
-            }
-    
-            .button {
-                width: 240px;
-                height: 40px;
-                background-color: #00b2a9;
-                display: flex;
-                text-transform: uppercase;
-                justify-content: center;
-                align-items: center;
-                text-decoration: none;
-                color: #ffffff;
-                font-size: 14px;
-                font-weight: bold;
-                font-family: "Raleway", sans-serif;
-                position: relative;
-            }
-    
-            .button::after {
-                left: 10px;
-                bottom: 3px;
-                border-radius: 50%;
-                box-shadow: -8px 0 20px 5px rgba(71, 71, 71, 0.4);
-                content: "";
-                display: block;
-                position: absolute;
-                z-index: -1;
-                height: 10px;
-                width: 210px;
-            }
-    
-            footer {
-                height: 54px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-    
-            .copyright {
-                font-size: 13.2px;
-                font-family: "OpenSans", sans-serif;
-                color: #aaaaaa;
-            }
-        </style>
-    </head>
-    <body>
-        <header class="header">
-            <p>
-              <span class="bold">SLS</span> Monitoring</p>
-        </header>
-        <div class="main">
-            <p>You’re only one step from being able to log on SLS Montitoring.</p>
-            <p class="bold">Click on the button below to confirm your account</p>
-            <div class="button-wrapper">
-                <a class="button" href="${process.env.API_URL}/users/${user._id}/verification/${user.verificationToken}">confirm your account</a>
-            </div>
-        </div>
-        <footer>
-            <div class="copyright">© TechMagic 2016 - 2018</div>
-        </footer>
-    </body>
-  </html>
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <meta http-equiv="X-UA-Compatible" content="ie=edge">
+          <title>Confirm</title>
+          <style>
+              @import url("https://fonts.googleapis.com/css?family=Raleway:400,600,800");
+          </style>
+      </head>
+      <body>
+          <table border="0" cellpadding="0" cellspacing="0" style="margin:0; padding:0;width: 800px; height: 362px;">
+              <tr style="height: 94px; border-bottom: 1px solid rgba(197, 197, 197, 0.5); box-sizing: border-box;">
+                  <td style="color: #373a36; font-size: 24px; font-family: 'Raleway', sans-serif; line-height: 26px; -webkit-text-size-adjust:none; display: block; margin-top: 30px; text-align: center; border-bottom: 1px solid rgba(197, 197, 197, 0.5); padding-bottom: 38px;">
+                      <span style="color: #373a36; font-size: 24px; font-family: 'Raleway', sans-serif; font-weight: bold; line-height: 26px; -webkit-text-size-adjust:none; display: inline;">SLS</span> Monitoring</td>
+              </tr>
+              <tr style="height: 80px; box-sizing: border-box;color: #373a36; font-size: 16px; font-family: 'OpenSans', sans-serif; line-height: 18px;">
+                  <td style="height: 24px; margin-top: 30px; width: 600px; margin-left: 40px; display: block;">You’re only one step from being able to log on SLS Montitoring.</td>
+              </tr>
+              <tr style="height: 44px; box-sizing: border-box;color: #373a36; font-size: 16px; font-family: 'OpenSans', sans-serif; line-height: 18px;">
+                  <td style="height: 24px; width: 600px; margin-left: 40px; display: block; font-weight: bold;">Click on the button below to confirm your account</td>
+              </tr>
+              <tr style="height: 90px;">
+                  <td style="height: 90px; width: 800px; padding-left: 40px; display: block; font-weight: bold;border-bottom: 1px solid rgba(197, 197, 197, 0.5);">
+                      <a class="button" href="${process.env.API_URL}/users/${user._id}/verification/${user.verificationToken}" style="color: #ffffff; font-size: 14px; font-family: 'Raleway', sans-serif; line-height: 16px; -webkit-text-size-adjust:none; display: block;width: 240px; height: 40px;background-color: #00b2a9;text-decoration: none; box-sizing:border-box; padding-top: 12px; padding-left:26px;" target="_blank">CONFIRM YOUR ACCOUNT</a>
+                  </td>
+              </tr>
+              <tr>
+                  <td style="height:54px;font-size: 13.2px; font-family: 'OpenSans', sans-serif; color: #aaaaaa;text-align: center;">© TechMagic 2016 - 2018</td>
+              </tr>
+          </table>
+      </body>
+    </html>
   `
   const options = {
     recipient: user.email,
@@ -167,140 +74,42 @@ module.exports.sendResetPasswordEmail = (user) => {
   console.log(user)
   const generateHTMLEmail = () => `
     <!DOCTYPE html>
-      <html lang="en">
-      <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <meta http-equiv="X-UA-Compatible" content="ie=edge">
-          <title>Confirm</title>
-          <style>
-              @import url("https://fonts.googleapis.com/css?family=Raleway:400,600,800");
-              body {
-                  width: 800px;
-                  height: 456px;
-                  margin: 0;
-                  background-color: #ffffff;
-                  color: #373a36;
-                  position: relative;
-                  z-index: 1;
-      
-                  -webkit-text-size-adjust: 100%;
-                  font-variant-ligatures: none;
-                  -webkit-font-variant-ligatures: none;
-                  text-rendering: optimizeLegibility;
-                  -moz-osx-font-smoothing: grayscale;
-                  font-smoothing: antialiased;
-                  -webkit-font-smoothing: antialiased;
-                  text-shadow: rgba(0, 0, 0, 0.01) 0 0 1px;
-              }
-      
-              p {
-                  margin: 0;
-              }
-
-              .header {
-                  height: 94px;
-                  display: flex;
-                  justify-content: center;
-                  align-items: center;
-                  border-bottom: 1px solid rgba(197, 197, 197, 0.5);
-              }
-      
-              .header p {
-                  font-family: "Raleway", sans-serif;
-                  font-size: 24px;
-              }
-      
-              .main {
-                  font-family: "OpenSans", sans-serif;
-                  font-size: 16px;
-                  line-height: 1.5;
-                  width: 100%;
-                  height: 308px;
-                  padding-left: 40px;
-                  padding-top: 35px;
-                  box-sizing: border-box;
-                  border-bottom: 1px solid rgba(197, 197, 197, 0.5);
-                  padding-right: 150px;
-              }
-      
-              .main p+p {
-                  margin-top: 25px;
-              }
-      
-              .bold {
-                  font-weight: bold;
-              }
-      
-              .small-text {
-                  font-size: 14px;
-              }
-      
-              .button-wrapper {
-                  margin-top: 20px;
-                  margin-bottom: 26px;
-              }
-      
-              .button {
-                  width: 240px;
-                  height: 40px;
-                  background-color: #00b2a9;
-                  display: flex;
-                  text-transform: uppercase;
-                  justify-content: center;
-                  align-items: center;
-                  text-decoration: none;
-                  color: #ffffff;
-                  font-size: 14px;
-                  font-weight: bold;
-                  font-family: "Raleway", sans-serif;
-                  position: relative;
-              }
-      
-              .button::after {
-                  left: 10px;
-                  bottom: 3px;
-                  border-radius: 50%;
-                  box-shadow: -8px 0 20px 5px rgba(71, 71, 71, 0.4);
-                  content: "";
-                  display: block;
-                  position: absolute;
-                  z-index: -1;
-                  height: 10px;
-                  width: 210px;
-              }
-      
-              footer {
-                  height: 54px;
-                  display: flex;
-                  justify-content: center;
-                  align-items: center;
-              }
-      
-              .copyright {
-                  font-size: 13.2px;
-                  font-family: "OpenSans", sans-serif;
-                  color: #aaaaaa;
-              }
-          </style>
-      </head>
-      <body>
-          <header class="header">
-              <p>
-                  <span class="bold">SLS</span> Monitoring</p>
-          </header>
-          <div class="main">
-              <p>We recevied a request to reset your password for your SLS account. We are here to help you! </p>
-              <p class="bold">Click on the button below to set a new password</p>
-              <div class="button-wrapper">
-                  <a class="button" href="${process.env.WEB_URL}/users/${user._id}/resetPassword/${user.resetPasswordToken}">set a new password</a>
-              </div>
-              <p class="small-text">If you didn’t mean to reset your password, than you can ignore this email, your password will not be changed.</p>
-          </div>
-          <footer>
-              <div class="copyright">© TechMagic 2016 - 2018</div>
-          </footer>
-      </body>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Confirm</title>
+        <style>
+            @import url("https://fonts.googleapis.com/css?family=Raleway:400,600,800");
+        </style>
+    </head>
+    <body>
+        <table border="0" cellpadding="0" cellspacing="0" style="margin:0; padding:0;width: 800px; height: 362px;">
+            <tr style="height: 94px; border-bottom: 1px solid rgba(197, 197, 197, 0.5); box-sizing: border-box;">
+                <td style="color: #373a36; font-size: 24px; font-family: 'Raleway', sans-serif; line-height: 26px; -webkit-text-size-adjust:none; display: block; margin-top: 30px; text-align: center; border-bottom: 1px solid rgba(197, 197, 197, 0.5); padding-bottom: 38px;">
+                    <span style="color: #373a36; font-size: 24px; font-family: 'Raleway', sans-serif; font-weight: bold; line-height: 26px; -webkit-text-size-adjust:none; display: inline;">SLS</span> Monitoring</td>
+            </tr>
+            <tr style="height: 95px; box-sizing: border-box;color: #373a36; font-size: 16px; font-family: 'OpenSans', sans-serif; line-height: 18px;">
+                <td style="height: 48px; margin-top: 30px; width: 600px; margin-left: 40px; display: block;">We recevied a request to reset your password for your SLS account. We are here to help you!</td>
+            </tr>
+            <tr style="height: 42px; box-sizing: border-box;color: #373a36; font-size: 16px; font-family: 'OpenSans', sans-serif; line-height: 18px;">
+                <td style="height: 24px; width: 600px; margin-left: 40px; display: block; font-weight: bold;">Click on the button below to set a new password</td>
+            </tr>
+            <tr style="height: 56px;">
+                <td style="height: 56px; width: 800px; padding-left: 40px; display: block; font-weight: bold;">
+                    <a class="button" href="${process.env.WEB_URL}/users/${user._id}/resetPassword/${user.resetPasswordToken}" style="color: #ffffff; font-size: 14px; font-family: 'Raleway', sans-serif; line-height: 16px; -webkit-text-size-adjust:none; display: block;width: 240px; height: 40px;background-color: #00b2a9;text-decoration: none; box-sizing:border-box; padding-top: 12px; padding-left:40px;" target="_blank">SET A NEW PASSWORD</a>
+                </td>
+            </tr>
+            <tr style="height: 85px; box-sizing: border-box;color: #373a36; font-size: 14px; font-family: 'OpenSans', sans-serif; line-height: 18px;">
+                <td style="height: 85px; margin-top: 30px; margin-left: 40px; display: block;border-bottom: 1px solid rgba(197, 197, 197, 0.5);">If you didn’t mean to reset your password, than you can ignore this email, your password will not
+                    <br>be changed.</td>
+            </tr>
+            <tr>
+                <td style="height:54px;font-size: 13.2px; font-family: 'OpenSans', sans-serif; color: #aaaaaa;text-align: center;">© TechMagic 2016 - 2018</td>
+            </tr>
+        </table>
+    </body>
     </html>
   `
   const options = {
