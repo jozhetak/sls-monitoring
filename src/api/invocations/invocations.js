@@ -114,7 +114,16 @@ module.exports.listOfAccount = (event, context, callback) => {
         ScanIndexForward: false
       })
     })
-    .then(responses.ok)
+    .then(data => {
+      const arrayOfPromises = data.Items.map(invocation => {
+        return FunctionModel.getById(invocation._function)
+          .then(functionObj => {
+            invocation.functionName = functionObj.name
+          })
+      })
+      return Promise.all(arrayOfPromises)
+        .then(() => responses.ok(data))
+    })
     .catch(responses.error)
     .then(response => callback(null, response))
 }
