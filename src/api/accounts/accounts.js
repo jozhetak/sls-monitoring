@@ -327,7 +327,7 @@ module.exports.deleteAccountUser = (event, context, callback) => {
       if (userId === id && accountUsers.filter(user => user._user !== id && user.isAdmin).length === 0) {
         throw errors.forbidden()
       }
-      if (accountUsersIds.includes(id) && accountUsers.find(user => user._user === id).isAdmin) {
+      if (!accountUsersIds.includes(id) && accountUsers.find(user => user._user === id).isAdmin) {
         throw errors.forbidden()
       }
 
