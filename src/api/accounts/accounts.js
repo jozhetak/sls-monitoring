@@ -282,9 +282,9 @@ module.exports.getAccountUsers = (event, context, callback) => {
 module.exports.updateAccountUser = (event, context, callback) => {
   return passport.checkAuth(event.headers.Authorization)
     .then(decoded => {
-      if (decoded.user._id === event.pathParameters.userId) {
-        throw errors.forbidden()
-      }
+      // if (decoded.user._id === event.pathParameters.userId) {
+      //   throw errors.forbidden()
+      // }
       return Promise.all([
         UserModel.isActiveOrThrow(decoded),
         UserAccountModel.getUsersByAccount(event.pathParameters.id)
