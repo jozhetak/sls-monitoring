@@ -10,6 +10,7 @@ const FunctionModel = require('../../shared/model/function')
 const errors = require('../../shared/helper/errors')
 const passport = require('./../passport/passport')
 const responses = require('../../shared/helper/responses')
+const moment = require('moment')
 
 module.exports.list = (event, context, callback) => {
   const query = event.queryStringParameters
@@ -203,18 +204,30 @@ module.exports.chartFunctionInvocations = (event, context, callback) => {
       })
     })
     .then((result) => {
+      const difference = moment().diff(moment(startTime), 'days')
       const byday = {}
       const data = result.Items
       data.forEach((value) => {
         let d = new Date(value['startTime'])
-        d = Math.floor(d.getTime() / (1000 * 60 * 60 * 24))
+        if (difference <= 1) {
+          d = Math.floor(d.getTime() / (1000 * 60 * 60))
+        } else {
+          d = Math.floor(d.getTime() / (1000 * 60 * 60 * 24))
+        }
         byday[d] = byday[d] || []
         byday[d].push(value)
       })
       return (Object.keys(byday)).map((value) => {
-        return {
-          title: (new Date(value * 1000 * 60 * 60 * 24)).toDateString(),
-          val: (byday[value]).length
+        if (difference <= 1) {
+          return {
+            title: (new Date(value * 1000 * 60 * 60)).toTimeString(),
+            val: (byday[value]).length
+          }
+        } else {
+          return {
+            title: (new Date(value * 1000 * 60 * 60 * 24)).toDateString(),
+            val: (byday[value]).length
+          }
         }
       })
     })
@@ -265,20 +278,32 @@ module.exports.chartFunctionErrors = (event, context, callback) => {
       })
     })
     .then((result) => {
+      const difference = moment().diff(moment(startTime), 'days')
       const byday = {}
       const data = result.Items
       data.forEach((value) => {
         let d = new Date(value['startTime'])
-        d = Math.floor(d.getTime() / (1000 * 60 * 60 * 24))
+        if (difference <= 1) {
+          d = Math.floor(d.getTime() / (1000 * 60 * 60))
+        } else {
+          d = Math.floor(d.getTime() / (1000 * 60 * 60 * 24))
+        }
         byday[d] = byday[d] || 0
         if (value['error']) {
           byday[d]++
         }
       })
       return (Object.keys(byday)).map((value) => {
-        return {
-          title: (new Date(value * 1000 * 60 * 60 * 24)).toDateString(),
-          val: byday[value]
+        if (difference <= 1) {
+          return {
+            title: (new Date(value * 1000 * 60 * 60)).toTimeString(),
+            val: byday[value]
+          }
+        } else {
+          return {
+            title: (new Date(value * 1000 * 60 * 60 * 24)).toDateString(),
+            val: byday[value]
+          }
         }
       })
     })
@@ -330,11 +355,16 @@ module.exports.chartFunctionDuration = (event, context, callback) => {
       })
     })
     .then((result) => {
+      const difference = moment().diff(moment(startTime), 'days')
       const byday = {}
       const data = result.Items
       data.forEach((value) => {
         let d = new Date(value['startTime'])
-        d = Math.floor(d.getTime() / (1000 * 60 * 60 * 24))
+        if (difference <= 1) {
+          d = Math.floor(d.getTime() / (1000 * 60 * 60))
+        } else {
+          d = Math.floor(d.getTime() / (1000 * 60 * 60 * 24))
+        }
         if (!byday[d]) {
           byday[d] = {
             totalDuration: Number(value.duration),
@@ -346,10 +376,18 @@ module.exports.chartFunctionDuration = (event, context, callback) => {
         }
       })
       return (Object.keys(byday)).map((value) => {
-        return {
-          title: (new Date(value * 1000 * 60 * 60 * 24)).toDateString(),
-          val: Math.round(byday[value].totalDuration /
-            byday[value].invocationsCount * 100) / 100
+        if (difference <= 1) {
+          return {
+            title: (new Date(value * 1000 * 60 * 60)).toTimeString(),
+            val: Math.round(byday[value].totalDuration /
+              byday[value].invocationsCount * 100) / 100
+          }
+        } else {
+          return {
+            title: (new Date(value * 1000 * 60 * 60 * 24)).toDateString(),
+            val: Math.round(byday[value].totalDuration /
+              byday[value].invocationsCount * 100) / 100
+          }
         }
       })
     })
@@ -393,18 +431,30 @@ module.exports.chartAccountInvocations = (event, context, callback) => {
       })
     })
     .then((result) => {
+      const difference = moment().diff(moment(startTime), 'days')
       const byday = {}
       const data = result.Items
       data.forEach((value) => {
         let d = new Date(value['startTime'])
-        d = Math.floor(d.getTime() / (1000 * 60 * 60 * 24))
+        if (difference <= 1) {
+          d = Math.floor(d.getTime() / (1000 * 60 * 60))
+        } else {
+          d = Math.floor(d.getTime() / (1000 * 60 * 60 * 24))
+        }
         byday[d] = byday[d] || []
         byday[d].push(value)
       })
       return (Object.keys(byday)).map((value) => {
-        return {
-          title: (new Date(value * 1000 * 60 * 60 * 24)).toDateString(),
-          val: (byday[value]).length
+        if (difference <= 1) {
+          return {
+            title: (new Date(value * 1000 * 60 * 60)).toTimeString(),
+            val: (byday[value]).length
+          }
+        } else {
+          return {
+            title: (new Date(value * 1000 * 60 * 60 * 24)).toDateString(),
+            val: (byday[value]).length
+          }
         }
       })
     })
@@ -448,20 +498,32 @@ module.exports.chartAccountErrors = (event, context, callback) => {
       })
     })
     .then((result) => {
+      const difference = moment().diff(moment(startTime), 'days')
       const byday = {}
       const data = result.Items
       data.forEach((value) => {
         let d = new Date(value['startTime'])
-        d = Math.floor(d.getTime() / (1000 * 60 * 60 * 24))
+        if (difference <= 1) {
+          d = Math.floor(d.getTime() / (1000 * 60 * 60))
+        } else {
+          d = Math.floor(d.getTime() / (1000 * 60 * 60 * 24))
+        }
         byday[d] = byday[d] || 0
         if (value['error']) {
           byday[d]++
         }
       })
       return (Object.keys(byday)).map((value) => {
-        return {
-          title: (new Date(value * 1000 * 60 * 60 * 24)).toDateString(),
-          val: byday[value]
+        if (difference <= 1) {
+          return {
+            title: (new Date(value * 1000 * 60 * 60)).toTimeString(),
+            val: byday[value]
+          }
+        } else {
+          return {
+            title: (new Date(value * 1000 * 60 * 60 * 24)).toDateString(),
+            val: byday[value]
+          }
         }
       })
     })
@@ -505,11 +567,16 @@ module.exports.chartAccountDuration = (event, context, callback) => {
       })
     })
     .then((result) => {
+      const difference = moment().diff(moment(startTime), 'days')
       const byday = {}
       const data = result.Items
       data.forEach((value) => {
         let d = new Date(value['startTime'])
-        d = Math.floor(d.getTime() / (1000 * 60 * 60 * 24))
+        if (difference <= 1) {
+          d = Math.floor(d.getTime() / (1000 * 60 * 60))
+        } else {
+          d = Math.floor(d.getTime() / (1000 * 60 * 60 * 24))
+        }
         if (!byday[d]) {
           byday[d] = {
             totalDuration: Number(value.duration),
@@ -521,10 +588,18 @@ module.exports.chartAccountDuration = (event, context, callback) => {
         }
       })
       return (Object.keys(byday)).map((value) => {
-        return {
-          title: (new Date(value * 1000 * 60 * 60 * 24)).toDateString(),
-          val: Math.round(byday[value].totalDuration /
-            byday[value].invocationsCount * 100) / 100
+        if (difference <= 1) {
+          return {
+            title: (new Date(value * 1000 * 60 * 60)).toTimeString(),
+            val: Math.round(byday[value].totalDuration /
+              byday[value].invocationsCount * 100) / 100
+          }
+        } else {
+          return {
+            title: (new Date(value * 1000 * 60 * 60 * 24)).toDateString(),
+            val: Math.round(byday[value].totalDuration /
+              byday[value].invocationsCount * 100) / 100
+          }
         }
       })
     })

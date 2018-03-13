@@ -36,6 +36,7 @@
     "jsonwebtoken": "^8.1.0",
     "limiter": "^1.1.2",
     "lodash": "^4.17.4",
+    "moment": "^2.21.0",
     "serverless-plugin-split-stacks": "^1.4.1",
     "uuid": "^3.1.0"
   },
