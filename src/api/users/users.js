@@ -100,6 +100,8 @@ module.exports.update = (event, context, callback) => {
         .then(user => {
           if (!user) {
             return UserModel.update(id, body)
+          } else if (user && user._id === id) {
+            return UserModel.update(id, body)
           } else {
             throw errors.forbidden()
           }
