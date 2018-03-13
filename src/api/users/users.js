@@ -95,7 +95,16 @@ module.exports.update = (event, context, callback) => {
     helper.validateUpdate(body)
   ])
     .then(([decoded]) => UserModel.isActiveOrThrow(decoded))
-    .then(() => UserModel.update(id, body))
+    .then(() => {
+      return UserModel.getByEmail(body.email)
+        .then(user => {
+          if (!user) {
+            return UserModel.update(id, body)
+          } else {
+            throw errors.forbidden()
+          }
+        })
+    })
     .then(dtoUser.public)
     .then(responses.ok)
     .catch(responses.error)
