@@ -15,8 +15,7 @@ const dtoUser = require('../../shared/user.dto')
 
 module.exports.create = (event, context, callback) => {
   Promise.all([
-    passport.checkAuth(event.headers.Authorization)
-      .then(decoded => UserModel.isActiveOrThrow(decoded)),
+    passport.checkAuth(event.headers.Authorization).then(decoded => UserModel.isActiveOrThrow(decoded)),
     helper.validate(event.body)
   ])
     .then(([userId, data]) => {

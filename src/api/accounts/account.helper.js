@@ -6,7 +6,7 @@ const regex = require('../../shared/regex')
 
 const schema = joi.object().keys({
   _id: joi.string().guid(),
-  name: joi.string().required(),
+  name: joi.string().required().regex(regex.firstName),
   key: joi.string().required().min(16).max(128),
   secret: joi.string(),
   region: joi.string(),
