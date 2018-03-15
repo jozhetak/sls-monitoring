@@ -52,7 +52,9 @@ module.exports.sendVerificationEmail = (user) => {
             </tr>
             <tr style="height: 90px;">
                 <td style="height: 90px; width: 800px; padding-left: 40px; display: block; font-weight: bold;border-bottom: 1px solid rgba(197, 197, 197, 0.5);">
-                    <a class="button" href="${process.env.API_URL}/users/${user._id}/verification/${user.verificationToken}" style="color: #ffffff; font-size: 14px; font-family: 'Raleway', sans-serif; line-height: 16px; -webkit-text-size-adjust:none; display: block;width: 240px; height: 40px;background-color: #00b2a9;text-decoration: none; box-sizing:border-box; padding-top: 12px; text-align: center;" target="_blank">CONFIRM YOUR ACCOUNT</a>
+                    <a class="button" href="${process.env.API_URL}/users/${user._id}/verification/${user.verificationToken}" style="color: #ffffff; font-size: 14px!important; font-family: 'Raleway', sans-serif; line-height: 16px!important; -webkit-text-size-adjust:none; display: block;width: 240px!important; height: 28px!important;background-color: #00b2a9;text-decoration: none; padding-top: 12px!important; text-align: center;" target="_blank">
+                        <span>CONFIRM YOUR ACCOUNT</span>
+                    </a>
                 </td>
             </tr>
             <tr>
